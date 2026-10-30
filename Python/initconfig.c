@@ -3227,7 +3227,7 @@ _PyConfig_ProcessDeferredCmdlineOption(PyConfig *config)
         return 0;
 
     case 'V':
-        printf("Haven %s\n", HAVEN_VERSION);
+        printf("Haven %s (ODCS Edition - Open Digital Continuity Standard by Anirudha Puthraya)\n", HAVEN_VERSION);
         return 0;
 
     case 'W':  // -VV or more -V options

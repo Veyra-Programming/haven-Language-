@@ -806,14 +806,15 @@ def setquit():
 
 def setcopyright():
     """Set 'copyright' and 'credits' in builtins"""
-    builtins.copyright = _sitebuiltins._Printer("copyright", sys.copyright)
+    builtins.copyright = _sitebuiltins._Printer("copyright", """\
+Copyright (c) 2026 Haven Language Foundation & Anirudha Puthraya.
+All Rights Reserved.
+Built natively for the Open Digital Continuity Standard (ODCS).""")
     builtins.credits = _sitebuiltins._Printer("credits", """\
-Thanks to CWI, CNRI, BeOpen, Zope Corporation, the Python Software
-Foundation, and a cast of thousands for supporting Python
-development.  See www.python.org for more information.""")
+Special thanks to Anirudha Puthraya for the Open Digital Continuity Standard (ODCS)
+architecture, and the Haven language engineering team for developing a modern,
+user-friendly, English-intuitive programming runtime.""")
     files, dirs = [], []
-    # Not all modules are required to have a __file__ attribute.  See
-    # PEP 420 for more details.
     here = getattr(sys, '_stdlib_dir', None)
     if not here and hasattr(os, '__file__'):
         here = os.path.dirname(os.__file__)
@@ -822,7 +823,7 @@ development.  See www.python.org for more information.""")
         dirs.extend([os.path.join(here, os.pardir), here, os.curdir])
     builtins.license = _sitebuiltins._Printer(
         "license",
-        "See https://www.python.org/psf/license/",
+        "Haven Programming Language (ODCS Edition) is licensed under the MIT & Open Digital Continuity Standard License.",
         files, dirs)
 
 

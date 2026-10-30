@@ -1,8 +1,6 @@
-
-/* Return the full version string. */
+/* Return the full version string for Haven (ODCS Native Edition). */
 
 #include "Python.h"
-
 #include "patchlevel.h"
 
 static int initialized = 0;
@@ -14,7 +12,7 @@ void _Py_InitVersion(void)
         return;
     }
     initialized = 1;
-    PyOS_snprintf(version, sizeof(version), "Haven %s [Haven VM Core] on Windows", HAVEN_VERSION);
+    PyOS_snprintf(version, sizeof(version), "Haven %s (ODCS Edition) [Open Digital Continuity Standard] on Windows", HAVEN_VERSION);
 }
 
 const char *
@@ -24,5 +22,5 @@ Py_GetVersion(void)
     return version;
 }
 
-// Export the Python hex version as a constant.
+// Export the version as a constant.
 const unsigned long Py_Version = PY_VERSION_HEX;
