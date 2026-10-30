@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "haven-ai"
+version = "0.1.0"
+description = "Lightweight, production-grade AI SDK for Hugging Face Inference Providers and Custom Language Runtimes"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+    { name = "Haven Language Team", email = "dev@haven-lang.org" }
+]
+keywords = ["ai", "huggingface", "llm", "inference", "streaming", "pipeline", "haven"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = []
+
+[project.optional-dependencies]
+fast = ["httpx>=0.25.0", "pydantic>=2.0.0"]
+image = ["pillow>=9.0.0"]
+all = ["httpx>=0.25.0", "pydantic>=2.0.0", "pillow>=9.0.0"]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "mypy>=1.5.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["haven_ai"]
+
+[tool.mypy]
+strict = true
+disallow_untyped_defs = true
+disallow_any_generics = true
+warn_redundant_casts = true
+warn_unused_ignores = true
