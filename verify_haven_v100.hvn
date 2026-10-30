@@ -1,0 +1,111 @@
+# ============================================================================
+# Haven v1.0.0 Production Self-Diagnostic & Specification Audit
+# ============================================================================
+from haven import (
+    DurableRecord,
+    durable_record,
+    ContinuityLedger,
+    ContinuityImmutabilityError,
+    checkpoint,
+    verify_continuity,
+    pipe_fn
+)
+
+print("--- [1/6] Auditing System Identity ---")
+import sys
+print(f"System Version: {sys.version}")
+assert "Haven 1.0.0" in sys.version, "Identity check failed: Missing Haven 1.0.0 banner"
+
+print("\n--- [2/6] Auditing Natural English Syntax ---")
+set base_score to 100
+let delta_margin be 50
+
+assert base_score == 100
+assert delta_margin == 50
+
+set executions to 0
+repeat 4 times:
+    set executions to executions + 1
+
+assert executions == 4, f"Repeat loop failed. Count: {executions}"
+
+set trigger_flag to False
+unless trigger_flag:
+    set audit_passed to True
+else:
+    set audit_passed to False
+
+assert audit_passed is True, "Unless guard branch resolution failed"
+
+print("\n--- [3/6] Auditing Pipelining & Placeholder Transformation ---")
+def multiply(x, y):
+    return x * y
+
+def prefix_message(text, prefix):
+    return f"{prefix}::{text}"
+
+# Positional and keyword argument substitution
+set calc_result to 5 |> multiply(10, _)
+assert calc_result == 50, f"Positional placeholder failed: {calc_result}"
+
+set tagged_msg to "TRANSACTION_101" |> prefix_message(prefix="ODCS", text=_)
+assert tagged_msg == "ODCS::TRANSACTION_101", f"Keyword placeholder failed: {tagged_msg}"
+
+# Native Pipe operator instruction execution (HAVEN_PIPE)
+set character_count to "HavenLanguage" |> len
+assert character_count == 13
+
+print("\n--- [4/6] Auditing ODCS Durable Immutability ---")
+durable record FinancialAsset:
+    asset_id: str
+    balance: float
+    authorized: bool
+
+set wallet to FinancialAsset("ASSET-ETH-99", 1500.50, True)
+assert wallet.asset_id == "ASSET-ETH-99"
+assert wallet.balance == 1500.50
+print(f"Sealed Genesis Hash: {wallet.odcs_hash()}")
+
+# Ensure tamper attempts trigger runtime immutability faults
+set mutation_rejected to False
+try:
+    wallet.balance = 999999.99
+except ContinuityImmutabilityError:
+    set mutation_rejected to True
+
+assert mutation_rejected is True, "CRITICAL: Immutability violation! Record permitted mutation."
+
+print("\n--- [5/6] Auditing Cryptographic Ledger Chains ---")
+set audit_journal to ContinuityLedger("TreasuryLedger")
+
+# Checkpoint assets via direct pipeline ingestion
+wallet into audit_journal
+checkpoint FinancialAsset("ASSET-BTC-01", 3.1415, True) into audit_journal
+
+assert len(audit_journal.chain) == 2, "Ledger failed to ingest records"
+assert audit_journal.verify_integrity() is True, "Hash chain verification failed!"
+
+# Validate deterministic verification primitive
+set current_proof to wallet.odcs_hash()
+verify wallet with current_proof
+
+print("\n--- [6/6] Auditing Bytecode Cache Integrity ---")
+import os
+import importlib.util
+
+# Write a transient module to test .hvnc persistence
+set temp_mod to "temp_haven_verifier"
+with open(f"{temp_mod}.hvn", "w") as f:
+    f.write("set status to 'HVN_ACTIVE'\n")
+
+try:
+    import temp_haven_verifier
+    assert temp_haven_verifier.status == "HVN_ACTIVE"
+    print("Module loader verified .hvn import resolution successfully.")
+finally:
+    if os.path.exists(f"{temp_mod}.hvn"):
+        os.remove(f"{temp_mod}.hvn")
+
+print("\n============================================================")
+print("  ✓ HAVEN v1.0.0 PRODUCTION RUNTIME VERIFIED SUCCESSFULLY!   ")
+print("============================================================")

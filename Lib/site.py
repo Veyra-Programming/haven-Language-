@@ -1122,6 +1122,13 @@ def main():
     setcopyright()
     sethelper()
     try:
+        import haven
+        import builtins
+        for _name in haven.__all__:
+            setattr(builtins, _name, getattr(haven, _name))
+    except Exception:
+        pass
+    try:
         import odcs
     except Exception:
         pass

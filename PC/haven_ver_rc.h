@@ -17,14 +17,4 @@
 
 #define PYTHON_VERSION HAVEN_VERSION "\0"
 
-/* 64-bit version number as comma-separated list of 4 16-bit ints */
-#if PY_MICRO_VERSION > 64
-#   error "PY_MICRO_VERSION > 64"
-#endif
-#if PY_RELEASE_LEVEL > 99
-#   error "PY_RELEASE_LEVEL > 99"
-#endif
-#if PY_RELEASE_SERIAL > 9
-#   error "PY_RELEASE_SERIAL > 9"
-#endif
-#define PYVERSION64 0, 1, 0, 0
+#define PYVERSION64 1, 0, 0, 0

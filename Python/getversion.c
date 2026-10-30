@@ -12,7 +12,7 @@ void _Py_InitVersion(void)
         return;
     }
     initialized = 1;
-    PyOS_snprintf(version, sizeof(version), "Haven %s (ODCS Edition) [Open Digital Continuity Standard] on Windows", HAVEN_VERSION);
+    PyOS_snprintf(version, sizeof(version), "%s", HAVEN_BANNER);
 }
 
 const char *

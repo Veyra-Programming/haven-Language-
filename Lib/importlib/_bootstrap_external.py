@@ -235,7 +235,7 @@ if _MS_WINDOWS:
 
 EXTENSION_SUFFIXES = _imp.extension_suffixes()
 
-BYTECODE_SUFFIXES = ['.pyc']
+BYTECODE_SUFFIXES = ['.hvnc', '.pyc']
 # Deprecated.
 DEBUG_BYTECODE_SUFFIXES = OPTIMIZED_BYTECODE_SUFFIXES = BYTECODE_SUFFIXES
 
@@ -270,7 +270,8 @@ def cache_from_source(path, *, optimization=None):
         if not optimization.isalnum():
             raise ValueError(f'{optimization!r} is not alphanumeric')
         almost_filename = f'{almost_filename}.{_OPT}{optimization}'
-    filename = almost_filename + BYTECODE_SUFFIXES[0]
+    ext = '.hvnc' if path.endswith(('.hvn', '.haven')) else '.pyc'
+    filename = almost_filename + ext
     if sys.pycache_prefix is not None:
         # We need an absolute path to the py file to avoid the possibility of
         # collisions within sys.pycache_prefix, if someone has two different
@@ -336,7 +337,8 @@ def source_from_cache(path):
             raise ValueError(f"optimization level {optimization!r} is not an "
                              "alphanumeric value")
     base_filename = pycache_filename.partition('.')[0]
-    return _path_join(head, base_filename + SOURCE_SUFFIXES[0])
+    ext = '.hvn' if pycache_filename.endswith('.hvnc') else '.py'
+    return _path_join(head, base_filename + ext)
 
 
 def _get_sourcefile(bytecode_path):

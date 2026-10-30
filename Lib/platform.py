@@ -1149,7 +1149,7 @@ def _sys_version(sys_version=None):
     elif "Haven" in sys_version:
         # Haven (ODCS Native Edition)
         name = "Haven"
-        version = "0.1.0"
+        version = "1.0.0"
         buildno = "1"
         builddate = ""
         buildtime = ""

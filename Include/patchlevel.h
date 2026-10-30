@@ -1,36 +1,31 @@
-#ifndef _Py_PATCHLEVEL_H
-#define _Py_PATCHLEVEL_H
-/* Python version identification scheme.
+#ifndef HAVEN_PATCHLEVEL_H
+#define HAVEN_PATCHLEVEL_H
 
-   When the major or minor version changes, the VERSION variable in
-   configure.ac must also be changed.
+#define HAVEN_VERSION_MAJOR     1
+#define HAVEN_VERSION_MINOR     0
+#define HAVEN_VERSION_MICRO     0
+#define HAVEN_VERSION_LEVEL     "final"
+#define HAVEN_VERSION_SERIAL    0
 
-   There is also (independent) API version information in modsupport.h.
-
-   This header should self-contained; PC/python_ver_rc.h includes it
-   without the rest of Python.h.
-*/
+#define HAVEN_VERSION           "1.0.0"
+#define HAVEN_BANNER            "Haven 1.0.0 (ODCS Native Production Core) [Windows/MSVC]"
+#define HAVEN_COPYRIGHT         "Copyright (c) 2026 Anirudha Puthraya. All Rights Reserved."
 
 /* Values for PY_RELEASE_LEVEL */
 #define PY_RELEASE_LEVEL_ALPHA  0xA
 #define PY_RELEASE_LEVEL_BETA   0xB
 #define PY_RELEASE_LEVEL_GAMMA  0xC     /* For release candidates */
 #define PY_RELEASE_LEVEL_FINAL  0xF     /* Serial should be 0 here */
-                                        /* Higher for patch releases */
 
 /* Version parsed out into numeric values */
-/*--start constants--*/
 #define PY_MAJOR_VERSION        3
 #define PY_MINOR_VERSION        16
 #define PY_MICRO_VERSION        0
-#define PY_RELEASE_LEVEL        PY_RELEASE_LEVEL_ALPHA
-#define PY_RELEASE_SERIAL       1
+#define PY_RELEASE_LEVEL        PY_RELEASE_LEVEL_FINAL
+#define PY_RELEASE_SERIAL       0
 
 /* Version as a string */
-#define PY_VERSION              "3.16.0a1+dev"
-#define HAVEN_VERSION           "0.1.0"
-/*--end constants--*/
-
+#define PY_VERSION              "3.16.0"
 
 #define _Py_PACK_FULL_VERSION(X, Y, Z, LEVEL, SERIAL) ( \
     (((X) & 0xff) << 24) |                              \
@@ -39,8 +34,7 @@
     (((LEVEL) & 0xf) << 4) |                            \
     (((SERIAL) & 0xf) << 0))
 
-/* Version as a single 4-byte hex number, e.g. 0x010502B2 == 1.5.2b2.
-   Use this for numeric comparisons, e.g. #if PY_VERSION_HEX >= ... */
+/* Version as a single 4-byte hex number */
 #define PY_VERSION_HEX _Py_PACK_FULL_VERSION( \
     PY_MAJOR_VERSION,                         \
     PY_MINOR_VERSION,                         \
@@ -48,18 +42,9 @@
     PY_RELEASE_LEVEL,                         \
     PY_RELEASE_SERIAL)
 
-// Public Py_PACK_VERSION is declared in pymacro.h; it needs <inttypes.h>.
-
-
-/* The API and ABI versions are left for backwards compatibility.
-   They've not been updated since 2006 and 2010, respectively.
-   API/ABI versioning is now tied to the CPython version.
-   The *_VERSION and *_STRING symbols should define the same value; as
-   number and string literal respectively. Make sure the definitions match.
-*/
 #define PYTHON_API_VERSION 1013
 #define PYTHON_API_STRING "1013"
 #define PYTHON_ABI_VERSION 3
 #define PYTHON_ABI_STRING "3"
 
-#endif //_Py_PATCHLEVEL_H
+#endif /* !HAVEN_PATCHLEVEL_H */
