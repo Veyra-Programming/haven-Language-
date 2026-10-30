@@ -55,10 +55,23 @@ kwlist = [
 
 softkwlist = [
     '_',
+    'be',
     'case',
+    'each',
+    'function',
+    'into',
     'lazy',
+    'let',
     'match',
-    'type'
+    'pipe',
+    'repeat',
+    'set',
+    'time',
+    'times',
+    'to',
+    'type',
+    'unless',
+    'until'
 ]
 
 iskeyword = frozenset(kwlist).__contains__

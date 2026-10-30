@@ -1,0 +1,103 @@
+# Project Haven 0.1.0 - English Natural Syntax Verification Suite
+
+def test_english_assignment():
+    set message to "Hello Haven"
+    assert message == "Hello Haven"
+
+    let count be 42
+    assert count == 42
+
+    let a, b be 10, 20
+    assert a == 10 and b == 20
+
+    print("[PASS] English Assignment: 'set x to ...' and 'let x be ...'")
+
+def test_english_conditionals():
+    set flag to False
+    set triggered to False
+
+    unless flag:
+        set triggered to True
+    assert triggered is True
+
+    set else_branch to False
+    unless True:
+        pass
+    else:
+        set else_branch to True
+    assert else_branch is True
+
+    print("[PASS] English Conditionals: 'unless condition:' and 'unless ... else:'")
+
+def test_english_until():
+    set counter to 5
+    set total to 0
+
+    until counter == 0:
+        set total to total + counter
+        set counter to counter - 1
+
+    assert total == 15
+    assert counter == 0
+    print("[PASS] English While Loop: 'until counter == 0:'")
+
+def test_for_each_and_repeat():
+    # for each
+    set items to [1, 2, 3, 4, 5]
+    set collected to []
+
+    for each item in items:
+        collected.append(item * 2)
+
+    assert collected == [2, 4, 6, 8, 10]
+    print("[PASS] English For Loop: 'for each item in items:'")
+
+    # repeat N times
+    set repeat_counter to 0
+    repeat 4 times:
+        set repeat_counter to repeat_counter + 1
+
+    assert repeat_counter == 4
+    print("[PASS] English Loop Ergonomics: 'repeat 4 times:'")
+
+to test_intuitive_functions():
+    function add(x, y):
+        return x + y
+
+    to multiply(x, y):
+        return x * y
+
+    to get_magic_number:
+        return 777
+
+    assert add(10, 5) == 15
+    assert multiply(6, 7) == 42
+    assert get_magic_number() == 777
+    print("[PASS] Intuitive Definitions: 'function f(x):', 'to f(x):', and 'to f:'")
+
+def test_english_pipeline():
+    set res1 to "haven" into str.upper
+    assert res1 == "HAVEN"
+
+    set res2 to [1, 2, 3, 4] into filter(lambda x: x % 2 == 0, _) into list
+    assert res2 == [2, 4]
+
+    pipe 10 into pow(2, _) into set_power
+    print("[PASS] English Pipeline: 'into' operator and 'pipe ... into ...'")
+
+def set_power(val):
+    assert val == 1024
+
+if __name__ == "__main__":
+    print("========================================")
+    print("Haven English Natural Syntax Test Suite")
+    print("========================================")
+    test_english_assignment()
+    test_english_conditionals()
+    test_english_until()
+    test_for_each_and_repeat()
+    test_intuitive_functions()
+    test_english_pipeline()
+    print("========================================")
+    print("ALL HAVEN ENGLISH SYNTAX TESTS PASSED!")
+    print("========================================")

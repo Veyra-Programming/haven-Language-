@@ -115,6 +115,7 @@ simple_stmt[stmt_ty] (memo):
     | assignment
     | &"type" type_alias
     | &('import' | 'from' | "lazy") import_stmt
+    | "pipe" e=pipe_expr { _PyAST_Expr(e, EXTRA) }
     | e=star_expressions { _PyAST_Expr(e, EXTRA) }
     | &'return' return_stmt
     | &'raise' raise_stmt
@@ -128,13 +129,14 @@ simple_stmt[stmt_ty] (memo):
     | &'nonlocal' nonlocal_stmt
 
 compound_stmt[stmt_ty]:
-    | &('def' | '@' | 'async') function_def
-    | &'if' if_stmt
+    | &('def' | '@' | 'async' | "function" | "to") function_def
+    | &('if' | "unless") if_stmt
     | &('class' | '@') class_def
     | &('with' | 'async') with_stmt
     | &('for' | 'async') for_stmt
+    | &"repeat" repeat_stmt
     | &'try' try_stmt
-    | &'while' while_stmt
+    | &('while' | "until") while_stmt
     | match_stmt
 
 # SIMPLE STATEMENTS
@@ -156,6 +158,10 @@ assignment[stmt_ty]:
          _PyAST_Assign(a, b, NEW_TYPE_COMMENT(p, tc), EXTRA) }
     | a=single_target b=augassign ~ c=annotated_rhs {
          _PyAST_AugAssign(a, b->kind, c, EXTRA) }
+    | "set" a=star_targets "to" ~ b=annotated_rhs tc=[TYPE_COMMENT] {
+         _PyAST_Assign(CHECK(asdl_expr_seq*, _PyPegen_singleton_seq(p, a)), b, NEW_TYPE_COMMENT(p, tc), EXTRA) }
+    | "let" a=star_targets "be" ~ b=annotated_rhs tc=[TYPE_COMMENT] {
+         _PyAST_Assign(CHECK(asdl_expr_seq*, _PyPegen_singleton_seq(p, a)), b, NEW_TYPE_COMMENT(p, tc), EXTRA) }
     | invalid_assignment
 
 annotated_rhs[expr_ty]: yield_expr | star_expressions
@@ -297,11 +303,15 @@ function_def[stmt_ty]:
 
 function_def_raw[stmt_ty]:
     | invalid_def_raw
-    | 'def' n=NAME t=[type_params] '(' params=[params] ')' a=['->' z=expression { z }] ':' tc=[func_type_comment] b=block {
+    | ('def' | "function" | "to") n=NAME t=[type_params] '(' params=[params] ')' a=['->' z=expression { z }] ':' tc=[func_type_comment] b=block {
         _PyAST_FunctionDef(n->v.Name.id,
                         (params) ? params : CHECK(arguments_ty, _PyPegen_empty_arguments(p)),
                         b, NULL, a, NEW_TYPE_COMMENT(p, tc), t, EXTRA) }
-    | 'async' 'def' n=NAME t=[type_params] '(' params=[params] ')' a=['->' z=expression { z }] ':' tc=[func_type_comment] b=block {
+    | ("function" | "to") n=NAME t=[type_params] ':' tc=[func_type_comment] b=block {
+        _PyAST_FunctionDef(n->v.Name.id,
+                        CHECK(arguments_ty, _PyPegen_empty_arguments(p)),
+                        b, NULL, NULL, NEW_TYPE_COMMENT(p, tc), t, EXTRA) }
+    | 'async' ('def' | "function") n=NAME t=[type_params] '(' params=[params] ')' a=['->' z=expression { z }] ':' tc=[func_type_comment] b=block {
         CHECK_VERSION(
             stmt_ty,
             5,
@@ -309,6 +319,15 @@ function_def_raw[stmt_ty]:
             _PyAST_AsyncFunctionDef(n->v.Name.id,
                             (params) ? params : CHECK(arguments_ty, _PyPegen_empty_arguments(p)),
                             b, NULL, a, NEW_TYPE_COMMENT(p, tc), t, EXTRA)
+        ) }
+    | 'async' ("function" | "to") n=NAME t=[type_params] ':' tc=[func_type_comment] b=block {
+        CHECK_VERSION(
+            stmt_ty,
+            5,
+            "Async functions are",
+            _PyAST_AsyncFunctionDef(n->v.Name.id,
+                            CHECK(arguments_ty, _PyPegen_empty_arguments(p)),
+                            b, NULL, NULL, NEW_TYPE_COMMENT(p, tc), t, EXTRA)
         ) }
 
 # Function parameters
@@ -391,6 +410,10 @@ if_stmt[stmt_ty]:
     | 'if' a=named_expression ':' b=block c=elif_stmt {
         _PyAST_If(a, b, CHECK(asdl_stmt_seq*, _PyPegen_singleton_seq(p, c)), EXTRA) }
     | 'if' a=named_expression ':' b=block c=[else_block] { _PyAST_If(a, b, c, EXTRA) }
+    | "unless" a=named_expression ':' b=block c=elif_stmt {
+        _PyAST_If(CHECK(expr_ty, _PyAST_UnaryOp(Not, a, EXTRA)), b, CHECK(asdl_stmt_seq*, _PyPegen_singleton_seq(p, c)), EXTRA) }
+    | "unless" a=named_expression ':' b=block c=[else_block] {
+        _PyAST_If(CHECK(expr_ty, _PyAST_UnaryOp(Not, a, EXTRA)), b, c, EXTRA) }
 elif_stmt[stmt_ty]:
     | invalid_elif_stmt
     | 'elif' a=named_expression ':' b=block c=elif_stmt {
@@ -406,17 +429,27 @@ else_block[asdl_stmt_seq*]:
 while_stmt[stmt_ty]:
     | invalid_while_stmt
     | 'while' a=named_expression ':' b=block c=[else_block] { _PyAST_While(a, b, c, EXTRA) }
+    | "until" a=named_expression ':' b=block c=[else_block] {
+        _PyAST_While(CHECK(expr_ty, _PyAST_UnaryOp(Not, a, EXTRA)), b, c, EXTRA) }
 
 # For statement
 # -------------
 
 for_stmt[stmt_ty]:
     | invalid_for_stmt
+    | 'for' "each" t=star_targets 'in' ~ ex=star_expressions ':' tc=[TYPE_COMMENT] b=block el=[else_block] {
+        _PyAST_For(t, ex, b, el, NEW_TYPE_COMMENT(p, tc), EXTRA) }
     | 'for' t=star_targets 'in' ~ ex=star_expressions ':' tc=[TYPE_COMMENT] b=block el=[else_block] {
         _PyAST_For(t, ex, b, el, NEW_TYPE_COMMENT(p, tc), EXTRA) }
+    | 'async' 'for' "each" t=star_targets 'in' ~ ex=star_expressions ':' tc=[TYPE_COMMENT] b=block el=[else_block] {
+        CHECK_VERSION(stmt_ty, 5, "Async for loops are", _PyAST_AsyncFor(t, ex, b, el, NEW_TYPE_COMMENT(p, tc), EXTRA)) }
     | 'async' 'for' t=star_targets 'in' ~ ex=star_expressions ':' tc=[TYPE_COMMENT] b=block el=[else_block] {
         CHECK_VERSION(stmt_ty, 5, "Async for loops are", _PyAST_AsyncFor(t, ex, b, el, NEW_TYPE_COMMENT(p, tc), EXTRA)) }
     | invalid_for_target
+
+repeat_stmt[stmt_ty]:
+    | "repeat" n=expression ["times" | "time"] ':' b=block el=[else_block] {
+        _PyPegen_repeat_stmt(p, n, b, el, EXTRA) }
 
 # With statement
 # --------------
@@ -776,7 +809,7 @@ inversion[expr_ty] (memo, fastpath=_PyPegen_atom_fast_path):
     | pipe_expr
 
 pipe_expr[expr_ty]:
-    | a=pipe_expr '|>' b=comparison { _PyPegen_pipe_expr(p, a, b, EXTRA) }
+    | a=pipe_expr ('|>' | "into") b=comparison { _PyPegen_pipe_expr(p, a, b, EXTRA) }
     | comparison
 
 # Comparison operators

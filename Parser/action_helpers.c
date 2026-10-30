@@ -2272,3 +2272,39 @@ _PyPegen_pipe_expr(Parser *p, expr_ty a, expr_ty b, int lineno, int col_offset,
 
     return _PyAST_Pipe(a, b, lineno, col_offset, end_lineno, end_col_offset, arena);
 }
+
+stmt_ty
+_PyPegen_repeat_stmt(Parser *p, expr_ty count, asdl_stmt_seq *body, asdl_stmt_seq *orelse,
+                     int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena *arena)
+{
+    PyObject *target_id = _PyPegen_new_identifier(p, "_");
+    if (!target_id) {
+        return NULL;
+    }
+    expr_ty target = _PyAST_Name(target_id, Store, lineno, col_offset, end_lineno, end_col_offset, arena);
+    if (!target) {
+        return NULL;
+    }
+
+    PyObject *range_id = _PyPegen_new_identifier(p, "range");
+    if (!range_id) {
+        return NULL;
+    }
+    expr_ty range_fn = _PyAST_Name(range_id, Load, lineno, col_offset, end_lineno, end_col_offset, arena);
+    if (!range_fn) {
+        return NULL;
+    }
+
+    asdl_expr_seq *args = (asdl_expr_seq *)_Py_asdl_generic_seq_new(1, arena);
+    if (!args) {
+        return NULL;
+    }
+    asdl_seq_SET(args, 0, count);
+
+    expr_ty call_range = _PyAST_Call(range_fn, args, NULL, lineno, col_offset, end_lineno, end_col_offset, arena);
+    if (!call_range) {
+        return NULL;
+    }
+
+    return _PyAST_For(target, call_range, body, orelse, NULL, lineno, col_offset, end_lineno, end_col_offset, arena);
+}
