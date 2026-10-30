@@ -359,6 +359,7 @@ asdl_seq *_PyPegen_singleton_seq(Parser *, void *);
 asdl_seq *_PyPegen_seq_insert_in_front(Parser *, void *, asdl_seq *);
 asdl_seq *_PyPegen_seq_append_to_end(Parser *, asdl_seq *, void *);
 asdl_seq *_PyPegen_seq_flatten(Parser *, asdl_seq *);
+expr_ty _PyPegen_pipe_expr(Parser *, expr_ty, expr_ty, int, int, int, int, PyArena *);
 expr_ty _PyPegen_join_names_with_dot(Parser *, expr_ty, expr_ty);
 int _PyPegen_seq_count_dots(asdl_seq *);
 alias_ty _PyPegen_alias_for_star(Parser *, int, int, int, int, PyArena *);

@@ -776,7 +776,7 @@ inversion[expr_ty] (memo, fastpath=_PyPegen_atom_fast_path):
     | pipe_expr
 
 pipe_expr[expr_ty]:
-    | a=pipe_expr '|>' b=comparison { _PyAST_Pipe(a, b, EXTRA) }
+    | a=pipe_expr '|>' b=comparison { _PyPegen_pipe_expr(p, a, b, EXTRA) }
     | comparison
 
 # Comparison operators

@@ -1,0 +1,61 @@
+# Project Haven 0.1.0 - Advanced Pipeline & Partial Application Test Suite
+
+def test_unary_pipeline():
+    result = [10, 20, 30] |> len
+    assert result == 3, f"Expected 3, got {result}"
+    print("[PASS] Unary pipeline: [10, 20, 30] |> len ->", result)
+
+def test_argument_prepending():
+    # Calling method with no extra args: 'hello' |> str.upper() -> str.upper('hello')
+    res1 = "haven" |> str.upper()
+    assert res1 == "HAVEN", f"Expected 'HAVEN', got {res1}"
+
+    # Calling function with existing args: prepends as first arg
+    res2 = "haven compiler" |> str.startswith("haven")
+    assert res2 is True
+
+    print("[PASS] Argument prepending: 'haven' |> str.upper() ->", res1)
+
+def test_positional_placeholder():
+    # 2^10 = 1024
+    res = 10 |> pow(2, _)
+    assert res == 1024, f"Expected 1024, got {res}"
+
+    # filter with placeholder
+    items = [1, 2, 3, 4, 5, 6]
+    evens = items |> filter(lambda x: x % 2 == 0, _) |> list
+    assert evens == [2, 4, 6], f"Expected [2, 4, 6], got {evens}"
+
+    print("[PASS] Positional placeholder: 10 |> pow(2, _) ->", res)
+    print("[PASS] Filter with placeholder: items |> filter(..., _) |> list ->", evens)
+
+def test_keyword_placeholder():
+    def greet(salutation, name):
+        return f"{salutation}, {name}!"
+
+    res = "Haven Developer" |> greet(salutation="Welcome", name=_)
+    assert res == "Welcome, Haven Developer!", f"Got {res}"
+    print("[PASS] Keyword placeholder: name=_ ->", res)
+
+def test_pipeline_chaining():
+    pipeline_result = (
+        "   the haven programming language   "
+        |> str.strip()
+        |> str.title()
+        |> str.replace("Language", "Ecosystem")
+    )
+    assert pipeline_result == "The Haven Programming Ecosystem", f"Got {pipeline_result}"
+    print("[PASS] Chained transformation ->", pipeline_result)
+
+if __name__ == "__main__":
+    print("========================================")
+    print("Running Haven Pipeline Verification Suite")
+    print("========================================")
+    test_unary_pipeline()
+    test_argument_prepending()
+    test_positional_placeholder()
+    test_keyword_placeholder()
+    test_pipeline_chaining()
+    print("========================================")
+    print("ALL HAVEN PIPELINE TESTS PASSED!")
+    print("========================================")

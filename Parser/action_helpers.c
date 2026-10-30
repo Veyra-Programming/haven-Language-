@@ -2192,3 +2192,83 @@ _PyPegen_register_stmts(Parser *p, asdl_stmt_seq* stmts) {
     p->last_stmt_location.end_col_offset = last_stmt->end_col_offset;
     return stmts;
 }
+
+expr_ty
+_PyPegen_pipe_expr(Parser *p, expr_ty a, expr_ty b, int lineno, int col_offset,
+                   int end_lineno, int end_col_offset, PyArena *arena)
+{
+    if (a == NULL || b == NULL) {
+        return NULL;
+    }
+    if (b->kind == Call_kind) {
+        asdl_expr_seq *orig_args = b->v.Call.args;
+        Py_ssize_t nargs = orig_args ? asdl_seq_LEN(orig_args) : 0;
+        int placeholder_idx = -1;
+        for (Py_ssize_t i = 0; i < nargs; i++) {
+            expr_ty arg = (expr_ty)asdl_seq_GET(orig_args, i);
+            if (arg->kind == Name_kind && _PyUnicode_EqualToASCIIString(arg->v.Name.id, "_")) {
+                placeholder_idx = (int)i;
+                break;
+            }
+        }
+
+        if (placeholder_idx >= 0) {
+            asdl_expr_seq *new_args = (asdl_expr_seq *)_Py_asdl_generic_seq_new(nargs, arena);
+            if (!new_args) {
+                return NULL;
+            }
+            for (Py_ssize_t i = 0; i < nargs; i++) {
+                if (i == placeholder_idx) {
+                    asdl_seq_SET(new_args, i, a);
+                }
+                else {
+                    asdl_seq_SET(new_args, i, asdl_seq_GET(orig_args, i));
+                }
+            }
+            return _PyAST_Call(b->v.Call.func, new_args, b->v.Call.keywords,
+                               lineno, col_offset, end_lineno, end_col_offset, arena);
+        }
+
+        asdl_keyword_seq *orig_keywords = b->v.Call.keywords;
+        Py_ssize_t nkw = orig_keywords ? asdl_seq_LEN(orig_keywords) : 0;
+        int kw_placeholder_idx = -1;
+        for (Py_ssize_t i = 0; i < nkw; i++) {
+            keyword_ty kw = (keyword_ty)asdl_seq_GET(orig_keywords, i);
+            if (kw->value->kind == Name_kind && _PyUnicode_EqualToASCIIString(kw->value->v.Name.id, "_")) {
+                kw_placeholder_idx = (int)i;
+                break;
+            }
+        }
+
+        if (kw_placeholder_idx >= 0) {
+            asdl_keyword_seq *new_kw = (asdl_keyword_seq *)_Py_asdl_generic_seq_new(nkw, arena);
+            if (!new_kw) {
+                return NULL;
+            }
+            for (Py_ssize_t i = 0; i < nkw; i++) {
+                keyword_ty kw = (keyword_ty)asdl_seq_GET(orig_keywords, i);
+                if (i == kw_placeholder_idx) {
+                    keyword_ty new_k = _PyAST_keyword(kw->arg, a, kw->lineno, kw->col_offset,
+                                                      kw->end_lineno, kw->end_col_offset, arena);
+                    if (!new_k) return NULL;
+                    asdl_seq_SET(new_kw, i, new_k);
+                }
+                else {
+                    asdl_seq_SET(new_kw, i, kw);
+                }
+            }
+            return _PyAST_Call(b->v.Call.func, orig_args, new_kw,
+                               lineno, col_offset, end_lineno, end_col_offset, arena);
+        }
+
+        // Prepend 'a' as first positional argument
+        asdl_expr_seq *new_args = (asdl_expr_seq *)_PyPegen_seq_insert_in_front(p, a, (asdl_seq *)orig_args);
+        if (!new_args) {
+            return NULL;
+        }
+        return _PyAST_Call(b->v.Call.func, new_args, b->v.Call.keywords,
+                           lineno, col_offset, end_lineno, end_col_offset, arena);
+    }
+
+    return _PyAST_Pipe(a, b, lineno, col_offset, end_lineno, end_col_offset, arena);
+}
