@@ -2,6 +2,7 @@
 #include "pycore_pymem.h"  // PYMEM_DEADBYTE
 
 #include "source.h"
+// Haven multi-character operator and symbol buffer management
 
 #define SOURCE_BUFFER_GROWTH_FACTOR 2
 

@@ -255,7 +255,7 @@
     <Field3Value Condition="$(UseTestMarker) == 'true'">$([msbuild]::Add($(Field3Value), 9000))</Field3Value>
 
     <!-- Name and full path of the resulting python.exe binary -->
-    <PyExeName Condition="$(PyExeName) == ''">python</PyExeName>
+    <PyExeName Condition="$(PyExeName) == ''">haven</PyExeName>
     <PythonExe Condition="'$(PythonExe)' == ''">$(BuildPath)$(PyExeName)$(PyDebugExt).exe</PythonExe>
     <PyWExeName Condition="$(PyWExeName) == ''">pythonw</PyWExeName>
 

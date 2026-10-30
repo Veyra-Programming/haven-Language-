@@ -370,6 +370,7 @@ const uint32_t _PyUop_Flags[MAX_UOP_ID+1] = {
     [_BUILD_SLICE] = HAS_ARG_FLAG | HAS_ERROR_FLAG | HAS_ESCAPES_FLAG,
     [_CONVERT_VALUE] = HAS_ARG_FLAG | HAS_ERROR_FLAG | HAS_ESCAPES_FLAG,
     [_FORMAT_SIMPLE] = HAS_ERROR_FLAG | HAS_ESCAPES_FLAG,
+    [_HAVEN_PIPE] = HAS_ERROR_FLAG | HAS_ESCAPES_FLAG,
     [_FORMAT_WITH_SPEC] = HAS_ERROR_FLAG | HAS_ESCAPES_FLAG,
     [_COPY_1] = HAS_PURE_FLAG,
     [_COPY_2] = HAS_PURE_FLAG,
@@ -3462,6 +3463,15 @@ const _PyUopCachingInfo _PyUop_Caching[MAX_UOP_ID+1] = {
             { -1, -1, -1 },
         },
     },
+    [_HAVEN_PIPE] = {
+        .best = { 2, 2, 2, 2 },
+        .entries = {
+            { -1, -1, -1 },
+            { -1, -1, -1 },
+            { 1, 2, _HAVEN_PIPE_r21 },
+            { -1, -1, -1 },
+        },
+    },
     [_FORMAT_WITH_SPEC] = {
         .best = { 2, 2, 2, 2 },
         .entries = {
@@ -4669,6 +4679,7 @@ const uint16_t _PyUop_Uncached[MAX_UOP_REGS_ID+1] = {
     [_BUILD_SLICE_r01] = _BUILD_SLICE,
     [_CONVERT_VALUE_r11] = _CONVERT_VALUE,
     [_FORMAT_SIMPLE_r11] = _FORMAT_SIMPLE,
+    [_HAVEN_PIPE_r21] = _HAVEN_PIPE,
     [_FORMAT_WITH_SPEC_r21] = _FORMAT_WITH_SPEC,
     [_COPY_1_r02] = _COPY_1,
     [_COPY_1_r12] = _COPY_1,
@@ -5640,6 +5651,8 @@ const char *const _PyOpcode_uop_name[MAX_UOP_REGS_ID+1] = {
     [_HANDLE_PENDING_AND_DEOPT_r10] = "_HANDLE_PENDING_AND_DEOPT_r10",
     [_HANDLE_PENDING_AND_DEOPT_r20] = "_HANDLE_PENDING_AND_DEOPT_r20",
     [_HANDLE_PENDING_AND_DEOPT_r30] = "_HANDLE_PENDING_AND_DEOPT_r30",
+    [_HAVEN_PIPE] = "_HAVEN_PIPE",
+    [_HAVEN_PIPE_r21] = "_HAVEN_PIPE_r21",
     [_IMPORT_FROM] = "_IMPORT_FROM",
     [_IMPORT_FROM_r12] = "_IMPORT_FROM_r12",
     [_IMPORT_NAME] = "_IMPORT_NAME",
@@ -6868,6 +6881,8 @@ int _PyUop_num_popped(int opcode, int oparg)
             return 1;
         case _FORMAT_SIMPLE:
             return 1;
+        case _HAVEN_PIPE:
+            return 2;
         case _FORMAT_WITH_SPEC:
             return 2;
         case _COPY_1:

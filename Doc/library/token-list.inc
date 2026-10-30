@@ -100,5 +100,7 @@
      - ``"..."``
    * - .. data:: COLONEQUAL
      - ``":="``
+   * - .. data:: PIPE_OP
+     - ``"|>"``
    * - .. data:: EXCLAMATION
      - ``"!"``

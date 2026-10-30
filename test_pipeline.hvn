@@ -1,0 +1,17 @@
+# Haven Language Test Script (.hvn)
+
+def square(n):
+    return n * n
+
+def increment(n):
+    return n + 1
+
+def describe(val):
+    return f"Haven Pipeline Result: {val}"
+
+data = [1, 2, 3, 4, 5]
+total_count = data |> len
+transformed = 4 |> square |> increment |> describe
+
+print(f"Data length: {total_count}")
+print(transformed)

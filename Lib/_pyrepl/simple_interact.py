@@ -135,13 +135,13 @@ def run_multiline_interactive_console(
             except Exception:
                 pass
             try:
-                ps1 = str(getattr(sys, "ps1", ">>> "))
+                ps1 = str(getattr(sys, "ps1", "haven> "))
             except Exception:
-                ps1 = ">>> "
+                ps1 = "haven> "
             try:
-                ps2 = str(getattr(sys, "ps2", "... "))
+                ps2 = str(getattr(sys, "ps2", "...> "))
             except Exception:
-                ps2 = "... "
+                ps2 = "...> "
             try:
                 statement = multiline_input(more_lines, ps1, ps2)
             except EOFError:

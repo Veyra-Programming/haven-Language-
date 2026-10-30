@@ -1,0 +1,5 @@
+def emphasize(s):
+    return f"*** {s} ***"
+
+def reverse(s):
+    return s[::-1]

@@ -143,6 +143,14 @@ set PYTHONPATH=$(PySourcePath)Lib
           SkipUnchangedFiles="true"
           UseHardLinksIfPossible="true" />
   </Target>
+  <Target Name="CopyPythonAliasBinary" AfterTargets="AfterBuild"
+          Condition="'$(PyExeName)' != 'python'">
+    <Message Text="Duplicating $(TargetPath) to $(OutDir)python$(PyDebugExt).exe for python compatibility" />
+    <Copy SourceFiles="$(TargetPath)"
+          DestinationFiles="$(OutDir)python$(PyDebugExt).exe"
+          SkipUnchangedFiles="true"
+          UseHardLinksIfPossible="true" />
+  </Target>
   <Target Name="GeneratePythonBat" AfterTargets="AfterBuild">
     <PropertyGroup>
       <_Content>@rem This script invokes the most recently built Python with all arguments

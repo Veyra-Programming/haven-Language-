@@ -5275,6 +5275,16 @@
             break;
         }
 
+        case _HAVEN_PIPE: {
+            JitOptRef res;
+            res = sym_new_not_null(ctx);
+            CHECK_STACK_BOUNDS(-1);
+            stack_pointer[-2] = res;
+            stack_pointer += -1;
+            ASSERT_WITHIN_STACK_BOUNDS(__FILE__, __LINE__);
+            break;
+        }
+
         case _FORMAT_WITH_SPEC: {
             JitOptRef res;
             res = sym_new_not_null(ctx);

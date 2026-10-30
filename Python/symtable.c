@@ -2513,6 +2513,10 @@ symtable_visit_expr(struct symtable *st, expr_ty e)
     case BoolOp_kind:
         VISIT_SEQ(st, expr, e->v.BoolOp.values);
         break;
+    case Pipe_kind:
+        VISIT(st, expr, e->v.Pipe.left);
+        VISIT(st, expr, e->v.Pipe.right);
+        break;
     case BinOp_kind:
         VISIT(st, expr, e->v.BinOp.left);
         VISIT(st, expr, e->v.BinOp.right);

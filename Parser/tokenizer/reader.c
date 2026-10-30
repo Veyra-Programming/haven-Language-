@@ -8,6 +8,7 @@
 #include "reader.h"
 #include "reader_internal.h"
 #include "../lexer/state.h"
+// Haven tokenizer character reader and multi-character symbol streaming
 
 #define READER_BUFFER_GROWTH_FACTOR 2
 

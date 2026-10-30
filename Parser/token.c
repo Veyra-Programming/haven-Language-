@@ -60,6 +60,7 @@ const char * const _PyParser_TokenNames[] = {
     "RARROW",
     "ELLIPSIS",
     "COLONEQUAL",
+    "PIPE_OP",
     "EXCLAMATION",
     "OP",
     "TYPE_IGNORE",
@@ -190,6 +191,7 @@ _PyToken_TwoChars(int c1, int c2, int BARRY_AS_BDFL)
     case '|':
         switch (c2) {
         case '=': return VBAREQUAL;
+        case '>': return PIPE_OP;
         }
         break;
     }

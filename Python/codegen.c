@@ -5491,6 +5491,11 @@ codegen_visit_expr_impl(compiler *c, expr_ty e, bool result_is_unused)
         break;
     case BoolOp_kind:
         return codegen_boolop(c, e);
+    case Pipe_kind:
+        VISIT(c, expr, e->v.Pipe.left);
+        VISIT(c, expr, e->v.Pipe.right);
+        ADDOP(c, loc, HAVEN_PIPE);
+        break;
     case BinOp_kind:
         VISIT(c, expr, e->v.BinOp.left);
         VISIT(c, expr, e->v.BinOp.right);

@@ -14,13 +14,7 @@ void _Py_InitVersion(void)
         return;
     }
     initialized = 1;
-#ifdef Py_GIL_DISABLED
-    const char *buildinfo_format = "%.80s free-threading build (%.80s) %.80s";
-#else
-    const char *buildinfo_format = "%.80s (%.80s) %.80s";
-#endif
-    PyOS_snprintf(version, sizeof(version), buildinfo_format,
-                  PY_VERSION, Py_GetBuildInfo(), Py_GetCompiler());
+    PyOS_snprintf(version, sizeof(version), "Haven %s [Haven VM Core] on Windows", HAVEN_VERSION);
 }
 
 const char *

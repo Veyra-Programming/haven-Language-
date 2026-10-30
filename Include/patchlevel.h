@@ -28,6 +28,7 @@
 
 /* Version as a string */
 #define PY_VERSION              "3.16.0a1+dev"
+#define HAVEN_VERSION           "0.1.0"
 /*--end constants--*/
 
 

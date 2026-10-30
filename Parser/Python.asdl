@@ -60,6 +60,7 @@ module Python
     expr = BoolOp(boolop op, expr* values)
          | NamedExpr(expr target, expr value)
          | BinOp(expr left, operator op, expr right)
+         | Pipe(expr left, expr right)
          | UnaryOp(unaryop op, expr operand)
          | Lambda(arguments args, expr body)
          | IfExp(expr test, expr body, expr orelse)

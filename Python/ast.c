@@ -264,6 +264,10 @@ validate_expr(expr_ty exp, expr_context_ty ctx)
         }
         ret = validate_exprs(exp->v.BoolOp.values, Load, 0);
         break;
+    case Pipe_kind:
+        ret = validate_expr(exp->v.Pipe.left, Load) &&
+            validate_expr(exp->v.Pipe.right, Load);
+        break;
     case BinOp_kind:
         ret = validate_expr(exp->v.BinOp.left, Load) &&
             validate_expr(exp->v.BinOp.right, Load);

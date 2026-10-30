@@ -230,6 +230,8 @@ int _PyOpcode_num_popped(int opcode, int oparg)  {
             return 1;
         case GET_LEN:
             return 1;
+        case HAVEN_PIPE:
+            return 2;
         case IMPORT_FROM:
             return 1;
         case IMPORT_NAME:
@@ -725,6 +727,8 @@ int _PyOpcode_num_pushed(int opcode, int oparg)  {
             return 2;
         case GET_LEN:
             return 2;
+        case HAVEN_PIPE:
+            return 1;
         case IMPORT_FROM:
             return 2;
         case IMPORT_NAME:
@@ -1196,6 +1200,7 @@ const struct opcode_metadata _PyOpcode_opcode_metadata[267] = {
     [GET_ITER_SELF] = { true, INSTR_FMT_IXC, HAS_EXIT_FLAG | HAS_RECORDS_VALUE_FLAG },
     [GET_ITER_VIRTUAL] = { true, INSTR_FMT_IXC, HAS_EXIT_FLAG | HAS_RECORDS_VALUE_FLAG },
     [GET_LEN] = { true, INSTR_FMT_IX, HAS_ERROR_FLAG | HAS_ESCAPES_FLAG },
+    [HAVEN_PIPE] = { true, INSTR_FMT_IX, HAS_ERROR_FLAG | HAS_ESCAPES_FLAG },
     [IMPORT_FROM] = { true, INSTR_FMT_IB, HAS_ARG_FLAG | HAS_NAME_FLAG | HAS_ERROR_FLAG | HAS_ESCAPES_FLAG },
     [IMPORT_NAME] = { true, INSTR_FMT_IB, HAS_ARG_FLAG | HAS_NAME_FLAG | HAS_ERROR_FLAG | HAS_ESCAPES_FLAG },
     [INSTRUMENTED_CALL] = { true, INSTR_FMT_IBC00, HAS_ARG_FLAG | HAS_EVAL_BREAK_FLAG | HAS_ERROR_FLAG | HAS_ERROR_NO_POP_FLAG | HAS_ESCAPES_FLAG | HAS_SYNC_SP_FLAG | HAS_NEEDS_GUARD_IP_FLAG },
@@ -1443,6 +1448,7 @@ _PyOpcode_macro_expansion[256] = {
     [GET_ITER_SELF] = { .nuops = 3, .uops = { { _RECORD_TOS_TYPE, OPARG_SIMPLE, 0 }, { _GUARD_ITERATOR, OPARG_SIMPLE, 1 }, { _PUSH_NULL, OPARG_SIMPLE, 1 } } },
     [GET_ITER_VIRTUAL] = { .nuops = 3, .uops = { { _RECORD_TOS_TYPE, OPARG_SIMPLE, 0 }, { _GUARD_ITER_VIRTUAL, OPARG_SIMPLE, 1 }, { _PUSH_TAGGED_ZERO, OPARG_SIMPLE, 1 } } },
     [GET_LEN] = { .nuops = 1, .uops = { { _GET_LEN, OPARG_SIMPLE, 0 } } },
+    [HAVEN_PIPE] = { .nuops = 1, .uops = { { _HAVEN_PIPE, OPARG_SIMPLE, 0 } } },
     [IMPORT_FROM] = { .nuops = 1, .uops = { { _IMPORT_FROM, OPARG_SIMPLE, 0 } } },
     [IMPORT_NAME] = { .nuops = 1, .uops = { { _IMPORT_NAME, OPARG_SIMPLE, 0 } } },
     [IS_OP] = { .nuops = 3, .uops = { { _IS_OP, OPARG_SIMPLE, 0 }, { _POP_TOP, OPARG_SIMPLE, 0 }, { _POP_TOP, OPARG_SIMPLE, 0 } } },
@@ -1649,6 +1655,7 @@ const char *_PyOpcode_OpName[267] = {
     [GET_ITER_SELF] = "GET_ITER_SELF",
     [GET_ITER_VIRTUAL] = "GET_ITER_VIRTUAL",
     [GET_LEN] = "GET_LEN",
+    [HAVEN_PIPE] = "HAVEN_PIPE",
     [IMPORT_FROM] = "IMPORT_FROM",
     [IMPORT_NAME] = "IMPORT_NAME",
     [INSTRUMENTED_CALL] = "INSTRUMENTED_CALL",
@@ -1828,7 +1835,6 @@ const uint8_t _PyOpcode_Caches[256] = {
 PyAPI_DATA(const uint8_t) _PyOpcode_Deopt[256];
 #ifdef NEED_OPCODE_METADATA
 const uint8_t _PyOpcode_Deopt[256] = {
-    [117] = 117,
     [118] = 118,
     [119] = 119,
     [120] = 120,
@@ -1949,6 +1955,7 @@ const uint8_t _PyOpcode_Deopt[256] = {
     [GET_ITER_SELF] = GET_ITER,
     [GET_ITER_VIRTUAL] = GET_ITER,
     [GET_LEN] = GET_LEN,
+    [HAVEN_PIPE] = HAVEN_PIPE,
     [IMPORT_FROM] = IMPORT_FROM,
     [IMPORT_NAME] = IMPORT_NAME,
     [INSTRUMENTED_CALL] = INSTRUMENTED_CALL,
@@ -2089,7 +2096,6 @@ const uint8_t _PyOpcode_Deopt[256] = {
 #endif // NEED_OPCODE_METADATA
 
 #define EXTRA_CASES \
-    case 117: \
     case 118: \
     case 119: \
     case 120: \

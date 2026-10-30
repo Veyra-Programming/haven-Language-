@@ -5863,6 +5863,13 @@ dummy_func(
             }
         }
 
+        inst(HAVEN_PIPE, (left, right -- res)) {
+            PyObject *res_o = PyObject_CallOneArg(PyStackRef_AsPyObjectBorrow(right), PyStackRef_AsPyObjectBorrow(left));
+            DECREF_INPUTS();
+            ERROR_IF(res_o == NULL);
+            res = PyStackRef_FromPyObjectSteal(res_o);
+        }
+
         inst(FORMAT_WITH_SPEC, (value, fmt_spec -- res)) {
             PyObject *res_o = PyObject_Format(PyStackRef_AsPyObjectBorrow(value), PyStackRef_AsPyObjectBorrow(fmt_spec));
             DECREF_INPUTS();

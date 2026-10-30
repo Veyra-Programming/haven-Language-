@@ -58,6 +58,7 @@ ATEQUAL                 '@='
 RARROW                  '->'
 ELLIPSIS                '...'
 COLONEQUAL              ':='
+PIPE_OP                 '|>'
 EXCLAMATION             '!'
 
 OP

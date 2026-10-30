@@ -773,6 +773,10 @@ conjunction[expr_ty] (memo):
 
 inversion[expr_ty] (memo, fastpath=_PyPegen_atom_fast_path):
     | 'not' a=inversion { _PyAST_UnaryOp(Not, a, EXTRA) }
+    | pipe_expr
+
+pipe_expr[expr_ty]:
+    | a=pipe_expr '|>' b=comparison { _PyAST_Pipe(a, b, EXTRA) }
     | comparison
 
 # Comparison operators

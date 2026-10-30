@@ -64,7 +64,7 @@ _PyRun_File(FILE *fp, PyObject *filename, int start, PyObject *globals,
 static void
 pyrun_error(const char *msg)
 {
-    PySys_FormatStderr("python: %s\n", msg);
+    PySys_FormatStderr("haven: %s\n", msg);
 }
 
 
@@ -135,7 +135,7 @@ _PyRun_InteractiveLoop(FILE *fp, PyObject *filename, PyCompilerFlags *flags)
         return NULL;
     }
     if (v == NULL) {
-        v = PyUnicode_FromString(">>> ");
+        v = PyUnicode_FromString("haven> ");
         if (v == NULL) {
             PyErr_Clear();
         }
@@ -148,7 +148,7 @@ _PyRun_InteractiveLoop(FILE *fp, PyObject *filename, PyCompilerFlags *flags)
         return NULL;
     }
     if (v == NULL) {
-        v = PyUnicode_FromString("... ");
+        v = PyUnicode_FromString("...> ");
         if (v == NULL) {
             PyErr_Clear();
         }
@@ -422,6 +422,13 @@ maybe_pyc_file(FILE *fp, PyObject *filename, int closeit)
     }
     Py_ssize_t endswith = PyUnicode_Tailmatch(filename, ext, 0, PY_SSIZE_T_MAX, +1);
     Py_DECREF(ext);
+    if (!endswith) {
+        PyObject *ext2 = PyUnicode_FromString(".hvnc");
+        if (ext2 != NULL) {
+            endswith = PyUnicode_Tailmatch(filename, ext2, 0, PY_SSIZE_T_MAX, +1);
+            Py_DECREF(ext2);
+        }
+    }
     if (endswith) {
         return 1;
     }

@@ -523,6 +523,10 @@ astfold_expr(expr_ty node_, PyArena *ctx_, _PyASTPreprocessState *state)
     case BoolOp_kind:
         CALL_SEQ(astfold_expr, expr, node_->v.BoolOp.values);
         break;
+    case Pipe_kind:
+        CALL(astfold_expr, expr_ty, node_->v.Pipe.left);
+        CALL(astfold_expr, expr_ty, node_->v.Pipe.right);
+        break;
     case BinOp_kind:
         CALL(astfold_expr, expr_ty, node_->v.BinOp.left);
         CALL(astfold_expr, expr_ty, node_->v.BinOp.right);

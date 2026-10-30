@@ -864,6 +864,15 @@ class Unparser(NodeVisitor):
     }
 
     binop_rassoc = frozenset(("**",))
+    def visit_Pipe(self, node):
+        operator_precedence = _Precedence.BOR
+        with self.require_parens(operator_precedence, node):
+            self.set_precedence(operator_precedence, node.left)
+            self.traverse(node.left)
+            self.write(" |> ")
+            self.set_precedence(operator_precedence.next(), node.right)
+            self.traverse(node.right)
+
     def visit_BinOp(self, node):
         operator = self.binop[node.op.__class__.__name__]
         operator_precedence = self.binop_precedence[operator]

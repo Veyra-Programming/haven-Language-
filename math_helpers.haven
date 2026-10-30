@@ -1,0 +1,5 @@
+def add_ten(x):
+    return x + 10
+
+def cube(x):
+    return x * x * x

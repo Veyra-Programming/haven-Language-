@@ -3227,11 +3227,11 @@ _PyConfig_ProcessDeferredCmdlineOption(PyConfig *config)
         return 0;
 
     case 'V':
-        printf("Python %s\n", PY_VERSION);
+        printf("Haven %s\n", HAVEN_VERSION);
         return 0;
 
     case 'W':  // -VV or more -V options
-        printf("Python %s\n", Py_GetVersion());
+        printf("%s\n", Py_GetVersion());
         return 0;
 
     // Integers represent long options, see Python/getopt.c

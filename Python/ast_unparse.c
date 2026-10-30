@@ -159,6 +159,17 @@ append_ast_boolop(PyUnicodeWriter *writer, expr_ty e, int level)
 }
 
 static int
+append_ast_pipe(PyUnicodeWriter *writer, expr_ty e, int level)
+{
+    APPEND_STR_IF(level > PR_BOR, "(");
+    APPEND_EXPR(e->v.Pipe.left, PR_BOR);
+    APPEND_STR(" |> ");
+    APPEND_EXPR(e->v.Pipe.right, PR_BOR + 1);
+    APPEND_STR_IF(level > PR_BOR, ")");
+    return 0;
+}
+
+static int
 append_ast_binop(PyUnicodeWriter *writer, expr_ty e, int level)
 {
     const char *op;
@@ -942,6 +953,8 @@ append_ast_expr(PyUnicodeWriter *writer, expr_ty e, int level)
     switch (e->kind) {
     case BoolOp_kind:
         return append_ast_boolop(writer, e, level);
+    case Pipe_kind:
+        return append_ast_pipe(writer, e, level);
     case BinOp_kind:
         return append_ast_binop(writer, e, level);
     case UnaryOp_kind:
