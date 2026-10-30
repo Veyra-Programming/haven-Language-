@@ -35,7 +35,7 @@ menudefs = [
    ('Prin_t Window', '<<print-window>>'),
    None,
    ('_Close Window', '<<close-window>>'),
-   ('E_xit IDLE', '<<close-all-windows>>'),
+   ('E_xit Haven IDE', '<<close-all-windows>>'),
    ]),
 
  ('edit', [
@@ -77,7 +77,7 @@ menudefs = [
    ('R_un Module', '<<run-module>>'),
    ('Run... _Customized', '<<run-custom>>'),
    ('C_heck Module', '<<check-module>>'),
-   ('Python Shell', '<<open-python-shell>>'),
+   ('Haven Shell', '<<open-python-shell>>'),
    ]),
 
  ('shell', [
@@ -98,7 +98,7 @@ menudefs = [
    ]),
 
  ('options', [
-   ('Configure _IDLE', '<<open-config-dialog>>'),
+   ('Configure _Haven IDE', '<<open-config-dialog>>'),
    None,
    ('Show _Code Context', '<<toggle-code-context>>'),
    ('Show _Line Numbers', '<<toggle-line-numbers>>'),
@@ -109,10 +109,10 @@ menudefs = [
    ]),
 
  ('help', [
-   ('_About IDLE', '<<about-idle>>'),
+   ('_About Haven IDE', '<<about-idle>>'),
    None,
-   ('_IDLE Doc', '<<help>>'),
-   ('Python _Docs', '<<python-docs>>'),
+   ('_Haven IDE Documentation', '<<help>>'),
+   ('Haven & ODCS _Docs', '<<python-docs>>'),
    ]),
 ]
 
