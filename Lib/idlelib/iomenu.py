@@ -381,7 +381,7 @@ class IOBinding:
     savedialog = None
 
     filetypes = (
-        ("Python files", py_extensions, "TEXT"),
+        ("Haven files", py_extensions, "TEXT"),
         ("Text files", "*.txt", "TEXT"),
         ("All files", "*"),
         )
@@ -392,11 +392,11 @@ class IOBinding:
     # with text files listed first and default to ".txt" (gh-65339).
     text_filetypes = (
         ("Text files", "*.txt", "TEXT"),
-        ("Python files", py_extensions, "TEXT"),
+        ("Haven files", py_extensions, "TEXT"),
         ("All files", "*"),
         )
 
-    defaultextension = '.py' if sys.platform == 'darwin' else ''
+    defaultextension = '.hvn' if sys.platform == 'darwin' else ''
     text_defaultextension = '.txt'
 
     def askopenfile(self):

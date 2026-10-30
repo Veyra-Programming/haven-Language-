@@ -233,8 +233,8 @@ class InteractiveConsole(InteractiveInterpreter):
         cprt = 'Type "help", "copyright", "credits" or "license" for more information.'
         if banner is None:
             prefix = "" if sys.version.startswith("Haven") else "Python "
-            self.write("%s%s on %s\n%s\n(%s)\n" % (prefix,
-                       (sys.version, sys.platform, cprt,
+            self.write("%s%s on %s\n%s\n(%s)\n" %
+                       (prefix, sys.version, sys.platform, cprt,
                         self.__class__.__name__))
         elif banner:
             self.write("%s\n" % str(banner))

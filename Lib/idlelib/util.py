@@ -17,7 +17,7 @@ import sys
 
 # .pyw is for Windows; .pyi is for typing stub files.
 # The extension order is needed for iomenu open/save dialogs.
-py_extensions = ('.py', '.pyw', '.pyi')
+py_extensions = ('.hvn', '.haven', '.py', '.pyw', '.pyi')
 
 
 # fix_x functions seem only needed once per process.

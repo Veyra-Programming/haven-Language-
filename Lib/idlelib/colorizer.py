@@ -20,7 +20,8 @@ def any(name, alternates):
 
 
 def make_pat():
-    kw = r"\b" + any("KEYWORD", keyword.kwlist) + r"\b"
+    haven_kwlist = list(dict.fromkeys(keyword.kwlist + [k for k in keyword.softkwlist if k != '_']))
+    kw = r"\b" + any("KEYWORD", haven_kwlist) + r"\b"
     match_softkw = (
         r"^[ \t]*" +  # at beginning of line + possible indentation
         r"(?P<MATCH_SOFTKW>match)\b" +

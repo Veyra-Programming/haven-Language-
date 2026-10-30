@@ -81,7 +81,7 @@ def idle_showwarning(
     try:
         file.write(idle_formatwarning(
                 message, category, filename, lineno, line=line))
-        file.write(">>> ")
+        file.write("haven> ")
     except (AttributeError, OSError):
         pass  # if file (probably __stderr__) is invalid, skip warning.
 
@@ -871,7 +871,7 @@ class PyShell(OutputWindow):
     is_shell = True
     from idlelib.squeezer import Squeezer
 
-    shell_title = "IDLE Shell"
+    shell_title = "Haven IDE Shell (ODCS Native Edition)"
 
     # Override classes
     ColorDelegator = ModifiedColorDelegator
@@ -925,7 +925,7 @@ class PyShell(OutputWindow):
         # indentwidth must be 8 when using tabs.  See note in EditorWindow:
         self.indentwidth = 4
 
-        self.sys_ps1 = sys.ps1 if hasattr(sys, 'ps1') else '>>>\n'
+        self.sys_ps1 = sys.ps1 if hasattr(sys, 'ps1') else 'haven>\n'
         self.prompt = self.sys_ps1  # Changes when debug active
 
         text = self.text
@@ -1185,7 +1185,7 @@ class PyShell(OutputWindow):
                     "for details.\n\n")
             sys.displayhook = rpc.displayhook
 
-        self.write("Python %s on %s\n%s\n%s" %
+        self.write("%s on %s\n%s\n%s" %
                    (sys.version, sys.platform, self.SPLASHLINE, nosub))
         self.text.focus_force()
         self.showprompt()

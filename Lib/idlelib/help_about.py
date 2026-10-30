@@ -69,7 +69,7 @@ class AboutDialog(Toplevel):
         frame_background = Frame(frame, bg=self.bg)
         frame_background.pack(expand=True, fill=BOTH)
 
-        header = Label(frame_background, text='IDLE', fg=self.fg,
+        header = Label(frame_background, text='Haven IDE', fg=self.fg,
                        bg=self.bg, font=('courier', 24, 'bold'))
         header.grid(row=0, column=0, sticky=E, padx=10, pady=10)
 
@@ -81,7 +81,7 @@ class AboutDialog(Toplevel):
         logo = Label(frame_background, image=self.icon_image, bg=self.bg)
         logo.grid(row=0, column=0, sticky=W, rowspan=2, padx=10, pady=10)
 
-        byline_text = "Python's Integrated Development\nand Learning Environment" + 5*'\n'
+        byline_text = "Haven Integrated Development Environment\nOpen Digital Continuity Standard (ODCS) Edition\nArchitected by Anirudha Puthraya" + 5*'\n'
         byline = Label(frame_background, text=byline_text, justify=LEFT,
                        fg=self.fg, bg=self.bg)
         byline.grid(row=2, column=0, sticky=W, columnspan=3, padx=10, pady=5)
@@ -107,7 +107,7 @@ class AboutDialog(Toplevel):
 
         tclver = str(self.info_patchlevel())
         tkver = ' and ' + tkpatch if tkpatch != tclver else ''
-        versions = f"Python {pyver} with tcl/tk {tclver}{tkver}"
+        versions = f"Haven {pyver} (ODCS Edition) with tcl/tk {tclver}{tkver}"
         vers = Label(frame_background, text=versions, fg=self.fg, bg=self.bg)
         vers.grid(row=9, column=0, sticky=W, padx=10, pady=0)
         py_buttons = Frame(frame_background, bg=self.bg)
@@ -129,7 +129,7 @@ class AboutDialog(Toplevel):
               height=2, bg=self.bg).grid(row=11, column=0, sticky=EW,
                                          columnspan=3, padx=5, pady=5)
 
-        idle = Label(frame_background, text='IDLE', fg=self.fg, bg=self.bg)
+        idle = Label(frame_background, text='Haven IDE', fg=self.fg, bg=self.bg)
         idle.grid(row=12, column=0, sticky=W, padx=10, pady=0)
         idle_buttons = Frame(frame_background, bg=self.bg)
         idle_buttons.grid(row=13, column=0, columnspan=3, sticky=NSEW)
@@ -157,7 +157,7 @@ class AboutDialog(Toplevel):
 
     def show_py_credits(self):
         "Handle Python Credits button event."
-        self.display_printer_text('About - Python Credits', credits)
+        self.display_printer_text('About - Haven Credits', credits)
 
     # Encode CREDITS.txt to utf-8 for proper version of Loewis.
     # Specify others as ascii until need utf-8, so catch errors.

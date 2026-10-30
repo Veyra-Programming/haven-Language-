@@ -1146,6 +1146,15 @@ def _sys_version(sys_version=None):
             builddate = ''
         compiler = sys.platform
 
+    elif "Haven" in sys_version:
+        # Haven (ODCS Native Edition)
+        name = "Haven"
+        version = "0.1.0"
+        buildno = "1"
+        builddate = ""
+        buildtime = ""
+        compiler = "Haven VM (ODCS Engine)"
+
     elif "PyPy" in sys_version:
         # PyPy
         pypy_sys_version_parser = re.compile(
