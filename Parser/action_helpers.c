@@ -2308,3 +2308,107 @@ _PyPegen_repeat_stmt(Parser *p, expr_ty count, asdl_stmt_seq *body, asdl_stmt_se
 
     return _PyAST_For(target, call_range, body, orelse, NULL, lineno, col_offset, end_lineno, end_col_offset, arena);
 }
+
+
+stmt_ty
+_PyPegen_durable_class_def(Parser *p, expr_ty a, expr_ty b, asdl_stmt_seq *c,
+                           asdl_type_param_seq *t, int lineno, int col_offset,
+                           int end_lineno, int end_col_offset, PyArena *arena)
+{
+    PyObject *dec_id = _PyPegen_new_identifier(p, "durable_record");
+    if (!dec_id) {
+        return NULL;
+    }
+    expr_ty dec = _PyAST_Name(dec_id, Load, lineno, col_offset, end_lineno, end_col_offset, arena);
+    if (!dec) {
+        return NULL;
+    }
+    asdl_expr_seq *decorators = (asdl_expr_seq *)_Py_asdl_generic_seq_new(1, arena);
+    if (!decorators) {
+        return NULL;
+    }
+    asdl_seq_SET(decorators, 0, dec);
+
+    asdl_expr_seq *args = (b) ? ((expr_ty)b)->v.Call.args : NULL;
+    asdl_keyword_seq *keywords = (b) ? ((expr_ty)b)->v.Call.keywords : NULL;
+
+    return _PyAST_ClassDef(a->v.Name.id, args, keywords, c, decorators, t,
+                           lineno, col_offset, end_lineno, end_col_offset, arena);
+}
+
+stmt_ty
+_PyPegen_checkpoint_stmt(Parser *p, expr_ty target, expr_ty alias, expr_ty ledger,
+                         int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena *arena)
+{
+    PyObject *fn_id = _PyPegen_new_identifier(p, "checkpoint");
+    if (!fn_id) {
+        return NULL;
+    }
+    expr_ty fn = _PyAST_Name(fn_id, Load, lineno, col_offset, end_lineno, end_col_offset, arena);
+    if (!fn) {
+        return NULL;
+    }
+
+    asdl_expr_seq *args = (asdl_expr_seq *)_Py_asdl_generic_seq_new(1, arena);
+    if (!args) {
+        return NULL;
+    }
+    asdl_seq_SET(args, 0, target);
+
+    int n_kw = (alias ? 1 : 0) + (ledger ? 1 : 0);
+    asdl_keyword_seq *keywords = NULL;
+    if (n_kw > 0) {
+        keywords = (asdl_keyword_seq *)_Py_asdl_generic_seq_new(n_kw, arena);
+        if (!keywords) {
+            return NULL;
+        }
+        int idx = 0;
+        if (alias) {
+            PyObject *alias_id = _PyPegen_new_identifier(p, "alias");
+            if (!alias_id) return NULL;
+            keyword_ty kw = _PyAST_keyword(alias_id, alias, lineno, col_offset, end_lineno, end_col_offset, arena);
+            if (!kw) return NULL;
+            asdl_seq_SET(keywords, idx++, kw);
+        }
+        if (ledger) {
+            PyObject *ledger_id = _PyPegen_new_identifier(p, "ledger");
+            if (!ledger_id) return NULL;
+            keyword_ty kw = _PyAST_keyword(ledger_id, ledger, lineno, col_offset, end_lineno, end_col_offset, arena);
+            if (!kw) return NULL;
+            asdl_seq_SET(keywords, idx++, kw);
+        }
+    }
+
+    expr_ty call = _PyAST_Call(fn, args, keywords, lineno, col_offset, end_lineno, end_col_offset, arena);
+    if (!call) {
+        return NULL;
+    }
+    return _PyAST_Expr(call, lineno, col_offset, end_lineno, end_col_offset, arena);
+}
+
+stmt_ty
+_PyPegen_verify_stmt(Parser *p, expr_ty target, expr_ty proof,
+                     int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena *arena)
+{
+    PyObject *fn_id = _PyPegen_new_identifier(p, "verify_continuity");
+    if (!fn_id) {
+        return NULL;
+    }
+    expr_ty fn = _PyAST_Name(fn_id, Load, lineno, col_offset, end_lineno, end_col_offset, arena);
+    if (!fn) {
+        return NULL;
+    }
+
+    asdl_expr_seq *args = (asdl_expr_seq *)_Py_asdl_generic_seq_new(2, arena);
+    if (!args) {
+        return NULL;
+    }
+    asdl_seq_SET(args, 0, target);
+    asdl_seq_SET(args, 1, proof);
+
+    expr_ty call = _PyAST_Call(fn, args, NULL, lineno, col_offset, end_lineno, end_col_offset, arena);
+    if (!call) {
+        return NULL;
+    }
+    return _PyAST_Expr(call, lineno, col_offset, end_lineno, end_col_offset, arena);
+}

@@ -116,7 +116,19 @@ simple_stmt[stmt_ty] (memo):
     | &"type" type_alias
     | &('import' | 'from' | "lazy") import_stmt
     | "pipe" e=pipe_expr { _PyAST_Expr(e, EXTRA) }
+    | checkpoint_stmt
+    | verify_stmt
     | e=star_expressions { _PyAST_Expr(e, EXTRA) }
+
+checkpoint_stmt[stmt_ty]:
+    | "checkpoint" a=expression b=['as' z=(NAME | string) { z }] c=['into' l=expression { l }] {
+        _PyPegen_checkpoint_stmt(p, a, b, c, EXTRA) }
+    | "checkpoint" a=expression c=['into' l=expression { l }] {
+        _PyPegen_checkpoint_stmt(p, a, NULL, c, EXTRA) }
+
+verify_stmt[stmt_ty]:
+    | "verify" a=expression 'with' b=expression {
+        _PyPegen_verify_stmt(p, a, b, EXTRA) }
     | &'return' return_stmt
     | &'raise' raise_stmt
     | &'pass' pass_stmt
@@ -131,7 +143,7 @@ simple_stmt[stmt_ty] (memo):
 compound_stmt[stmt_ty]:
     | &('def' | '@' | 'async' | "function" | "to") function_def
     | &('if' | "unless") if_stmt
-    | &('class' | '@') class_def
+    | &('class' | '@' | "durable") class_def
     | &('with' | 'async') with_stmt
     | &('for' | 'async') for_stmt
     | &"repeat" repeat_stmt
@@ -293,6 +305,8 @@ class_def_raw[stmt_ty]:
                      (b) ? ((expr_ty) b)->v.Call.args : NULL,
                      (b) ? ((expr_ty) b)->v.Call.keywords : NULL,
                      c, NULL, t, EXTRA) }
+    | "durable" ["record" | "class"] a=NAME t=[type_params] b=['(' z=[arguments] ')' { z }] ':' c=block {
+        _PyPegen_durable_class_def(p, a, b, c, t, EXTRA) }
 
 # Function definitions
 # --------------------
@@ -809,7 +823,7 @@ inversion[expr_ty] (memo, fastpath=_PyPegen_atom_fast_path):
     | pipe_expr
 
 pipe_expr[expr_ty]:
-    | a=pipe_expr ('|>' | "into") b=comparison { _PyPegen_pipe_expr(p, a, b, EXTRA) }
+    | a=pipe_expr ('|>' | 'into') b=comparison { _PyPegen_pipe_expr(p, a, b, EXTRA) }
     | comparison
 
 # Comparison operators

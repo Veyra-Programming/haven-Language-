@@ -1120,6 +1120,10 @@ def main():
     setquit()
     setcopyright()
     sethelper()
+    try:
+        import odcs
+    except Exception:
+        pass
     if not sys.flags.isolated:
         enablerlcompleter()
     execsitecustomize()
