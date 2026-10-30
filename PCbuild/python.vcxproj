@@ -103,13 +103,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="..\PC\icons\python.ico" />
+    <None Include="..\PC\icons\haven.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\PC\python_exe.rc" />
+    <ResourceCompile Include="..\PC\haven_exe.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Programs\python.c" />
+    <ClCompile Include="..\Programs\haven.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="pythoncore.vcxproj">
@@ -150,6 +150,17 @@ set PYTHONPATH=$(PySourcePath)Lib
           DestinationFiles="$(OutDir)python$(PyDebugExt).exe"
           SkipUnchangedFiles="true"
           UseHardLinksIfPossible="true" />
+  </Target>
+  <Target Name="GenerateHavenBat" AfterTargets="AfterBuild">
+    <PropertyGroup>
+      <_HavenContent>@rem Haven Language Launcher (ODCS Edition - Open Digital Continuity Standard by Anirudha Puthraya)
+@setlocal
+@set PYTHONHOME=$(PySourcePath)
+@"$(OutDir)$(PyExeName)$(PyDebugExt).exe" %*
+</_HavenContent>
+      <_HavenExistingContent Condition="Exists('$(PySourcePath)haven.bat')">$([System.IO.File]::ReadAllText('$(PySourcePath)haven.bat'))</_HavenExistingContent>
+    </PropertyGroup>
+    <WriteLinesToFile File="$(PySourcePath)haven.bat" Lines="$(_HavenContent)" Overwrite="true" Condition="'$(_HavenContent)' != '$(_HavenExistingContent)'" />
   </Target>
   <Target Name="GeneratePythonBat" AfterTargets="AfterBuild">
     <PropertyGroup>

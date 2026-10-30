@@ -257,7 +257,9 @@
     <!-- Name and full path of the resulting python.exe binary -->
     <PyExeName Condition="$(PyExeName) == ''">haven</PyExeName>
     <PythonExe Condition="'$(PythonExe)' == ''">$(BuildPath)$(PyExeName)$(PyDebugExt).exe</PythonExe>
-    <PyWExeName Condition="$(PyWExeName) == ''">pythonw</PyWExeName>
+    <PyWExeName Condition="$(PyWExeName) == ''">havenw</PyWExeName>
+    <HavenExe Condition="'$(HavenExe)' == ''">$(PythonExe)</HavenExe>
+    <HavenWExe Condition="'$(HavenWExe)' == ''">$(BuildPath)$(PyWExeName)$(PyDebugExt).exe</HavenWExe>
 
     <!-- The name of the resulting pythonXY.dll (without the extension) -->
     <PyDllName Condition="$(DisableGil) == 'true'">python$(MajorVersionNumber)$(MinorVersionNumber)t$(PyDebugExt)</PyDllName>
