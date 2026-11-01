@@ -1805,7 +1805,7 @@ def writedocs(dir, pkgpath='', done=None):
 
 def _introdoc():
     ver = '%d.%d' % sys.version_info[:2]
-    if os.environ.get('PYTHON_BASIC_REPL'):
+    if os.environ.get('HAVEN_BASIC_REPL') or os.environ.get('PYTHON_BASIC_REPL'):
         pyrepl_keys = ''
     else:
         # Additional help for keyboard shortcuts if enhanced REPL is used.
@@ -1815,18 +1815,17 @@ def _introdoc():
         mode (press again to exit).
         '''
     return textwrap.dedent(f'''\
-        Welcome to Python {ver}'s help utility! If this is your first time using
-        Python, you should definitely check out the tutorial at
-        https://docs.python.org/{ver}/tutorial/.
+        Welcome to Haven 1.0.0's documentation system!
+        Open Digital Continuity Standard (ODCS) by Anirudha Puthraya.
 
         Enter the name of any module, keyword, or topic to get help on writing
-        Python programs and using Python modules.  To get a list of available
+        Haven programs and using Haven modules.  To get a list of available
         modules, keywords, symbols, or topics, enter "modules", "keywords",
         "symbols", or "topics".
         {pyrepl_keys}
         Each module also comes with a one-line summary of what it does; to list
-        the modules whose name or summary contain a given string such as "spam",
-        enter "modules spam".
+        the modules whose name or summary contain a given string,
+        enter "modules <term>".
 
         To quit this help utility and return to the interpreter,
         enter "q", "quit" or "exit".
@@ -2043,7 +2042,7 @@ class Helper:
             self.intro()
             self.interact()
             self.output.write('''
-You are now leaving help and returning to the Python interpreter.
+You are now leaving help and returning to the Haven interpreter.
 If you want to ask for help on a particular object directly from the
 interpreter, you can type "help(object)".  Executing "help('string')"
 has the same effect as typing a particular string at the help> prompt.
@@ -2119,14 +2118,14 @@ has the same effect as typing a particular string at the help> prompt.
 
     def listkeywords(self):
         self.output.write('''
-Here is a list of the Python keywords.  Enter any keyword to get more help.
+Here is a list of the Haven keywords.  Enter any keyword to get more help.
 
 ''')
         self.list(self.keywords.keys())
 
     def listsymbols(self):
         self.output.write('''
-Here is a list of the punctuation symbols which Python assigns special meaning
+Here is a list of the punctuation symbols which Haven assigns special meaning
 to. Enter any symbol to get more help.
 
 ''')
@@ -2499,12 +2498,12 @@ def _url_handler(url, content_type="text/html"):
     html = _HTMLDoc()
 
     def html_navbar():
-        version = html.escape("%s [%s, %s]" % (platform.python_version(),
+        version = html.escape("%s [%s, %s]" % (platform.haven_version() if hasattr(platform, 'haven_version') else platform.python_version(),
                                                platform.python_build()[0],
                                                platform.python_compiler()))
         return """
 <nav class="navbar">
-  <div class="navbar-version">Python %s<br>%s</div>
+  <div class="navbar-version">Haven %s<br>%s</div>
   <ul>
     <li><a href="index.html">Module Index</a></li>
     <li><a href="topics.html">Topics</a></li>

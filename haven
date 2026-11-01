@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# ============================================================================
+# Haven Programming Language Launcher (v1.0.0 Production Core)
+# Open Digital Continuity Standard (ODCS) by Anirudha Puthraya
+# ============================================================================
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+export HAVENHOME="$SCRIPT_DIR"
+export HAVENPATH="$SCRIPT_DIR/Lib:$SCRIPT_DIR"
+export HAVEN_HOME="$SCRIPT_DIR"
+export HAVEN_PATH="$SCRIPT_DIR/Lib:$SCRIPT_DIR"
+export PYTHONHOME="$SCRIPT_DIR"
+export PYTHONPATH="$SCRIPT_DIR/Lib:$SCRIPT_DIR"
+
+if [ -f "$SCRIPT_DIR/PCbuild/amd64/haven.exe" ]; then
+    "$SCRIPT_DIR/PCbuild/amd64/haven.exe" "$SCRIPT_DIR/haven.py" "$@"
+elif [ -f "$SCRIPT_DIR/haven" ] && [ -x "$SCRIPT_DIR/haven" ]; then
+    "$SCRIPT_DIR/haven" "$SCRIPT_DIR/haven.py" "$@"
+elif command -v haven >/dev/null 2>&1; then
+    haven "$SCRIPT_DIR/haven.py" "$@"
+else
+    "$SCRIPT_DIR/PCbuild/amd64/haven.exe" "$SCRIPT_DIR/haven.py" "$@"
+fi

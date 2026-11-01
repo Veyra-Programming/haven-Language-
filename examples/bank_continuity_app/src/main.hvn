@@ -1,0 +1,72 @@
+# bank_continuity_app - Main Entry Point
+# Open Digital Continuity Standard (ODCS) Implementation
+# Standard Specification & Architecture by Anirudha Puthraya
+
+import os
+from src.models import AssetRecord
+from src.service import create_app
+
+to main():
+    print("================================================================")
+    print("  🚀 Initializing ODCS App: bank_continuity_app")
+    print("  Open Digital Continuity Standard (ODCS) by Anirudha Puthraya")
+    print("================================================================")
+
+    # Initialize ODCS App Engine
+    set app to create_app()
+    print("[*] ODCS App initialized with Cryptographic Ledger.")
+    print(f"[*] Genesis Head Hash: {app.ledger.head_hash}")
+
+    # Step 1: Register initial asset records
+    print("\n--- [1] Dispatching State Transitions ---")
+    set entry1 to app.dispatch(
+        action="REGISTER_ASSET",
+        payload={"asset_id": "VAULT-A", "owner": "Alice", "balance": 10000.0},
+        actor="Alice"
+    )
+    print(f"[+] Asset 'VAULT-A' Registered! Ledger Block #{entry1.index} Sealed: {entry1.entry_hash[:20]}...")
+
+    set entry2 to app.dispatch(
+        action="REGISTER_ASSET",
+        payload={"asset_id": "VAULT-B", "owner": "Bob", "balance": 2500.0},
+        actor="Bob"
+    )
+    print(f"[+] Asset 'VAULT-B' Registered! Ledger Block #{entry2.index} Sealed: {entry2.entry_hash[:20]}...")
+
+    # Step 2: Verifiable State Transfer
+    print("\n--- [2] Executing Verifiable Balance Transfer ---")
+    set entry3 to app.dispatch(
+        action="TRANSFER_BALANCE",
+        payload={"from_asset_id": "VAULT-A", "to_asset_id": "VAULT-B", "amount": 3500.0},
+        actor="Alice"
+    )
+    print(f"[+] Transfer 3500.0 from VAULT-A to VAULT-B Succeeded!")
+    print(f"[+] Ledger Block #{entry3.index} Hash: {entry3.entry_hash[:20]}...")
+
+    # Step 3: Verify App State & Merkle Root
+    print("\n--- [3] Current Application State & Cryptographic Proofs ---")
+    set curr_state to app.get_state()
+    print("State Assets:", curr_state["assets"])
+    print("State Hash:  ", app.get_state_hash())
+    print("Merkle Root: ", app.get_merkle_root())
+
+    # Step 4: Full Cryptographic Continuity Audit
+    print("\n--- [4] Performing Full Cryptographic Ledger Audit ---")
+    set audit_report to app.audit()
+    print(f"[*] Status:                  {audit_report['status']}")
+    print(f"[*] Chain Integrity Valid:   {audit_report['chain_integrity_valid']}")
+    print(f"[*] Total Blocks:            {audit_report['total_ledger_blocks']}")
+    print(f"[*] Head Hash:               {audit_report['head_hash']}")
+
+    # Step 5: Export Journal for Long-Term Digital Continuity & Disaster Recovery
+    os.makedirs("data", exist_ok=True)
+    set journal_file to "data/ledger_journal.json"
+    app.export_journal(journal_file)
+    print(f"\n[+] Sealed continuity journal exported to: {journal_file}")
+
+    print("\n================================================================")
+    print("  ✓ bank_continuity_app ODCS EXECUTION & CONTINUITY COMPLETED!")
+    print("================================================================")
+
+if __name__ == "__main__":
+    main()

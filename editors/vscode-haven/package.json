@@ -1,0 +1,44 @@
+{
+  "name": "haven-language",
+  "displayName": "Haven Programming Language",
+  "description": "Language support for the Haven Programming Language and Open Digital Continuity Standard (ODCS).",
+  "version": "1.0.0",
+  "publisher": "anirudha-puthraya",
+  "engines": {
+    "vscode": "^1.70.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "haven",
+        "aliases": [
+          "Haven",
+          "haven"
+        ],
+        "extensions": [
+          ".hvn",
+          ".haven"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "haven",
+        "scopeName": "source.haven",
+        "path": "./syntaxes/haven.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "haven",
+        "path": "./snippets/haven.json"
+      }
+    ]
+  }
+}
+

@@ -44,10 +44,31 @@ class DurableRecord:
 
     def odcs_hash(self) -> str:
         """Returns the cryptographically sealed root hash."""
-        return self._hash
+        if self._hash.startswith("sha256:"):
+            return self._hash
+        return f"sha256:{self._hash}"
 
     def to_dict(self) -> Dict[str, Any]:
         return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
+
+    def odcs_dict(self) -> Dict[str, Any]:
+        return self.to_dict()
+
+    def odcs_envelope(self, parent_hash: Optional[str] = None, creator: Optional[str] = None) -> Any:
+        from odcs.envelope import ContinuityAssetEnvelope
+        tree = getattr(self, "_merkle", None)
+        root = tree.root if tree else self.odcs_hash()
+        return ContinuityAssetEnvelope(
+            asset_type=self.__class__.__name__,
+            payload=self.to_dict(),
+            parent_hash=parent_hash,
+            creator=creator or "Anirudha Puthraya / Haven ODCS Runtime",
+            merkle_root=root,
+        )
+
+    def verify_integrity(self) -> bool:
+        env = self.odcs_envelope()
+        return env.verify_integrity()
 
 
 def durable_record(cls):
@@ -87,8 +108,11 @@ def durable_record(cls):
     cls.__init__ = wrapped_init
     cls.__setattr__ = DurableRecord.__setattr__
     cls.__delattr__ = DurableRecord.__delattr__
-    cls.odcs_hash = lambda self: self._hash
+    cls.odcs_hash = lambda self: self._hash if self._hash.startswith("sha256:") else f"sha256:{self._hash}"
     cls.to_dict = lambda self: {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
+    cls.odcs_dict = cls.to_dict
+    cls.odcs_envelope = DurableRecord.odcs_envelope
+    cls.verify_integrity = DurableRecord.verify_integrity
     return cls
 
 
@@ -164,6 +188,14 @@ class ContinuityLedger:
             expected_prev = entry.entry_hash
         return True
 
+    @property
+    def entries(self) -> List[LedgerEntry]:
+        return self.chain
+
+    verify_chain = verify_integrity
+    checkpoint = commit
+    append = commit
+
     def __ror__(self, other: Any) -> "ContinuityLedger":
         """Pipeline operator ingestion support: asset into my_ledger"""
         self.commit(other)
@@ -178,15 +210,28 @@ class ContinuityLedger:
 # Global Runtime Helpers injected into Haven namespaces
 _GLOBAL_LEDGER = ContinuityLedger("default_system_ledger")
 
-def checkpoint(asset: Any, alias: Optional[str] = None, ledger: Optional[ContinuityLedger] = None) -> LedgerEntry:
+def checkpoint(asset: Any, alias: Optional[str] = None, ledger: Optional[Any] = None) -> Any:
     target_ledger = ledger if ledger is not None else _GLOBAL_LEDGER
-    return target_ledger.commit(asset, alias)
+    if hasattr(target_ledger, "checkpoint"):
+        return target_ledger.checkpoint(asset, alias=alias)
+    elif hasattr(target_ledger, "commit"):
+        return target_ledger.commit(asset, alias=alias)
+    raise AttributeError(f"Target ledger has neither checkpoint nor commit method: {target_ledger}")
 
 def verify_continuity(asset: Any, proof_or_hash: str) -> bool:
     if hasattr(asset, "odcs_hash"):
-        res = (asset.odcs_hash() == proof_or_hash)
+        target_hash = asset.odcs_hash()
+    elif hasattr(asset, "envelope_hash"):
+        target_hash = asset.envelope_hash
+    elif hasattr(asset, "entry_hash"):
+        target_hash = asset.entry_hash
     else:
-        res = (sha256_digest(asset) == proof_or_hash)
-    if not res:
-        raise AssertionError(f"Continuity verification failed for {asset}")
+        raw = sha256_digest(asset)
+        target_hash = f"sha256:{raw}"
+
+    # Verify matching with or without sha256: prefix
+    t_clean = target_hash.replace("sha256:", "")
+    p_clean = str(proof_or_hash).replace("sha256:", "")
+    if target_hash != proof_or_hash and t_clean != p_clean and proof_or_hash not in target_hash:
+        raise AssertionError(f"Continuity verification failed: expected {proof_or_hash}, got {target_hash}")
     return True

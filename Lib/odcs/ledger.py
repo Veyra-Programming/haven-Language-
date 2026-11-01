@@ -67,9 +67,15 @@ class ContinuityLedger:
     """
     GENESIS_HASH: str = "sha256:0000000000000000000000000000000000000000000000000000000000000000"
 
-    def __init__(self, name: str = "Primary-Continuity-Ledger", author: str = "Anirudha Puthraya") -> None:
+    def __init__(
+        self,
+        name: str = "Primary-Continuity-Ledger",
+        author: str = "Anirudha Puthraya",
+        storage_path: Optional[str] = None
+    ) -> None:
         self.name: str = name
         self.author: str = author
+        self.storage_path: Optional[str] = storage_path
         self.entries: List[LedgerEntry] = []
         self.alias_map: Dict[str, LedgerEntry] = {}
         self._init_genesis()
@@ -98,6 +104,10 @@ class ContinuityLedger:
         )
         self.entries.append(genesis_entry)
         self.alias_map["genesis"] = genesis_entry
+
+    @property
+    def chain(self) -> List[LedgerEntry]:
+        return self.entries
 
     @property
     def head_hash(self) -> str:
@@ -131,6 +141,9 @@ class ContinuityLedger:
             self.alias_map[alias] = new_entry
         return new_entry
 
+    append = checkpoint
+    commit = checkpoint
+
     def verify_chain(self) -> bool:
         """Cryptographically verify the unbroken continuity of the ledger from genesis to head."""
         if not self.entries:
@@ -149,6 +162,10 @@ class ContinuityLedger:
                     return False
 
         return True
+
+    verify_integrity = verify_chain
+    audit_chain = verify_chain
+    commit = checkpoint
 
     def export_journal(self, file_path: str) -> str:
         """Export the full continuity journal to an external JSON file for long-term archiving."""
@@ -252,11 +269,19 @@ def verify_continuity(asset_or_proof: Any, expected_proof: Any) -> bool:
             raise ContinuityIntegrityError(f"Verification failed: expected proof '{expected_proof}', got '{target_hash}'.")
         return True
 
+    verify_integrity = verify_chain
+    audit_chain = verify_chain
+    commit = checkpoint
+
     # 2. If verifying a ledger entry
     if hasattr(expected_proof, "entry_hash"):
         matches = (target_hash == expected_proof.envelope.envelope_hash or target_hash == expected_proof.entry_hash)
         if not matches:
             raise ContinuityIntegrityError(f"Verification failed against ledger entry: {expected_proof.entry_hash}.")
         return True
+
+    verify_integrity = verify_chain
+    audit_chain = verify_chain
+    commit = checkpoint
 
     return True

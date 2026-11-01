@@ -49,6 +49,11 @@ class MerkleTree:
         """The cryptographic root hash of the Merkle Tree."""
         return self.levels[-1][0]
 
+    @property
+    def root_hash(self) -> str:
+        """Convenience alias for root hash."""
+        return self.root
+
     def get_proof(self, index: int) -> List[Tuple[str, str]]:
         """
         Generate Merkle audit path for the element at index.

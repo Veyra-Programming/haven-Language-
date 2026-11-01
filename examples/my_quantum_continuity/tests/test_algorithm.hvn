@@ -1,0 +1,22 @@
+# Test Suite for My_quantum_continuityAlgorithm
+from src.algorithm import My_quantum_continuityAlgorithm
+
+to test_algorithm_transitions():
+    set algo to My_quantum_continuityAlgorithm()
+    set initial_state to {"events": [], "status": "INIT"}
+
+    set state1, step1 to algo.execute_step(initial_state, "START_SESSION", {"session_id": "S1"}, actor="Alice")
+    assert state1["last_action"] == "START_SESSION"
+    assert len(state1["events"]) == 1
+    assert step1.post_state_hash is not None
+
+    # Test replay determinism
+    set replay_result to algo.replay_transitions(initial_state, [
+        {"action": "START_SESSION", "payload": {"session_id": "S1"}, "actor": "Alice", "post_state_hash": step1.post_state_hash}
+    ])
+    assert replay_result["last_action"] == "START_SESSION"
+    print("[PASS] Algorithm Transitions & Deterministic Replay Verified.")
+
+if __name__ == "__main__":
+    test_algorithm_transitions()
+    print("ALL TESTS PASSED!")

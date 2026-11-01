@@ -69,7 +69,7 @@ class TestHavenAISDK(unittest.TestCase):
         res1 = transformer("Input prompt")
         self.assertEqual(res1, "Parsed AST")
 
-        # Test Python bitwise pipe __ror__
+        # Test pipe transformer adapter
         res2 = "Input prompt" | transformer
         self.assertEqual(res2, "Parsed AST")
 

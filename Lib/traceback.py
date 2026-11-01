@@ -1207,7 +1207,7 @@ class TracebackException:
             elif abi_tag := _find_incompatible_extension_module(module_name):
                 self._str += (
                     ". Although a module with this name was found for a "
-                    f"different Python version ({abi_tag})."
+                    f"different Haven version ({abi_tag})."
                 )
             else:
                 suggestion = _compute_suggestion_error(exc_value, exc_traceback, module_name)
@@ -1667,7 +1667,7 @@ class TracebackException:
                 yield from _ctx.emit(msg)
             if exc.exceptions is None:
                 if exc.stack:
-                    yield from _ctx.emit('Traceback (most recent call last):\n')
+                    yield from _ctx.emit('Haven Traceback (most recent call last):\n')
                     yield from _ctx.emit(exc.stack.format(colorize=colorize))
                 yield from _ctx.emit(exc.format_exception_only(colorize=colorize))
             elif _ctx.exception_group_depth > self.max_group_depth:
@@ -1682,7 +1682,7 @@ class TracebackException:
 
                 if exc.stack:
                     yield from _ctx.emit(
-                        'Exception Group Traceback (most recent call last):\n',
+                        'Haven Exception Group Traceback (most recent call last):\n',
                         margin_char = '+' if is_toplevel else None)
                     yield from _ctx.emit(exc.stack.format(colorize=colorize))
 

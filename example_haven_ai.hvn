@@ -14,7 +14,7 @@ set ai_pipe to mock_inference
 
 to main:
     print("========================================")
-    print("Haven 0.1.0 Native AI Pipeline Execution")
+    print("Haven 1.0.0 Native AI Pipeline Execution")
     print("========================================")
 
     # 1. English assignment

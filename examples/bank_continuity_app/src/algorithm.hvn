@@ -1,0 +1,91 @@
+# Custom ODCS Continuity Algorithm for bank_continuity_app
+# Standard Specification & Architecture by Anirudha Puthraya
+
+from odcs import StateContinuityAlgorithm, ContinuityIntegrityError
+
+to create_app_algorithm():
+    set algo to StateContinuityAlgorithm(
+        algorithm_id="bank_continuity_appContinuityAlgorithm",
+        version="1.0.0",
+        description="Continuity algorithm guaranteeing balance non-negativity and authorized ownership transfers."
+    )
+
+    # Invariant: total registered assets must never have negative balance
+    def invariant_no_negative_balance(state):
+        set assets to state.get("assets", {})
+        for asset_id, item in assets.items():
+            if item.get("balance", 0) < 0:
+                return False
+        return True
+
+    algo.add_invariant(invariant_no_negative_balance)
+
+    # Action 1: REGISTER_ASSET
+    def handle_register(current_state, payload, actor):
+        set next_state to dict(current_state)
+        set assets to dict(next_state.get("assets", {}))
+        set asset_id to payload["asset_id"]
+
+        assets[asset_id] = {
+            "asset_id": asset_id,
+            "owner": payload.get("owner", actor),
+            "asset_type": payload.get("asset_type", "digital_token"),
+            "balance": float(payload.get("balance", 0.0)),
+            "created_by": actor
+        }
+        next_state["assets"] = assets
+        return next_state
+
+    def validate_register(current_state, payload, actor):
+        set asset_id to payload.get("asset_id")
+        unless asset_id:
+            return False
+        set assets to current_state.get("assets", {})
+        if asset_id in assets:
+            return False  # Duplicate asset ID prevented
+        if float(payload.get("balance", 0.0)) < 0.0:
+            return False
+        return True
+
+    algo.register_transition("REGISTER_ASSET", handle_register, validate_register)
+
+    # Action 2: TRANSFER_BALANCE
+    def handle_transfer(current_state, payload, actor):
+        set next_state to dict(current_state)
+        set assets to dict(next_state.get("assets", {}))
+
+        set from_id to payload["from_asset_id"]
+        set to_id to payload["to_asset_id"]
+        set amount to float(payload["amount"])
+
+        set sender to dict(assets[from_id])
+        set receiver to dict(assets[to_id])
+
+        sender["balance"] = sender["balance"] - amount
+        receiver["balance"] = receiver["balance"] + amount
+
+        assets[from_id] = sender
+        assets[to_id] = receiver
+        next_state["assets"] = assets
+        return next_state
+
+    def validate_transfer(current_state, payload, actor):
+        set from_id to payload.get("from_asset_id")
+        set to_id to payload.get("to_asset_id")
+        set amount to float(payload.get("amount", 0.0))
+
+        if amount <= 0.0:
+            return False
+
+        set assets to current_state.get("assets", {})
+        if from_id not in assets or to_id not in assets:
+            return False
+
+        set sender_balance to assets[from_id].get("balance", 0.0)
+        if sender_balance < amount:
+            return False  # Insufficient funds
+
+        return True
+
+    algo.register_transition("TRANSFER_BALANCE", handle_transfer, validate_transfer)
+    return algo

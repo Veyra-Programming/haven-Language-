@@ -1,0 +1,78 @@
+{
+  "Durable Record": {
+    "prefix": "durable",
+    "body": [
+      "durable record ${1:AssetRecord}:",
+      "    def __init__(self, ${2:asset_id}, ${3:value}):",
+      "        self.${2:asset_id} = ${2:asset_id}",
+      "        self.${3:value} = ${3:value}"
+    ],
+    "description": "Create an immutable, cryptographically sealed ODCS Durable Record"
+  },
+  "Checkpoint Statement": {
+    "prefix": "checkpoint",
+    "body": [
+      "checkpoint ${1:asset} as \"${2:alias}\" into ${3:ledger}"
+    ],
+    "description": "Native Haven checkpoint statement"
+  },
+  "Verify Statement": {
+    "prefix": "verify",
+    "body": [
+      "verify ${1:asset} with ${2:proof}"
+    ],
+    "description": "Native Haven cryptographic proof verification"
+  },
+  "English Assignment": {
+    "prefix": "set",
+    "body": [
+      "set ${1:variable} to ${2:value}"
+    ],
+    "description": "Haven natural English assignment"
+  },
+  "Unless Statement": {
+    "prefix": "unless",
+    "body": [
+      "unless ${1:condition}:",
+      "    ${2:pass}"
+    ],
+    "description": "Haven inverted conditional block"
+  },
+  "Until Loop": {
+    "prefix": "until",
+    "body": [
+      "until ${1:condition}:",
+      "    ${2:pass}"
+    ],
+    "description": "Haven until loop"
+  },
+  "Repeat Loop": {
+    "prefix": "repeat",
+    "body": [
+      "repeat ${1:5} times:",
+      "    ${2:pass}"
+    ],
+    "description": "Haven ergonomic repeat loop"
+  },
+  "P2P Gossip Mesh": {
+    "prefix": "mesh",
+    "body": [
+      "set mesh to GossipMesh()",
+      "set node_alpha to mesh.create_node(\"${1:Alpha}\")",
+      "set node_beta to mesh.create_node(\"${2:Beta}\")",
+      "mesh.sync_until_stable()",
+      "mesh.assert_converged()"
+    ],
+    "description": "Scaffold a multi-node ODCS P2P Gossip Mesh"
+  },
+  "Adaptive Policy": {
+    "prefix": "adaptive",
+    "body": [
+      "@adaptive_policy(on_airgap=${1:local_fallback_fn})",
+      "function ${2:sync_task}():",
+      "    ${3:pass}"
+    ],
+    "description": "ODCS Layer 3 adaptive environmental execution policy"
+  }
+}
+

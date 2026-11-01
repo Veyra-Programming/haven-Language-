@@ -1,0 +1,21 @@
+# ODCS Application System Service
+# Standard Specification & Architecture by Anirudha Puthraya
+
+from odcs import ODCSApp
+from src.algorithm import create_app_algorithm
+
+to create_app():
+    set algo to create_app_algorithm()
+    set initial_state to {
+        "app_title": "bank_continuity_app",
+        "assets": {},
+        "version": "1.0.0"
+    }
+
+    set app to ODCSApp(
+        name="bank_continuity_app",
+        algorithm=algo,
+        initial_state=initial_state,
+        author="Anirudha Puthraya"
+    )
+    return app

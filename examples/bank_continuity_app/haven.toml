@@ -1,0 +1,18 @@
+[project]
+name = "bank_continuity_app"
+version = "1.0.0"
+author = "Anirudha Puthraya"
+description = "Production ODCS-based Application System with verifiable cryptographic continuity."
+standard = "ODCS-1.0.0"
+specification_author = "Anirudha Puthraya"
+entrypoint = "src/main.hvn"
+
+[app]
+type = "odcs-app"
+algorithm = "bank_continuity_appContinuityAlgorithm"
+auto_checkpoint = true
+ledger_name = "bank_continuity_app-Primary-Ledger"
+
+[dependencies]
+haven = ">=1.0.0"
+odcs = ">=1.0.0"

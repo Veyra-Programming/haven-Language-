@@ -832,16 +832,18 @@ def sethelper():
 
 
 def gethistoryfile():
-    """Check if the PYTHON_HISTORY environment variable is set and define
-    it as the .python_history file.  If PYTHON_HISTORY is not set, use the
-    default .python_history file.
+    """Check if the HAVEN_HISTORY or PYTHON_HISTORY environment variable is set and define
+    it as the .haven_history file.
     """
     if not sys.flags.ignore_environment:
-        history = os.environ.get("PYTHON_HISTORY")
+        history = os.environ.get("HAVEN_HISTORY") or os.environ.get("PYTHON_HISTORY")
         if history:
             return history
-    return os.path.join(os.path.expanduser('~'),
-        '.python_history')
+    home = os.path.expanduser('~')
+    haven_hist = os.path.join(home, '.haven_history')
+    if os.path.exists(haven_hist) or not os.path.exists(os.path.join(home, '.python_history')):
+        return haven_hist
+    return os.path.join(home, '.python_history')
 
 
 def enablerlcompleter():
@@ -1118,6 +1120,17 @@ def main():
     # and finally .start entry points are executed — ensuring sys.path is
     # fully populated before any startup code runs.
     state.process()
+    try:
+        import types
+        sys.implementation = types.SimpleNamespace(
+            name='haven',
+            cache_tag='haven-100',
+            version=sys.version_info,
+            hexversion=sys.hexversion,
+            supports_isolated_interpreters=True
+        )
+    except Exception:
+        pass
     setquit()
     setcopyright()
     sethelper()

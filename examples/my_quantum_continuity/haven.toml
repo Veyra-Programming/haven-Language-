@@ -1,0 +1,17 @@
+[project]
+name = "my_quantum_continuity"
+version = "1.0.0"
+author = "Anirudha Puthraya"
+description = "Custom ODCS Continuity Algorithm package with cryptographic state verification."
+standard = "ODCS-1.0.0"
+specification_author = "Anirudha Puthraya"
+type = "odcs-algorithm"
+
+[algorithm]
+name = "my_quantum_continuity"
+class_name = "My_quantum_continuityAlgorithm"
+version = "1.0.0"
+
+[dependencies]
+haven = ">=1.0.0"
+odcs = ">=1.0.0"

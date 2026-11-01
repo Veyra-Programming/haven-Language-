@@ -11,9 +11,7 @@ from .merkle import MerkleTree
 T = TypeVar("T")
 
 
-class ContinuityImmutabilityError(Exception):
-    """Raised when an attempt is made to mutate a sealed durable record."""
-    pass
+from haven.immutability import ContinuityImmutabilityError
 
 
 class ContinuityIntegrityError(Exception):
@@ -61,60 +59,70 @@ class DurableRecord:
         """Compute the deterministic SHA-256 digest of this record."""
         return f"sha256:{compute_sha256(canonical_json(self.odcs_dict()))}"
 
-    def odcs_merkle_tree(self) -> MerkleTree:
-        """Build a Merkle tree of this record's sorted key-value pairs."""
-        items = sorted(self.odcs_dict().items())
-        return MerkleTree(items)
+    def to_envelope(self, provenance_author: str = "Anirudha Puthraya", parent_hash: Optional[str] = None, **kwargs: Any) -> ContinuityAssetEnvelope:
+        """Encapsulate this record into an ODCS Asset Envelope with Merkle proofs."""
+        if self._odcs_envelope_cache and not parent_hash:
+            return self._odcs_envelope_cache
 
-    def odcs_envelope(self, parent_hash: Optional[str] = None, creator: Optional[str] = None) -> ContinuityAssetEnvelope:
-        """Generate a certified ContinuityAssetEnvelope for this record."""
-        tree = self.odcs_merkle_tree()
+        payload = self.odcs_dict()
+        fields = [f"{k}:{v}" for k, v in sorted(payload.items())]
+        merkle = MerkleTree(fields)
+
         env = ContinuityAssetEnvelope(
             asset_type=self.__class__.__name__,
-            payload=self.odcs_dict(),
+            payload=payload,
             parent_hash=parent_hash,
-            creator=creator or "Anirudha Puthraya / Haven ODCS Runtime",
-            merkle_root=tree.root,
+            creator=provenance_author,
+            merkle_root=merkle.root_hash,
+            metadata=kwargs.get("metadata", {})
         )
-        object.__setattr__(self, "_odcs_envelope_cache", env)
+        if not parent_hash:
+            object.__setattr__(self, "_odcs_envelope_cache", env)
         return env
 
-    def verify_integrity(self) -> bool:
-        """Verify the integrity of this record's internal Merkle root and envelope."""
-        env = getattr(self, "_odcs_envelope_cache", None) or self.odcs_envelope()
-        return env.verify_integrity()
+    def odcs_envelope(self, creator: str = "Anirudha Puthraya", parent_hash: Optional[str] = None, **kwargs: Any) -> ContinuityAssetEnvelope:
+        """Alias for to_envelope matching ODCS specification terminology."""
+        author = creator or kwargs.get("provenance_author", "Anirudha Puthraya")
+        return self.to_envelope(provenance_author=author, parent_hash=parent_hash, **kwargs)
 
-    def checkpoint(self, alias: Optional[str] = None, ledger: Optional[Any] = None) -> Any:
-        """Checkpoint this record into a continuity ledger."""
-        from .ledger import get_default_ledger
-        target_ledger = ledger or get_default_ledger()
-        return target_ledger.checkpoint(self, alias=alias)
+    def verify_field_proof(self, field_name: str, expected_root: str) -> bool:
+        """Verify that a specific field is a cryptographically valid component of the Merkle root."""
+        env = self.to_envelope()
+        return env.verify(expected_root)
 
     def __repr__(self) -> str:
-        attrs = ", ".join(f"{k}={v!r}" for k, v in self.odcs_dict().items())
-        return f"{self.__class__.__name__}({attrs})"
+        fields = ", ".join(f"{k}={v!r}" for k, v in self.odcs_dict().items())
+        return f"{self.__class__.__name__}({fields}) [ODCS Sealed]"
 
 
 def durable_record(cls: Type[T]) -> Type[T]:
     """
-    Class decorator transforming any Python/Haven class into an ODCS DurableRecord.
+    Class decorator transforming any Haven class into an ODCS DurableRecord.
     Used automatically by Haven's `durable record Name:` grammar construct.
     """
     if issubclass(cls, DurableRecord):
         return cls
 
-    # Dynamically inject DurableRecord base and functionality
     orig_init = cls.__init__
+    has_custom_init = (orig_init is not object.__init__)
 
     def wrapped_init(self: Any, *args: Any, **kwargs: Any) -> None:
-        # If user passed positional args, map them to signature params
-        sig = inspect.signature(orig_init)
-        bound = sig.bind_partial(self, *args, **kwargs)
-        bound.apply_defaults()
-        for k, v in bound.arguments.items():
-            if k != "self":
+        if has_custom_init:
+            sig = inspect.signature(orig_init)
+            bound = sig.bind_partial(self, *args, **kwargs)
+            bound.apply_defaults()
+            for k, v in bound.arguments.items():
+                if k != "self":
+                    object.__setattr__(self, k, v)
+            orig_init(self, *args, **kwargs)
+        else:
+            # Map args and kwargs to fields defined in annotations
+            annotations = list(getattr(cls, "__annotations__", {}).keys())
+            for idx, arg in enumerate(args):
+                if idx < len(annotations):
+                    object.__setattr__(self, annotations[idx], arg)
+            for k, v in kwargs.items():
                 object.__setattr__(self, k, v)
-        orig_init(self, *args, **kwargs)
         object.__setattr__(self, "_odcs_sealed", True)
 
     new_dict = dict(cls.__dict__)

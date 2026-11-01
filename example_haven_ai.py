@@ -51,7 +51,7 @@ def demonstrate_pipeline():
     # Using pipe_fn functional adapter
     ai_pipe = pipe_fn(client, model="meta-llama/Llama-3.3-70B-Instruct")
     
-    # In Python (bitwise pipe) or Haven (|>)
+    # In Haven pipeline (|>) or pipe adapter
     # "Write a quick haiku" | ai_pipe | print
     print("Pipeline adapter 'pipe_fn' ready for Haven's native '|>' and 'into' operators.")
 

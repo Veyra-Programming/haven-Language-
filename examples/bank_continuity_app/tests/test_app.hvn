@@ -1,0 +1,50 @@
+# Test Suite for bank_continuity_app ODCS Application System
+# Standard Specification & Architecture by Anirudha Puthraya
+
+from odcs import ContinuityIntegrityError, ContinuityImmutabilityError
+from src.models import AssetRecord
+from src.service import create_app
+
+to test_durable_record_immutability():
+    set asset to AssetRecord("AST-01", "Charlie", "Token", 500.0, "ACTIVE")
+    assert asset.asset_id == "AST-01"
+    assert asset.balance == 500.0
+
+    # Ensure field mutation is prevented
+    set mutation_blocked to False
+    try:
+        asset.balance = 999999.0
+    except ContinuityImmutabilityError:
+        set mutation_blocked to True
+    assert mutation_blocked is True
+    print("[PASS] Durable Record Immutability Verified.")
+
+to test_app_transitions_and_ledger():
+    set app to create_app()
+    set e1 to app.dispatch("REGISTER_ASSET", {"asset_id": "ACC-1", "balance": 1000.0}, actor="Admin")
+    set e2 to app.dispatch("REGISTER_ASSET", {"asset_id": "ACC-2", "balance": 500.0}, actor="Admin")
+
+    # Valid transfer
+    set e3 to app.dispatch("TRANSFER_BALANCE", {"from_asset_id": "ACC-1", "to_asset_id": "ACC-2", "amount": 400.0})
+    set state to app.get_state()
+    assert state["assets"]["ACC-1"]["balance"] == 600.0
+    assert state["assets"]["ACC-2"]["balance"] == 900.0
+
+    # Invalid transfer: exceeds balance -> should fail
+    set failed_overflow to False
+    try:
+        app.dispatch("TRANSFER_BALANCE", {"from_asset_id": "ACC-1", "to_asset_id": "ACC-2", "amount": 10000.0})
+    except ContinuityIntegrityError:
+        set failed_overflow to True
+    assert failed_overflow is True
+
+    # Audit validation
+    set audit_res to app.audit()
+    assert audit_res["chain_integrity_valid"] is True
+    print("[PASS] State Transitions and Ledger Chain Integrity Verified.")
+
+if __name__ == "__main__":
+    print("Running bank_continuity_app ODCS Verification...")
+    test_durable_record_immutability()
+    test_app_transitions_and_ledger()
+    print("ALL TESTS PASSED!")

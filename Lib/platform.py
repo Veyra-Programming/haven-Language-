@@ -1245,47 +1245,23 @@ def python_version_tuple():
     return tuple(_sys_version()[1].split('.'))
 
 def python_branch():
-
-    """ Returns a string identifying the Python implementation
-        branch.
-
-        For CPython this is the SCM branch from which the
-        Python binary was built.
-
-        If not available, an empty string is returned.
-
-    """
-
     return _sys_version()[2]
 
 def python_revision():
-
-    """ Returns a string identifying the Python implementation
-        revision.
-
-        For CPython this is the SCM revision from which the
-        Python binary was built.
-
-        If not available, an empty string is returned.
-
-    """
     return _sys_version()[3]
 
 def python_build():
-
-    """ Returns a tuple (buildno, builddate) stating the Python
-        build number and date as strings.
-
-    """
     return _sys_version()[4:6]
 
 def python_compiler():
-
-    """ Returns a string identifying the compiler used for compiling
-        Python.
-
-    """
     return _sys_version()[6]
+
+# Haven Language platform API aliases
+haven_implementation = python_implementation
+haven_version = python_version
+haven_version_tuple = python_version_tuple
+haven_compiler = python_compiler
+haven_build = python_build
 
 ### The Opus Magnum of platform strings :-)
 

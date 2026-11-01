@@ -150,7 +150,7 @@ def run_multiline_interactive_console(
             if maybe_run_command(statement):
                 continue
 
-            input_name = f"<python-input-{input_n}>"
+            input_name = f"<haven-input-{input_n}>"
             more = console.push(_strip_final_indent(statement), filename=input_name, _symbol="single")  # type: ignore[call-arg]
             assert not more
             try:

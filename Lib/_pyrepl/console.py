@@ -248,11 +248,11 @@ class InteractiveColoredConsole(code.InteractiveConsole):
         except SyntaxError as e:
             # If it looks like pip install was entered (a common beginner
             # mistake), provide a hint to use the system command prompt.
-            if re.match(r"^\s*(pip3?|py(thon3?)? -m pip) install.*", source):
+            if re.match(r"^\s*(haven|pip3?|py(thon3?)? -m pip) install.*", source):
                 e.add_note(
-                    "The Python package manager (pip) can only be used"
-                    " outside of the Python REPL.\n"
-                    "Try the 'pip' command in a separate terminal or"
+                    "Package management commands can only be used"
+                    " outside of the Haven REPL.\n"
+                    "Try running the command in a separate terminal or"
                     " command prompt."
                 )
             self.showsyntaxerror(filename, source=source)

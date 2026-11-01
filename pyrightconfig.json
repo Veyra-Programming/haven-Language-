@@ -1,0 +1,20 @@
+{
+  "include": [
+    ".",
+    "Lib"
+  ],
+  "extraPaths": [
+    "./Lib",
+    "."
+  ],
+  "executionEnvironments": [
+    {
+      "root": ".",
+      "extraPaths": [
+        "./Lib",
+        "."
+      ]
+    }
+  ]
+}
+

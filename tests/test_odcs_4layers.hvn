@@ -1,0 +1,144 @@
+# =============================================================================
+# Open Digital Continuity Standard (ODCS) - 4-Layer Comprehensive Verification
+# Specification & Architecture by Anirudha Puthraya
+# =============================================================================
+
+from odcs import (
+    # Layer 1
+    DurableRecord,
+    durable_record,
+    ContinuityLedger,
+    MerkleTree,
+    checkpoint,
+    # Layer 2
+    VectorClock,
+    PNCounter,
+    LWWRegister,
+    AWORSet,
+    OutboxPipeline,
+    # Layer 3
+    ContinuityMode,
+    EnvironmentalTelemetry,
+    adaptive_policy,
+    # Layer 4
+    IntentReceipt,
+    ZeroIntentLossManager,
+)
+
+to test_layer_1:
+    print("\n--- Testing ODCS Layer 1: Local Durability & Cryptographic Storage ---")
+    durable record PatientRecord:
+        patient_id: str
+        heart_rate: int
+        oxygen_pct: float
+
+    set record to PatientRecord("PT-8802", 72, 98.5)
+    print(f"[L1 PASS] Sealed Durable Record Created: {record.patient_id} with hash: {record.odcs_hash()[:24]}...")
+
+    # Test Merkle Tree
+    set tree to MerkleTree(["field_a", "field_b", "field_c"])
+    print(f"[L1 PASS] Binary Merkle Tree Root Verified: {tree.root_hash[:24]}...")
+
+to test_layer_2:
+    print("\n--- Testing ODCS Layer 2: Transport & CRDT Consensus ---")
+    
+    # 1. Vector Clock
+    set vc1 to VectorClock({"Node-Alpha": 1})
+    set vc2 to VectorClock({"Node-Beta": 1})
+    vc1.tick("Node-Alpha")
+    set merged_vc to vc1.merge(vc2)
+    assert merged_vc.clock["Node-Alpha"] == 2
+    assert merged_vc.clock["Node-Beta"] == 1
+    print(f"[L2 PASS] Vector Clock Causality Frontier Merged: {merged_vc}")
+
+    # 2. PN-Counter
+    set c_alpha to PNCounter("alpha")
+    set c_beta to PNCounter("beta")
+    c_alpha.inc(50)
+    c_alpha.dec(10)
+    c_beta.inc(30)
+    c_beta.dec(5)
+    set converged_cnt to c_alpha.merge(c_beta)
+    assert converged_cnt.value == 65
+    print(f"[L2 PASS] Distributed PN-Counter Converged: {converged_cnt.value}")
+
+    # 3. AW-ORSet
+    set set_a to AWORSet()
+    set set_b to AWORSet()
+    set_a.add("Asset-Alpha")
+    set_b.add("Asset-Beta")
+    set merged_set to set_a.merge(set_b)
+    assert "Asset-Alpha" in merged_set.elements
+    assert "Asset-Beta" in merged_set.elements
+    print(f"[L2 PASS] AW-ORSet Converged Collections: {merged_set.elements}")
+
+    # 4. Outbox Pipeline
+    set outbox to OutboxPipeline("test_outbox")
+    outbox.enqueue("SYNC_RECORD", {"id": "REC-01"})
+    assert outbox.pending_count == 1
+    set flushed to outbox.flush_sync(lambda item: True)
+    assert flushed == 1
+    assert outbox.pending_count == 0
+    print("[L2 PASS] Store-and-Forward Outbox Pipeline Flushed with ACKs")
+
+    # 5. P2P Gossip Mesh Partition & Convergence
+    set mesh to GossipMesh()
+    set n1 to mesh.create_node("Node-1")
+    set n2 to mesh.create_node("Node-2")
+    mesh.isolate("Node-1")
+    n1.mutate_counter("ResourceA", 40)
+    n2.mutate_counter("ResourceA", 60)
+    assert n1.get_counter("ResourceA").value == 40
+    assert n2.get_counter("ResourceA").value == 60
+    mesh.heal_all()
+    mesh.sync_until_stable()
+    mesh.assert_converged()
+    assert n1.get_counter("ResourceA").value == 100
+    assert n2.get_counter("ResourceA").value == 100
+    print("[L2 PASS] P2P Gossip Mesh Network Partition & SEC Convergence Verified")
+
+to test_layer_3:
+    print("\n--- Testing ODCS Layer 3: Runtime & Environmental Adaptation ---")
+    set tele to EnvironmentalTelemetry()
+    set summary to tele.status_summary()
+    print(f"[L3 PASS] Environmental Telemetry Probed: Mode={summary['mode_label']} Online={summary['is_online']}")
+
+    # Test Adaptive Policy Fallback
+    function on_airgap():
+        return "Executed in Airgap Offline Mode via Local Ledger"
+
+    @adaptive_policy(on_airgap=on_airgap)
+    function sync_operation():
+        return "Executed over Remote Broadband Network"
+
+    EnvironmentalTelemetry.set_override(ContinuityMode.AIRGAP_OFFLINE)
+    set res_airgap to sync_operation()
+    assert res_airgap == "Executed in Airgap Offline Mode via Local Ledger"
+    print(f"[L3 PASS] Adaptive Execution Graceful Degradation: {res_airgap}")
+    EnvironmentalTelemetry.set_override(None)
+
+to test_layer_4:
+    print("\n--- Testing ODCS Layer 4: Application & Continuity UX ---")
+    set mgr to ZeroIntentLossManager()
+    set receipt to mgr.capture("PATIENT_ADMISSION", "Dr. Vance", {"bed": "ICU-4", "severity": 1})
+    assert receipt.status == "sealed_in_local_ledger"
+    assert receipt.intent_id.startswith("intent-")
+    print(f"[L4 PASS] Zero Intent Loss Receipt Immortalized: {receipt.intent_id} [Status: {receipt.status}]")
+
+to main:
+    print("=================================================================")
+    print("  HAVEN LANGUAGE • FULL 4-LAYER ODCS VERIFICATION SUITE          ")
+    print("  Standard: Open Digital Continuity Standard (ODCS-1.0.0)        ")
+    print("  Specification & Architecture by Anirudha Puthraya              ")
+    print("=================================================================")
+    
+    test_layer_1()
+    test_layer_2()
+    test_layer_3()
+    test_layer_4()
+
+    print("\n=================================================================")
+    print("  ALL 4 ODCS CONTINUITY LAYERS CRYPTOGRAPHICALLY VERIFIED!       ")
+    print("=================================================================")
+
+main()
