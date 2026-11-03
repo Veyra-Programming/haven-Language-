@@ -1,0 +1,184 @@
+# Open Financial Continuity Standard (OFCS) Verification Suite
+# Standard Specification & Architecture by Anirudha Puthraya
+# Copyright (c) 2026 Haven Language Foundation & Anirudha Puthraya.
+
+from ofcs import (
+    Money, Currency, CurrencyMismatchError, ExchangeRate,
+    DoubleEntryRecord, FinancialAccount, OFCSFinancialLedger,
+    UnbalancedTransactionError, InsufficientFundsError,
+    FinancialTransaction, Idempotent, ZeroDrift, ZeroDriftViolationError,
+    ReconciliationEngine, ReconciliationReport,
+    USD, EUR, GBP, INR, HVN
+)
+from decimal import Decimal
+import time
+
+print("=========================================================")
+print("  Open Financial Continuity Standard (OFCS) Test Suite   ")
+print("  Standard Architecture & Specification by Anirudha Puthraya ")
+print("=========================================================")
+
+# ------------------------------------------------------------------------------
+# 1. Exact Decimal Representation & Monetary Arithmetic (Zero Floating Drift)
+# ------------------------------------------------------------------------------
+m1 = Money("100.50", USD)
+m2 = Money("49.50", USD)
+assert (m1 + m2) == Money("150.00", USD)
+assert (m1 - m2) == Money("51.00", USD)
+assert (m1 * 2) == Money("201.00", USD)
+assert (m1 / 2) == Money("50.25", USD)
+
+# Verify floating-point drift is eliminated: 0.10 + 0.20 == 0.30
+cents1 = Money("0.10", USD)
+cents2 = Money("0.20", USD)
+cents3 = Money("0.30", USD)
+assert (cents1 + cents2) == cents3, "OFCS Decimal must prevent IEEE-754 float drift"
+
+# Verify Currency Mismatch Protection
+mismatch = False
+try:
+    _ = m1 + Money("50.00", EUR)
+except CurrencyMismatchError:
+    mismatch = True
+assert mismatch, "Operating across different currencies without ExchangeRate must fail"
+
+# Test ExchangeRate Conversion
+rate = ExchangeRate(USD, EUR, "0.92")
+eur_val = rate.convert(Money("100.00", USD))
+assert eur_val == Money("92.00", EUR)
+print("[PASS] Exact Decimal Money, Currency Safety, and Exchange Rates verified.")
+
+# ------------------------------------------------------------------------------
+# 2. Double-Entry Balance Invariant (Debits == Credits)
+# ------------------------------------------------------------------------------
+valid_tx = DoubleEntryRecord(
+    tx_id="tx-9901",
+    debits=[("account_alice", Money("500.00", USD))],
+    credits=[("account_bob", Money("500.00", USD))],
+    memo="Payment for enterprise continuity license"
+)
+assert valid_tx.record_hash is not None
+assert len(valid_tx.record_hash) == 64
+
+# Unbalanced transaction must be rejected immediately
+unbalanced_caught = False
+try:
+    DoubleEntryRecord(
+        tx_id="tx-bad",
+        debits=[("account_alice", Money("500.00", USD))],
+        credits=[("account_bob", Money("400.00", USD))] # $100 deficit!
+    )
+except UnbalancedTransactionError:
+    unbalanced_caught = True
+assert unbalanced_caught, "Unbalanced double-entry record must raise UnbalancedTransactionError"
+print("[PASS] Double-Entry Accounting Invariant (Debits == Credits) verified.")
+
+# ------------------------------------------------------------------------------
+# 3. OFCS Financial Ledger & Cryptographic Block Hash Chain
+# ------------------------------------------------------------------------------
+ledger = OFCSFinancialLedger("Federal-Continuity-Bank")
+
+acct_alice = FinancialAccount("alice", USD, initial_balance="1000.00")
+acct_bob = FinancialAccount("bob", USD, initial_balance="250.00")
+ledger.register_account(acct_alice)
+ledger.register_account(acct_bob)
+
+# Post valid transfer
+receipt = ledger.transfer(
+    from_account="alice",
+    to_account="bob",
+    amount=Money("300.00", USD),
+    memo="Settlement for hardware nodes"
+)
+assert receipt["status"] == "SETTLED"
+assert acct_alice.balance == Money("700.00", USD)
+assert acct_bob.balance == Money("550.00", USD)
+assert ledger.verify_ledger_chain() is True
+
+# Test Idempotency (Duplicate submission with same idempotency key)
+dup_receipt = ledger.transfer(
+    from_account="alice",
+    to_account="bob",
+    amount=Money("300.00", USD),
+    idempotency_key=receipt["tx_id"]
+)
+assert dup_receipt["status"] == "DUPLICATE_IDEMPOTENT_RECEIPT"
+# Balance must NOT be deducted a second time!
+assert acct_alice.balance == Money("700.00", USD)
+assert acct_bob.balance == Money("550.00", USD)
+
+# Test Insufficient Funds Protection
+overdraft_caught = False
+try:
+    ledger.transfer(
+        from_account="alice",
+        to_account="bob",
+        amount=Money("9999.00", USD)
+    )
+except InsufficientFundsError:
+    overdraft_caught = True
+assert overdraft_caught, "Debit exceeding balance on standard account must raise InsufficientFundsError"
+print("[PASS] OFCS Financial Ledger, Idempotency & Cryptographic Chain verified.")
+
+# ------------------------------------------------------------------------------
+# 4. OFCS Annotations: @FinancialTransaction, @Idempotent, @ZeroDrift
+# ------------------------------------------------------------------------------
+@FinancialTransaction(ledger=ledger)
+@ZeroDrift(ledger=ledger)
+def execute_batch_clearing(payer: str, payee: str, amount: Money):
+    return ledger.transfer(payer, payee, amount)
+
+# Initial system volume
+vol_before = ledger.calculate_total_volume(USD)
+execute_batch_clearing("alice", "bob", Money("100.00", USD))
+vol_after = ledger.calculate_total_volume(USD)
+assert vol_before == vol_after, "ZeroDrift must guarantee total system monetary conservation"
+assert acct_alice.balance == Money("600.00", USD)
+assert acct_bob.balance == Money("650.00", USD)
+
+# Test @Idempotent decorator
+call_count = 0
+@Idempotent()
+def process_client_payout(payment_id: str, amount: float):
+    global call_count
+    call_count += 1
+    return {"payout_id": payment_id, "amount": amount, "executed_at": time.time()}
+
+r1 = process_client_payout("tx-uniq-4402", 75.0)
+r2 = process_client_payout("tx-uniq-4402", 75.0)
+assert r1 == r2
+assert call_count == 1, "@Idempotent must prevent duplicate execution"
+print("[PASS] OFCS Annotations (@FinancialTransaction, @Idempotent, @ZeroDrift) verified.")
+
+# ------------------------------------------------------------------------------
+# 5. Distributed Offline Reconciliation Engine
+# ------------------------------------------------------------------------------
+# Simulate an airgapped branch bank operating while disconnected
+branch_ledger = OFCSFinancialLedger("Branch-Alaska")
+branch_alice = FinancialAccount("alice", USD, initial_balance="600.00")
+branch_bob = FinancialAccount("bob", USD, initial_balance="650.00")
+branch_ledger.register_account(branch_alice)
+branch_ledger.register_account(branch_bob)
+
+# Branch posts a local offline transaction
+branch_receipt = branch_ledger.transfer(
+    from_account="bob",
+    to_account="alice",
+    amount=Money("50.00", USD),
+    memo="Local airgapped branch deposit",
+    idempotency_key="branch-offline-tx-001"
+)
+
+# Reconcile branch with central federal ledger
+engine = ReconciliationEngine(ledger)
+report = engine.reconcile_with_remote(branch_ledger)
+assert report.synced_successfully is True
+assert "branch-offline-tx-001" in report.missing_in_local
+assert ledger.get_account("alice").balance == Money("650.00", USD)
+assert ledger.get_account("bob").balance == Money("600.00", USD)
+assert ledger.verify_ledger_chain() is True
+print("[PASS] Distributed Offline Financial Reconciliation Engine verified.")
+
+print("=========================================================")
+print(" ALL OPEN FINANCIAL CONTINUITY STANDARD (OFCS) TESTS PASSED! ")
+print("=========================================================")

@@ -1,0 +1,254 @@
+# Haven Enterprise Annotations and Java Concepts Verification Suite
+# Standard: Open Digital Continuity Standard (ODCS) & Open Financial Continuity Standard (OFCS)
+# Author: Anirudha Puthraya
+
+from haven.annotations import (
+    RetentionPolicy, ElementType, Retention, Target, interface,
+    Override, OverrideError, Deprecated, Synchronized, Volatile,
+    Sealed, SealedHierarchyError, Serial, Durable,
+    Transactional, TransactionRollback, Audit, ContinuityCheck,
+    CircuitBreaker, Retry, get_annotations, has_annotation, get_annotation
+)
+from haven.enterprise import (
+    Interface, default, implements, InterfaceImplementationError,
+    SealedClass, HavenEnum, Record, TypeBound
+)
+from haven.concurrency import (
+    CompletableFuture, AtomicInteger, AtomicBoolean, AtomicReference,
+    CountDownLatch, ReentrantLock, VirtualExecutor
+)
+from haven.continuity import _GLOBAL_LEDGER
+import abc
+import time
+import threading
+
+print("=========================================================")
+print("  Haven Enterprise Annotations & Java Verification Suite ")
+print("  Specification & Architecture by Anirudha Puthraya      ")
+print("=========================================================")
+
+# ------------------------------------------------------------------------------
+# 1. Test Custom Annotation Declaration & Reflection
+# ------------------------------------------------------------------------------
+@interface
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+class EnterpriseEndpoint:
+    path: str = ""
+    auth_required: bool = True
+
+class ServiceController:
+    @EnterpriseEndpoint
+    def fetch_data(self):
+        return {"status": "ok"}
+
+ann = get_annotations(ServiceController.fetch_data)
+assert len(ann) > 0, "Annotation metadata must be recorded"
+assert has_annotation(ServiceController.fetch_data, EnterpriseEndpoint), "has_annotation must return True"
+print("[PASS] Meta-Annotations (@interface, @Retention, @Target) & Reflection verified.")
+
+# ------------------------------------------------------------------------------
+# 2. Test Java Interface with Default Methods & @implements
+# ------------------------------------------------------------------------------
+class PaymentGateway(Interface):
+    @abc.abstractmethod
+    def process_payment(self, amount: float) -> str:
+        pass
+
+    @default
+    def health_check(self) -> str:
+        return "Gateway Online"
+
+@implements(PaymentGateway)
+class HavenStripeGateway:
+    @Override
+    def process_payment(self, amount: float) -> str:
+        return f"Processed ${amount:.2f}"
+
+gw = HavenStripeGateway()
+assert gw.process_payment(150.00) == "Processed $150.00"
+# Verify inherited default method
+assert gw.health_check() == "Gateway Online"
+
+# Verify missing implementation fails at definition time
+failed_contract = False
+try:
+    @implements(PaymentGateway)
+    class IncompleteGateway:
+        pass
+except InterfaceImplementationError:
+    failed_contract = True
+assert failed_contract, "Failing to implement interface abstract method must raise InterfaceImplementationError"
+print("[PASS] Java Interfaces, Default Methods, and @implements validation verified.")
+
+# ------------------------------------------------------------------------------
+# 3. Test @Override Strict Verification
+# ------------------------------------------------------------------------------
+class BaseService:
+    def execute(self):
+        return "base"
+
+class ValidSubService(BaseService):
+    @Override
+    def execute(self):
+        return "sub"
+
+sub = ValidSubService()
+assert sub.execute() == "sub"
+
+failed_override = False
+try:
+    @implements(PaymentGateway)
+    class InvalidOverrideGateway:
+        def process_payment(self, amount: float) -> str:
+            return "ok"
+
+        @Override
+        def non_existent_method(self):
+            return "error"
+except OverrideError:
+    failed_override = True
+assert failed_override, "@Override on a non-existent method must raise OverrideError"
+print("[PASS] Java @Override contract verification verified.")
+
+# ------------------------------------------------------------------------------
+# 4. Test Java 17 Sealed Classes (permits=[...])
+# ------------------------------------------------------------------------------
+class ContinuityAsset(SealedClass, permits=["DurableCertificate", "MerkleProof"]):
+    pass
+
+class DurableCertificate(ContinuityAsset):
+    pass
+
+class MerkleProof(ContinuityAsset):
+    pass
+
+sealed_violation = False
+try:
+    class UnauthorizedAsset(ContinuityAsset):
+        pass
+except SealedHierarchyError:
+    sealed_violation = True
+assert sealed_violation, "Unauthorized subclass of a sealed class must raise SealedHierarchyError"
+print("[PASS] Java 17 Sealed Classes (permits) hierarchy enforcement verified.")
+
+# ------------------------------------------------------------------------------
+# 5. Test Rich Java-Style Enums (HavenEnum)
+# ------------------------------------------------------------------------------
+class LedgerNodeStatus(HavenEnum):
+    ONLINE = (1, "Node is fully synchronized")
+    DEGRADED = (2, "Operating in local partition mode")
+    AIRGAPPED = (3, "Physical isolated operation")
+
+    def __init__(self, code: int, description: str):
+        self.code = code
+        self.description = description
+
+    def is_operational(self) -> bool:
+        return self.code in (1, 2)
+
+assert LedgerNodeStatus.ONLINE.code == 1
+assert LedgerNodeStatus.ONLINE.name() == "ONLINE"
+assert LedgerNodeStatus.ONLINE.ordinal() == 0
+assert LedgerNodeStatus.DEGRADED.ordinal() == 1
+assert LedgerNodeStatus.ONLINE.is_operational() is True
+assert LedgerNodeStatus.value_of("AIRGAPPED") is LedgerNodeStatus.AIRGAPPED
+assert len(LedgerNodeStatus.values()) == 3
+print("[PASS] Rich Java Enums (HavenEnum with constructors, fields & methods) verified.")
+
+# ------------------------------------------------------------------------------
+# 6. Test @Transactional and @Audit with ODCS Ledger
+# ------------------------------------------------------------------------------
+class BankService:
+    def __init__(self):
+        self.vault = 1000
+
+    @Transactional()
+    @Audit(event_name="VAULT_TRANSFER")
+    def transfer(self, amount: int, fail: bool = False):
+        self.vault -= amount
+        if fail:
+            raise ValueError("Network link abruptly severed")
+        return self.vault
+
+bank = BankService()
+# Successful transaction
+initial_blocks = len(_GLOBAL_LEDGER.entries)
+res = bank.transfer(200, fail=False)
+assert res == 800
+assert len(_GLOBAL_LEDGER.entries) > initial_blocks, "Audit and Transaction must append to ledger"
+
+# Failed transaction with automatic rollback
+rollback_caught = False
+try:
+    bank.transfer(100, fail=True)
+except TransactionRollback as tr:
+    rollback_caught = True
+    assert "Network link abruptly severed" in str(tr)
+assert rollback_caught, "Transaction failure must raise TransactionRollback"
+print("[PASS] ODCS @Transactional (Commit/Rollback receipts) & @Audit logging verified.")
+
+# ------------------------------------------------------------------------------
+# 7. Test @CircuitBreaker and @Retry
+# ------------------------------------------------------------------------------
+breaker_failures = 0
+
+def emergency_fallback():
+    return "FALLBACK_CACHED_DATA"
+
+@CircuitBreaker(failure_threshold=2, recovery_time_seconds=0.2, fallback=emergency_fallback)
+def flaky_remote_query():
+    global breaker_failures
+    breaker_failures += 1
+    raise ConnectionResetError("Remote server dead")
+
+# Trip the breaker
+flaky_remote_query() # failure 1 -> fallback
+flaky_remote_query() # failure 2 -> circuit opens
+res_fallback = flaky_remote_query() # circuit OPEN -> immediate fallback
+assert res_fallback == "FALLBACK_CACHED_DATA"
+
+# Test Retry
+retry_counter = 0
+@Retry(max_attempts=3, backoff_ms=10)
+def transient_service():
+    global retry_counter
+    retry_counter += 1
+    if retry_counter < 3:
+        raise TimeoutError("Transient packet loss")
+    return "RETRY_SUCCESS"
+
+assert transient_service() == "RETRY_SUCCESS"
+assert retry_counter == 3
+print("[PASS] Enterprise @CircuitBreaker and @Retry resilience mechanisms verified.")
+
+# ------------------------------------------------------------------------------
+# 8. Test Concurrency Primitives (CompletableFuture & AtomicInteger)
+# ------------------------------------------------------------------------------
+# Test AtomicInteger CAS
+counter = AtomicInteger(10)
+assert counter.get_and_increment() == 10
+assert counter.get() == 11
+assert counter.compare_and_set(11, 42) is True
+assert counter.get() == 42
+assert counter.compare_and_set(11, 99) is False # fails because value is 42
+
+# Test CompletableFuture Async Pipeline
+future = (
+    CompletableFuture.supply_async(lambda: 100)
+    .then_apply(lambda x: x * 2)
+    .then_apply(lambda x: f"Balance: ${x}")
+)
+assert future.join() == "Balance: $200"
+
+# Test CompletableFuture all_of
+f1 = CompletableFuture.supply_async(lambda: "Node-1 OK")
+f2 = CompletableFuture.supply_async(lambda: "Node-2 OK")
+all_f = CompletableFuture.all_of(f1, f2)
+results = all_f.join()
+assert results == ["Node-1 OK", "Node-2 OK"]
+print("[PASS] Java Concurrency (CompletableFuture, AtomicInteger, CAS) verified.")
+
+print("=========================================================")
+print(" ALL HAVEN ENTERPRISE ANNOTATION & JAVA TESTS PASSED!    ")
+print("=========================================================")

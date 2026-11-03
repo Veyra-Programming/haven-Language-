@@ -1,6 +1,7 @@
 """
 Haven Standard System Library v1.0.0
-Copyright (c) 2026 Anirudha Puthraya.
+Open Digital Continuity Standard (ODCS) & Open Financial Continuity Standard (OFCS)
+Copyright (c) 2026 Haven Language Foundation & Anirudha Puthraya.
 """
 
 from .continuity import (
@@ -48,9 +49,82 @@ from odcs.intent import (
     ZeroIntentLossManager,
 )
 
+# Enterprise Annotations & Meta-Annotations
+from .annotations import (
+    RetentionPolicy,
+    ElementType,
+    Retention,
+    Target,
+    interface,
+    Override,
+    OverrideError,
+    Deprecated,
+    Synchronized,
+    Volatile,
+    Sealed,
+    SealedHierarchyError,
+    Serial,
+    Durable,
+    Transactional,
+    TransactionRollback,
+    Audit,
+    ContinuityCheck,
+    CircuitBreaker,
+    Retry,
+    get_annotations,
+    has_annotation,
+    get_annotation,
+)
+
+# Enterprise Java Concepts
+from .enterprise import (
+    Interface,
+    default,
+    implements,
+    InterfaceImplementationError,
+    SealedClass,
+    HavenEnum,
+    Record,
+    TypeBound,
+    GenericContainer,
+)
+
+# Concurrency & Reactive Primitives
+from .concurrency import (
+    CompletableFuture,
+    AtomicInteger,
+    AtomicBoolean,
+    AtomicReference,
+    CountDownLatch,
+    ReentrantLock,
+    VirtualExecutor,
+)
+
+# Open Financial Continuity Standard (OFCS)
+import ofcs
+from ofcs import (
+    Money,
+    Currency,
+    CurrencyMismatchError,
+    ExchangeRate,
+    DoubleEntryRecord,
+    FinancialAccount,
+    OFCSFinancialLedger,
+    UnbalancedTransactionError,
+    InsufficientFundsError,
+    DuplicateTransactionError,
+    FinancialTransaction,
+    Idempotent,
+    ZeroDrift,
+    ZeroDriftViolationError,
+    ReconciliationEngine,
+    ReconciliationReport,
+    USD, EUR, GBP, INR, JPY, BTC, HVN
+)
+
 __version__ = "1.0.0"
 __author__ = "Anirudha Puthraya"
-__standard__ = "Open Digital Continuity Standard (ODCS)"
+__standard__ = "Open Digital Continuity Standard (ODCS) & Open Financial Continuity Standard (OFCS)"
 
 # Establish Haven System Identity
 import sys
@@ -117,4 +191,65 @@ __all__ = [
     "ConsensusContinuityAlgorithm",
     "EventSourcingContinuityAlgorithm",
     "ODCSApp",
+    # Enterprise Annotations
+    "RetentionPolicy",
+    "ElementType",
+    "Retention",
+    "Target",
+    "interface",
+    "Override",
+    "OverrideError",
+    "Deprecated",
+    "Synchronized",
+    "Volatile",
+    "Sealed",
+    "SealedHierarchyError",
+    "Serial",
+    "Durable",
+    "Transactional",
+    "TransactionRollback",
+    "Audit",
+    "ContinuityCheck",
+    "CircuitBreaker",
+    "Retry",
+    "get_annotations",
+    "has_annotation",
+    "get_annotation",
+    # Enterprise Java Concepts
+    "Interface",
+    "default",
+    "implements",
+    "InterfaceImplementationError",
+    "SealedClass",
+    "HavenEnum",
+    "Record",
+    "TypeBound",
+    "GenericContainer",
+    # Concurrency Primitives
+    "CompletableFuture",
+    "AtomicInteger",
+    "AtomicBoolean",
+    "AtomicReference",
+    "CountDownLatch",
+    "ReentrantLock",
+    "VirtualExecutor",
+    # Open Financial Continuity Standard (OFCS)
+    "ofcs",
+    "Money",
+    "Currency",
+    "CurrencyMismatchError",
+    "ExchangeRate",
+    "DoubleEntryRecord",
+    "FinancialAccount",
+    "OFCSFinancialLedger",
+    "UnbalancedTransactionError",
+    "InsufficientFundsError",
+    "DuplicateTransactionError",
+    "FinancialTransaction",
+    "Idempotent",
+    "ZeroDrift",
+    "ZeroDriftViolationError",
+    "ReconciliationEngine",
+    "ReconciliationReport",
+    "USD", "EUR", "GBP", "INR", "JPY", "BTC", "HVN"
 ]

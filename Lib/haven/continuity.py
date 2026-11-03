@@ -160,7 +160,7 @@ class ContinuityLedger:
         self.chain: List[LedgerEntry] = []
         self.head_hash: str = self.GENESIS_HASH
 
-    def commit(self, asset: Any, alias: Optional[str] = None) -> LedgerEntry:
+    def commit(self, asset: Any, alias: Optional[str] = None, *args, **kwargs) -> LedgerEntry:
         asset_id = alias or f"asset_{len(self.chain)}"
         if hasattr(asset, "odcs_hash"):
             payload_hash = asset.odcs_hash()

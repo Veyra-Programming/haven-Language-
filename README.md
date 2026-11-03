@@ -179,6 +179,125 @@ haven new ConsensusEngine --template odcs-algorithm
 
 ---
 
+## ☕ Java Enterprise Concepts & Annotations in Haven
+
+Haven brings industrial Java-style rigor, strict contracts, and enterprise annotations to local-first, disruption-tolerant software:
+
+### 1. 🏷️ Meta-Annotations & Reflection
+Define custom type-safe annotations with `@interface`, `@Retention`, and `@Target`:
+```haven
+@interface
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+class EnterpriseEndpoint:
+    path: str = ""
+    auth_required: bool = True
+
+class PaymentController:
+    @EnterpriseEndpoint(path="/api/pay", auth_required=True)
+    def handle_payment(self, req):
+        return {"status": "authorized"}
+```
+
+### 2. 🔌 Java Interfaces with Default Methods (`@implements` & `@Override`)
+Enforces compile-time and definition-time contract verification, with seamless inheritance of default methods:
+```haven
+class PaymentGateway(Interface):
+    @abc.abstractmethod
+    def process_payment(self, amount: float) -> str:
+        pass
+
+    @default
+    def health_check(self) -> str:
+        return "Gateway Online"
+
+@implements(PaymentGateway)
+class HavenStripeGateway:
+    @Override
+    def process_payment(self, amount: float) -> str:
+        return f"Processed ${amount:.2f}"
+```
+
+### 3. 🛡️ Java 17 Sealed Classes (`permits=[...]`)
+Strictly restrict which subclasses can extend your core hierarchy:
+```haven
+class ContinuityAsset(SealedClass, permits=["DurableCertificate", "MerkleProof"]):
+    pass
+
+class DurableCertificate(ContinuityAsset): # Allowed
+    pass
+
+class RogueAsset(ContinuityAsset): # Raises SealedHierarchyError!
+    pass
+```
+
+### 4. 🔢 Rich Java-Style Enums (`HavenEnum`)
+Enums with constructor parameters, state fields, ordinal indexing, and custom methods:
+```haven
+class LedgerNodeStatus(HavenEnum):
+    ONLINE = (1, "Node is fully synchronized")
+    DEGRADED = (2, "Operating in local partition mode")
+    AIRGAPPED = (3, "Physical isolated operation")
+
+    def __init__(self, code: int, description: str):
+        self.code = code
+        self.description = description
+
+    def is_operational(self) -> bool:
+        return self.code in (1, 2)
+```
+
+### 5. ⚡ Enterprise Resilience & Concurrency Primitives
+- **`@Transactional`**: Executes methods inside atomic WAL transactions with automatic rollback receipts on failure.
+- **`@Audit`**: Cryptographically logs execution parameters, caller hashes, and execution duration to the Merkle ledger.
+- **`@CircuitBreaker` & `@Retry`**: Prevents cascading failures with fast-fail circuit states (`CLOSED`, `OPEN`, `HALF_OPEN`) and exponential backoff retries.
+- **`CompletableFuture`**: Java-style async pipeline chaining (`supply_async`, `then_apply`, `then_compose`, `all_of`).
+- **`AtomicInteger`, `AtomicBoolean`, `AtomicReference`**: Lock-free CAS (Compare-And-Swap) variables.
+
+---
+
+## 💳 Open Financial Continuity Standard (OFCS-1.0.0)
+
+**OFCS** is the financial-grade continuity framework authored by **Anirudha Puthraya**, establishing mathematically proven guarantees for sovereign banking, payments, and digital asset settlement:
+
+### 1. 🪙 Exact Decimal Representation & Monetary Safety
+Eliminates IEEE-754 floating-point drift (`0.10 + 0.20 == 0.30`) and enforces strict currency boundaries:
+```haven
+set m1 to Money("100.50", USD)
+set m2 to Money("49.50", USD)
+set total to m1 + m2 # Exactly $150.00 USD
+
+set rate to ExchangeRate(USD, EUR, "0.92")
+set eur_val to rate.convert(m1) # Exactly €92.46 EUR
+```
+
+### 2. ⚖️ Double-Entry Cryptographic Ledger
+Every financial transaction strictly enforces **Invariant 1: Debits == Credits**:
+```haven
+set tx to DoubleEntryRecord(
+    tx_id="tx-9901",
+    debits=[("account_alice", Money("500.00", USD))],
+    credits=[("account_bob", Money("500.00", USD))],
+    memo="Payment for enterprise continuity license"
+)
+# Rejects unbalanced transactions with UnbalancedTransactionError!
+```
+
+### 3. 🔒 Financial Annotations
+- **`@FinancialTransaction`**: Atomically debits/credits accounts with automatic rollback.
+- **`@Idempotent`**: Replay-attack and double-spend shield; returns identical settled receipts for duplicate submissions.
+- **`@ZeroDrift`**: Cryptographically asserts that the total monetary volume across all accounts is 100% conserved before and after execution.
+
+### 4. 🌐 Distributed Offline Reconciliation Engine
+Airgapped bank branches and edge POS terminals can transact offline and deterministically reconcile with central settlement hubs using Merkle difference trees:
+```haven
+set engine to ReconciliationEngine(federal_master_ledger)
+set report to engine.reconcile_with_remote(branch_alaska_ledger)
+print(f"Reconciliation Complete: {report.synced_successfully}")
+```
+
+---
+
 ## 🧪 Comprehensive Verification Suite
 
 Haven features a built-in automated test suite:
@@ -193,6 +312,9 @@ Verifies:
 - Durable record immutability and tamper resistance
 - Merkle root hashing and SHA-256 state digests
 - Ledger checkpointing and cryptographic continuity chains
+- Java-style Meta-Annotations, Interfaces, `@Override`, and Sealed Classes
+- Enterprise Concurrency (`CompletableFuture`, `AtomicInteger`, CAS)
+- Open Financial Continuity Standard (`Money`, Double-Entry, `@ZeroDrift`, `ReconciliationEngine`)
 - Haven AI SDK streaming and reasoning extraction
 
 ---
