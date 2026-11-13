@@ -281,3 +281,4 @@ class OFCSFinancialLedger:
 
 # Global singleton instance
 _GLOBAL_FINANCIAL_LEDGER = OFCSFinancialLedger("Global-OFCS-Ledger")
+

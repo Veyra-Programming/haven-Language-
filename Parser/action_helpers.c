@@ -2412,3 +2412,55 @@ _PyPegen_verify_stmt(Parser *p, expr_ty target, expr_ty proof,
     }
     return _PyAST_Expr(call, lineno, col_offset, end_lineno, end_col_offset, arena);
 }
+
+stmt_ty
+_PyPegen_say_stmt(Parser *p, expr_ty expr,
+                  int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena *arena)
+{
+    PyObject *fn_id = _PyPegen_new_identifier(p, "print");
+    if (!fn_id) {
+        return NULL;
+    }
+    expr_ty fn = _PyAST_Name(fn_id, Load, lineno, col_offset, end_lineno, end_col_offset, arena);
+    if (!fn) {
+        return NULL;
+    }
+
+    asdl_expr_seq *args = NULL;
+    if (expr->kind == Tuple_kind) {
+        args = expr->v.Tuple.elts;
+    } else {
+        args = (asdl_expr_seq *)_Py_asdl_generic_seq_new(1, arena);
+        if (!args) {
+            return NULL;
+        }
+        asdl_seq_SET(args, 0, expr);
+    }
+
+    expr_ty call = _PyAST_Call(fn, args, NULL, lineno, col_offset, end_lineno, end_col_offset, arena);
+    if (!call) {
+        return NULL;
+    }
+    return _PyAST_Expr(call, lineno, col_offset, end_lineno, end_col_offset, arena);
+}
+
+stmt_ty
+_PyPegen_forever_stmt(Parser *p, asdl_stmt_seq *body,
+                      int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena *arena)
+{
+    expr_ty cond = _PyAST_Constant(Py_True, NULL, lineno, col_offset, end_lineno, end_col_offset, arena);
+    if (!cond) {
+        return NULL;
+    }
+    return _PyAST_While(cond, body, NULL, lineno, col_offset, end_lineno, end_col_offset, arena);
+}
+
+expr_ty
+_PyPegen_exception_name(Parser *p, int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena *arena)
+{
+    PyObject *exc_id = _PyPegen_new_identifier(p, "Exception");
+    if (!exc_id) {
+        return NULL;
+    }
+    return _PyAST_Name(exc_id, Load, lineno, col_offset, end_lineno, end_col_offset, arena);
+}

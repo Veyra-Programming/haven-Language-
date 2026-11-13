@@ -122,6 +122,23 @@ from ofcs import (
     USD, EUR, GBP, INR, JPY, BTC, HVN
 )
 
+# Haven Backend & Microservices Framework
+from .backend import (
+    Response,
+    HavenJSONEncoder,
+    Request,
+    RouteEntry,
+    Router,
+    Middleware,
+    CORSMiddleware,
+    ContinuityAuditMiddleware,
+    RateLimiterMiddleware,
+    HavenHTTPHandler,
+    HavenServer,
+    HavenApp,
+    register_continuity_endpoints,
+)
+
 __version__ = "1.0.0"
 __author__ = "Anirudha Puthraya"
 __standard__ = "Open Digital Continuity Standard (ODCS) & Open Financial Continuity Standard (OFCS)"
@@ -251,5 +268,19 @@ __all__ = [
     "ZeroDriftViolationError",
     "ReconciliationEngine",
     "ReconciliationReport",
-    "USD", "EUR", "GBP", "INR", "JPY", "BTC", "HVN"
+    "USD", "EUR", "GBP", "INR", "JPY", "BTC", "HVN",
+    # Haven Backend Framework
+    "Response",
+    "HavenJSONEncoder",
+    "Request",
+    "RouteEntry",
+    "Router",
+    "Middleware",
+    "CORSMiddleware",
+    "ContinuityAuditMiddleware",
+    "RateLimiterMiddleware",
+    "HavenHTTPHandler",
+    "HavenServer",
+    "HavenApp",
+    "register_continuity_endpoints",
 ]

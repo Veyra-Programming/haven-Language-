@@ -1,0 +1,183 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Haven",
+  "scopeName": "source.haven",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#annotations" },
+    { "include": "#odcs_keywords" },
+    { "include": "#english_syntax" },
+    { "include": "#backend_builtins" },
+    { "include": "#ofcs_builtins" },
+    { "include": "#concurrency_builtins" },
+    { "include": "#odcs_builtins" },
+    { "include": "#keywords" },
+    { "include": "#operators" },
+    { "include": "#functions" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.number-sign.haven",
+          "match": "#.*$"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.triple.haven",
+          "begin": "('''|\"\"\")",
+          "end": "\\1"
+        },
+        {
+          "name": "string.quoted.double.haven",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            { "name": "constant.character.escape.haven", "match": "\\\\." }
+          ]
+        },
+        {
+          "name": "string.quoted.single.haven",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            { "name": "constant.character.escape.haven", "match": "\\\\." }
+          ]
+        }
+      ]
+    },
+    "annotations": {
+      "patterns": [
+        {
+          "name": "entity.name.tag.annotation.haven",
+          "match": "@[a-zA-Z_][a-zA-Z0-9_]*"
+        }
+      ]
+    },
+    "odcs_keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.odcs.haven",
+          "match": "\\b(checkpoint|verify|durable\\s+(?:record|class)|preserve)\\b"
+        },
+        {
+          "name": "keyword.operator.odcs.haven",
+          "match": "\\b(as|with|into)\\b"
+        }
+      ]
+    },
+    "english_syntax": {
+      "patterns": [
+        {
+          "name": "keyword.control.english.haven",
+          "match": "\\b(set|to|let|be|unless|until|repeat|times|time|function|pipe|into|remember|whenever|otherwise\\s+if|otherwise|try|recover|ensure|say|show|forever|increase|decrease|by|give\\s+back|stop|skip)\\b"
+        },
+        {
+          "name": "keyword.control.english.for-each.haven",
+          "match": "\\bfor\\s+each\\b"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.haven",
+          "match": "\\b(if|elif|else|while|for|in|try|except|finally|raise|return|yield|pass|break|continue|assert|with|match|case|class|def|import|from|global|nonlocal|lambda)\\b"
+        },
+        {
+          "name": "keyword.operator.logical.haven",
+          "match": "\\b(and|or|not|is|in|is\\s+equal\\s+to|is\\s+not\\s+equal\\s+to|is\\s+greater\\s+than|is\\s+less\\s+than|is\\s+at\\s+least|is\\s+at\\s+most)\\b"
+        },
+        {
+          "name": "constant.language.haven",
+          "match": "\\b(True|False|None|true|false|nothing)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.pipeline.haven",
+          "match": "(\\|>|into)"
+        },
+        {
+          "name": "keyword.operator.comparison.haven",
+          "match": "(==|!=|<=|>=|<|>)"
+        },
+        {
+          "name": "keyword.operator.arithmetic.haven",
+          "match": "(\\+|\\-|\\*|\\/|\\/\\/|%|\\*\\*)"
+        },
+        {
+          "name": "keyword.operator.assignment.haven",
+          "match": "(=|\\+=|\\-=|\\*=|\\/=)"
+        }
+      ]
+    },
+    "odcs_builtins": {
+      "patterns": [
+        {
+          "name": "support.class.odcs.haven",
+          "match": "\\b(ContinuityLedger|VectorClock|LWWRegister|PNCounter|AWORSet|MeshNode|GossipMesh|ContinuityMode|EnvironmentalTelemetry|IntentReceipt|ZeroIntentLossManager|DurableRecord|ContinuityAssetEnvelope|MerkleTree|ODCSApp|ContinuityAlgorithm|StateContinuityAlgorithm|ConsensusContinuityAlgorithm|EventSourcingContinuityAlgorithm)\\b"
+        },
+        {
+          "name": "support.function.odcs.haven",
+          "match": "\\b(durable_record|checkpoint|verify_continuity|adaptive_policy|get_default_ledger|canonical_json|compute_sha256)\\b"
+        }
+      ]
+    },
+    "ofcs_builtins": {
+      "patterns": [
+        {
+          "name": "support.class.ofcs.haven",
+          "match": "\\b(Money|Currency|ExchangeRate|DoubleEntryRecord|FinancialAccount|OFCSFinancialLedger|ReconciliationEngine|ReconciliationReport|USD|EUR|GBP|INR|JPY|BTC|HVN)\\b"
+        },
+        {
+          "name": "support.function.ofcs.haven",
+          "match": "\\b(FinancialTransaction|Idempotent|ZeroDrift)\\b"
+        }
+      ]
+    },
+    "backend_builtins": {
+      "patterns": [
+        {
+          "name": "support.class.backend.haven",
+          "match": "\\b(HavenApp|HavenServer|Router|Request|Response|CORSMiddleware|ContinuityAuditMiddleware|RateLimiterMiddleware)\\b"
+        }
+      ]
+    },
+    "concurrency_builtins": {
+      "patterns": [
+        {
+          "name": "support.class.concurrency.haven",
+          "match": "\\b(CompletableFuture|AtomicInteger|AtomicBoolean|AtomicReference|CountDownLatch|ReentrantLock|VirtualExecutor|Interface|implements|SealedClass|HavenEnum|Record|TypeBound|GenericContainer)\\b"
+        },
+        {
+          "name": "support.function.concurrency.haven",
+          "match": "\\b(interface|default|Retention|Target|Override|Deprecated|Synchronized|Volatile|Sealed|Serial|Durable|Transactional|Audit|ContinuityCheck|CircuitBreaker|Retry)\\b"
+        }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {
+          "name": "entity.name.function.haven",
+          "match": "\\b(?:def|function|to)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.haven",
+          "match": "\\b[0-9]+(\\.[0-9]+)?\\b"
+        }
+      ]
+    }
+  }
+}

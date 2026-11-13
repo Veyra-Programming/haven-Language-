@@ -131,3 +131,4 @@ def ZeroDrift(ledger: Optional[OFCSFinancialLedger] = None):
         _register_annotation(wrapper, ZeroDrift, {})
         return wrapper
     return decorator
+

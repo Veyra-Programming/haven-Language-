@@ -118,23 +118,28 @@ simple_stmt[stmt_ty] (memo):
     | "pipe" e=pipe_expr { _PyAST_Expr(e, EXTRA) }
     | checkpoint_stmt
     | verify_stmt
+    | say_stmt
     | e=star_expressions { _PyAST_Expr(e, EXTRA) }
 
+say_stmt[stmt_ty]:
+    | ("say" | "show") !('(' | '.' | '[' | '=' | ':' | ',') a=star_expressions {
+        _PyPegen_say_stmt(p, a, EXTRA) }
+
 checkpoint_stmt[stmt_ty]:
-    | "checkpoint" a=expression b=['as' z=(NAME | string) { z }] c=['into' l=expression { l }] {
+    | ("checkpoint" | "preserve") a=expression b=['as' z=(NAME | string) { z }] c=['into' l=expression { l }] {
         _PyPegen_checkpoint_stmt(p, a, b, c, EXTRA) }
-    | "checkpoint" a=expression c=['into' l=expression { l }] {
+    | ("checkpoint" | "preserve") a=expression c=['into' l=expression { l }] {
         _PyPegen_checkpoint_stmt(p, a, NULL, c, EXTRA) }
 
 verify_stmt[stmt_ty]:
     | "verify" a=expression 'with' b=expression {
         _PyPegen_verify_stmt(p, a, b, EXTRA) }
-    | &'return' return_stmt
+    | &('return' | ("give" "back")) return_stmt
     | &'raise' raise_stmt
     | &'pass' pass_stmt
     | &'del' del_stmt
     | &'yield' yield_stmt
-    | &'assert' assert_stmt
+    | &('assert' | "ensure") assert_stmt
     | &'break' break_stmt
     | &'continue' continue_stmt
     | &'global' global_stmt
@@ -142,13 +147,13 @@ verify_stmt[stmt_ty]:
 
 compound_stmt[stmt_ty]:
     | &('def' | '@' | 'async' | "function" | "to") function_def
-    | &('if' | "unless") if_stmt
+    | &('if' | "unless" | "whenever") if_stmt
     | &('class' | '@' | "durable") class_def
     | &('with' | 'async') with_stmt
     | &('for' | 'async') for_stmt
     | &"repeat" repeat_stmt
     | &'try' try_stmt
-    | &('while' | "until") while_stmt
+    | &('while' | "until" | "forever") while_stmt
     | match_stmt
 
 # SIMPLE STATEMENTS
@@ -174,6 +179,12 @@ assignment[stmt_ty]:
          _PyAST_Assign(CHECK(asdl_expr_seq*, _PyPegen_singleton_seq(p, a)), b, NEW_TYPE_COMMENT(p, tc), EXTRA) }
     | "let" a=star_targets "be" ~ b=annotated_rhs tc=[TYPE_COMMENT] {
          _PyAST_Assign(CHECK(asdl_expr_seq*, _PyPegen_singleton_seq(p, a)), b, NEW_TYPE_COMMENT(p, tc), EXTRA) }
+    | "remember" a=star_targets 'as' ~ b=annotated_rhs tc=[TYPE_COMMENT] {
+         _PyAST_Assign(CHECK(asdl_expr_seq*, _PyPegen_singleton_seq(p, a)), b, NEW_TYPE_COMMENT(p, tc), EXTRA) }
+    | "increase" a=single_target "by" ~ c=annotated_rhs {
+         _PyAST_AugAssign(a, Add, c, EXTRA) }
+    | "decrease" a=single_target "by" ~ c=annotated_rhs {
+         _PyAST_AugAssign(a, Sub, c, EXTRA) }
     | invalid_assignment
 
 annotated_rhs[expr_ty]: yield_expr | star_expressions
@@ -194,7 +205,7 @@ augassign[AugOperator*]:
     | '//=' { _PyPegen_augoperator(p, FloorDiv) }
 
 return_stmt[stmt_ty]:
-    | 'return' a=[star_expressions] { _PyAST_Return(a, EXTRA) }
+    | ('return' | ("give" "back")) a=[star_expressions] { _PyAST_Return(a, EXTRA) }
 
 raise_stmt[stmt_ty]:
     | 'raise' a=expression 'from' b=expression { _PyAST_Raise(a, b, EXTRA) }
@@ -226,6 +237,7 @@ yield_stmt[stmt_ty]: y=yield_expr { _PyAST_Expr(y, EXTRA) }
 assert_stmt[stmt_ty]:
     | invalid_assert_stmt
     | 'assert' a=expression b=[',' z=expression { z }] { _PyAST_Assert(a, b, EXTRA) }
+    | "ensure" a=expression b=[("otherwise" | "because" | ',') z=expression { z }] { _PyAST_Assert(a, b, EXTRA) }
 
 import_stmt[stmt_ty](memo):
     | invalid_import
@@ -421,21 +433,21 @@ default[expr_ty]: '=' a=expression { a } | invalid_default
 
 if_stmt[stmt_ty]:
     | invalid_if_stmt
-    | 'if' a=named_expression ':' b=block c=elif_stmt {
+    | ('if' | "whenever") a=named_expression ':' b=block c=elif_stmt {
         _PyAST_If(a, b, CHECK(asdl_stmt_seq*, _PyPegen_singleton_seq(p, c)), EXTRA) }
-    | 'if' a=named_expression ':' b=block c=[else_block] { _PyAST_If(a, b, c, EXTRA) }
+    | ('if' | "whenever") a=named_expression ':' b=block c=[else_block] { _PyAST_If(a, b, c, EXTRA) }
     | "unless" a=named_expression ':' b=block c=elif_stmt {
         _PyAST_If(CHECK(expr_ty, _PyAST_UnaryOp(Not, a, EXTRA)), b, CHECK(asdl_stmt_seq*, _PyPegen_singleton_seq(p, c)), EXTRA) }
     | "unless" a=named_expression ':' b=block c=[else_block] {
         _PyAST_If(CHECK(expr_ty, _PyAST_UnaryOp(Not, a, EXTRA)), b, c, EXTRA) }
 elif_stmt[stmt_ty]:
     | invalid_elif_stmt
-    | 'elif' a=named_expression ':' b=block c=elif_stmt {
+    | ('elif' | "otherwise" 'if') a=named_expression ':' b=block c=elif_stmt {
         _PyAST_If(a, b, CHECK(asdl_stmt_seq*, _PyPegen_singleton_seq(p, c)), EXTRA) }
-    | 'elif' a=named_expression ':' b=block c=[else_block] { _PyAST_If(a, b, c, EXTRA) }
+    | ('elif' | "otherwise" 'if') a=named_expression ':' b=block c=[else_block] { _PyAST_If(a, b, c, EXTRA) }
 else_block[asdl_stmt_seq*]:
     | invalid_else_stmt
-    | 'else' &&':' b=block { b }
+    | ('else' | "otherwise") &&':' b=block { b }
 
 # While statement
 # ---------------
@@ -445,6 +457,8 @@ while_stmt[stmt_ty]:
     | 'while' a=named_expression ':' b=block c=[else_block] { _PyAST_While(a, b, c, EXTRA) }
     | "until" a=named_expression ':' b=block c=[else_block] {
         _PyAST_While(CHECK(expr_ty, _PyAST_UnaryOp(Not, a, EXTRA)), b, c, EXTRA) }
+    | "forever" ':' b=block {
+        _PyPegen_forever_stmt(p, b, EXTRA) }
 
 # For statement
 # -------------
@@ -513,6 +527,9 @@ except_block[excepthandler_ty]:
             "except expressions without parentheses are",
             _PyAST_ExceptHandler(e, NULL, b, EXTRA)) }
     | 'except' ':' b=block { _PyAST_ExceptHandler(NULL, NULL, b, EXTRA) }
+    | "recover" 'as' t=NAME ':' b=block {
+        _PyAST_ExceptHandler(CHECK(expr_ty, _PyPegen_exception_name(p, EXTRA)), ((expr_ty) t)->v.Name.id, b, EXTRA) }
+    | "recover" ':' b=block { _PyAST_ExceptHandler(NULL, NULL, b, EXTRA) }
     | invalid_except_stmt
 except_star_block[excepthandler_ty]:
     | invalid_except_star_stmt_indent

@@ -381,3 +381,4 @@ class VirtualExecutor:
 
     def shutdown(self, wait: bool = True):
         self._pool.shutdown(wait=wait)
+

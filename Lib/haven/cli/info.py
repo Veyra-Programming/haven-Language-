@@ -40,12 +40,13 @@ def print_info() -> int:
   {bold('Ledger Integrity:')}       {green('✔ Cryptographically Verified (SHA-256 / RFC 8785)')}
 
 {bold('Native Language Syntax & Grammar Engines:')}
-  ✓ Natural English Statements  : `set x to val`, `let x be val`, `to func():`
-  ✓ Deterministic Iteration     : `repeat N times:`
-  ✓ Guard Conditionals          : `unless condition:`
-  ✓ High-Speed Pipeline Chaining: `val |> func(_)`, `val into ledger`
+  ✓ Natural English Statements  : `set x to val`, `let x be val`, `remember x as val`, `say`/`show`
+  ✓ Arithmetic & Return Verbs   : `increase x by n`, `decrease x by n`, `give back expr`
+  ✓ Loops & Guard Conditionals  : `repeat N times:`, `forever:`, `unless`, `whenever` / `otherwise if` / `otherwise`
+  ✓ Recovery & Contracts        : `ensure cond otherwise msg`, `try:` / `recover as err:`
+  ✓ High-Speed Pipeline Chaining: `val |> func(_)`, `val into ledger`, `pipe ... into ...`
   ✓ Sealed Durable Records      : `durable record Name:`
-  ✓ Cryptographic Continuity    : `checkpoint record as alias into ledger`
+  ✓ Cryptographic Continuity    : `checkpoint` / `preserve record as alias into ledger`
   ✓ Mathematical Verification   : `verify asset with expected_proof`
   ✓ Sovereign State Algorithms  : `ContinuityAlgorithm`, `StateContinuityAlgorithm`, `ODCSApp`
 

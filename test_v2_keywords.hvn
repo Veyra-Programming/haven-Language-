@@ -1,0 +1,88 @@
+# Project Haven v2.0 - New Natural-English & Continuity Keywords Test Suite
+# Compiled directly in C via Grammar/python.gram & Parser/action_helpers.c
+
+import odcs
+from odcs import ContinuityLedger
+
+durable record LedgerAsset:
+    def __init__(self, asset_id, owner, balance):
+        self.asset_id = asset_id
+        self.owner = owner
+        self.balance = balance
+
+to calculate_resilience(uptime, quota):
+    increase uptime by 5
+    decrease quota by 1
+    give back uptime * quota
+
+to test_new_english_keywords():
+    remember region as "Bengaluru-Edge"
+    assert region == "Bengaluru-Edge"
+
+    set count to 10
+    increase count by 5
+    decrease count by 3
+    assert count == 12
+
+    set score to calculate_resilience(10, 4)
+    assert score == 45
+
+    set branch to ""
+    whenever count > 20:
+        set branch to "high"
+    otherwise if count == 12:
+        set branch to "exact"
+    otherwise:
+        set branch to "low"
+    assert branch == "exact"
+
+    ensure score == 45 otherwise "Resilience score calculation mismatch"
+    say "[PASS] 'remember ... as', 'increase/decrease ... by', 'give back', 'whenever/otherwise if/otherwise', 'ensure ... otherwise'"
+
+to test_say_show_and_forever():
+    set loops to 0
+    forever:
+        increase loops by 1
+        whenever loops == 3:
+            break
+    assert loops == 3
+    say "[PASS] 'say' statement & 'forever:' loop executed cleanly ->", loops, "cycles"
+    show "[PASS] 'show' statement output verified"
+
+to test_recover_and_preserve():
+    remember ledger as ContinuityLedger(name="Haven-v2-Audit", author="Anirudha Puthraya")
+    set packet to LedgerAsset("AST-2026", "Node-01", 1000)
+
+    # Test native 'preserve' statement (alias of checkpoint)
+    preserve packet as "genesis_asset" into ledger
+    assert len(ledger.entries) == 2
+    assert ledger.verify_chain() is True
+
+    # Test native 'recover as err:' & bare 'recover:'
+    set trapped to False
+    try:
+        packet.balance = 999999
+    recover as err:
+        set trapped to True
+        say "[PASS] 'recover as err:' trapped sealed mutation ->", type(err).__name__
+    assert trapped is True
+
+    set recovered_bare to False
+    try:
+        set _boom to 1 / 0
+    recover:
+        set recovered_bare to True
+    assert recovered_bare is True
+    say "[PASS] 'preserve ... as ... into' & 'recover:' verified!"
+
+if __name__ == "__main__":
+    say "================================================"
+    say "Haven v2.0 Compiled Keyword Verification Suite"
+    say "================================================"
+    test_new_english_keywords()
+    test_say_show_and_forever()
+    test_recover_and_preserve()
+    say "================================================"
+    say "ALL NEW HAVEN v2.0 C-PARSER KEYWORDS PASSED!"
+    say "================================================"
+

@@ -365,6 +365,9 @@ stmt_ty _PyPegen_repeat_stmt(Parser *, expr_ty, asdl_stmt_seq *, asdl_stmt_seq *
 stmt_ty _PyPegen_durable_class_def(Parser *p, expr_ty a, expr_ty b, asdl_stmt_seq *c, asdl_type_param_seq *t, int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena *arena);
 stmt_ty _PyPegen_checkpoint_stmt(Parser *p, expr_ty target, expr_ty alias, expr_ty ledger, int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena *arena);
 stmt_ty _PyPegen_verify_stmt(Parser *p, expr_ty target, expr_ty proof, int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena *arena);
+stmt_ty _PyPegen_say_stmt(Parser *p, expr_ty expr, int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena *arena);
+stmt_ty _PyPegen_forever_stmt(Parser *p, asdl_stmt_seq *body, int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena *arena);
+expr_ty _PyPegen_exception_name(Parser *p, int lineno, int col_offset, int end_lineno, int end_col_offset, PyArena *arena);
 
 expr_ty _PyPegen_join_names_with_dot(Parser *, expr_ty, expr_ty);
 int _PyPegen_seq_count_dots(asdl_seq *);

@@ -1,0 +1,150 @@
+{
+  "name": "heaven-programming-language",
+  "displayName": "Heaven (Haven) Programming Language",
+  "description": "Official Visual Studio Code extension for Heaven & Haven: natural-English syntax highlighting, AST diagnostics, hover tooltips, snippets, and ODCS continuity gateway integration.",
+  "version": "2.0.0",
+  "publisher": "star-lang",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/odcs-standard/heaven-language"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "icon": "assets/logo.png",
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Linters"
+  ],
+  "keywords": [
+    "heaven",
+    "haven",
+    "natural-english",
+    "odcs",
+    "digital-continuity",
+    "crdt",
+    "zero-intent-loss",
+    "hvn"
+  ],
+  "main": "./extension.js",
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": true
+  },
+  "activationEvents": [
+    "onLanguage:heaven",
+    "workspaceContains:**/*.hvn",
+    "workspaceContains:**/*.heaven",
+    "workspaceContains:**/*.haven"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "heaven",
+        "aliases": [
+          "Heaven",
+          "heaven",
+          "Haven",
+          "haven"
+        ],
+        "extensions": [
+          ".hvn",
+          ".heaven",
+          ".haven"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./assets/file_icon.png",
+          "dark": "./assets/file_icon.png"
+        }
+      }
+    ],
+    "grammars": [
+      {
+        "language": "heaven",
+        "scopeName": "source.heaven",
+        "path": "./syntaxes/heaven.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "heaven",
+        "path": "./snippets/heaven.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "heaven.run",
+        "title": "Heaven: Run Active File",
+        "icon": "$(play)"
+      },
+      {
+        "command": "heaven.lint",
+        "title": "Heaven: Lint & Validate Syntax",
+        "icon": "$(check)"
+      },
+      {
+        "command": "heaven.compile",
+        "title": "Heaven: Transpile to Python Target",
+        "icon": "$(symbol-operator)"
+      },
+      {
+        "command": "heaven.startServer",
+        "title": "Heaven: Start ODCS Continuity Gateway",
+        "icon": "$(server)"
+      },
+      {
+        "command": "heaven.repl",
+        "title": "Heaven: Launch Interactive REPL",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "heaven.showMenu",
+        "title": "Heaven: Show Actions Menu"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "heaven.run",
+          "when": "editorLangId == heaven",
+          "group": "navigation@1"
+        },
+        {
+          "command": "heaven.lint",
+          "when": "editorLangId == heaven",
+          "group": "navigation@2"
+        },
+        {
+          "command": "heaven.compile",
+          "when": "editorLangId == heaven",
+          "group": "navigation@3"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "heaven.run",
+          "when": "resourceExtname == .hvn || resourceExtname == .heaven",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Heaven Language",
+      "properties": {
+        "heaven.runnerPath": {
+          "type": "string",
+          "default": "",
+          "description": "Explicit path to heaven_lang.py or haven CLI binary."
+        }
+      }
+    }
+  }
+}

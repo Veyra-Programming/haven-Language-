@@ -272,3 +272,4 @@ class GenericContainer:
                     f"Item {item!r} of type '{type(item).__name__}' violates generic bound "
                     f"<{self.__generic_bound__.__name__}>"
                 )
+

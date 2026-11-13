@@ -189,3 +189,4 @@ class ExchangeRate:
 
     def __repr__(self) -> str:
         return f"ExchangeRate(1 {self.from_currency.code} = {self.rate} {self.to_currency.code})"
+

@@ -13,7 +13,40 @@ import sys
 completion_kwds = [s for s in keyword.kwlist
                      if s not in {'True', 'False', 'None'}]  # In builtins.
 completion_kwds.extend(('match', 'case'))  # Context keywords.
-completion_kwds.sort()
+
+# Haven Natural English Keywords, ODCS & OFCS Builtins, Backend Framework & Annotations
+HAVEN_COMPLETION_KEYWORDS = [
+    # English Control Flow & Keywords
+    "set", "to", "let", "be", "unless", "until", "repeat", "times",
+    "for each", "function", "pipe", "give back", "remember", "as",
+    "whenever", "otherwise", "try", "recover", "ensure", "say", "show",
+    "forever", "increase", "decrease", "by", "into", "stop", "skip",
+    # ODCS Durability & Merkle Ledgers
+    "durable", "record", "checkpoint", "preserve", "DurableRecord",
+    "durable_record", "ContinuityLedger", "LedgerEntry", "MerkleTree",
+    "VectorClock", "LWWRegister", "PNCounter", "AWORSet", "OutboxPipeline",
+    "MeshNode", "GossipMesh", "ContinuityMode", "EnvironmentalTelemetry",
+    "adaptive_policy", "IntentReceipt", "ZeroIntentLossManager",
+    "ContinuityAlgorithm", "ODCSApp", "verify_continuity",
+    # Open Financial Continuity Standard (OFCS)
+    "Money", "Currency", "ExchangeRate", "DoubleEntryRecord",
+    "FinancialAccount", "OFCSFinancialLedger", "ReconciliationEngine",
+    "ReconciliationReport", "USD", "EUR", "GBP", "INR", "JPY", "BTC", "HVN",
+    # Haven Backend & Microservices Framework
+    "HavenApp", "HavenServer", "Router", "Request", "Response",
+    "CORSMiddleware", "ContinuityAuditMiddleware", "RateLimiterMiddleware",
+    # Enterprise Annotations & Concurrency
+    "CompletableFuture", "AtomicInteger", "AtomicBoolean", "AtomicReference",
+    "CountDownLatch", "ReentrantLock", "VirtualExecutor", "Interface",
+    "default", "implements", "SealedClass", "HavenEnum", "Record",
+    "TypeBound", "GenericContainer",
+    "interface", "Retention", "Target", "Override", "Deprecated",
+    "Synchronized", "Volatile", "Sealed", "Serial", "Durable",
+    "Transactional", "Audit", "ContinuityCheck", "CircuitBreaker", "Retry",
+    "FinancialTransaction", "Idempotent", "ZeroDrift"
+]
+completion_kwds.extend(HAVEN_COMPLETION_KEYWORDS)
+completion_kwds = sorted(set(completion_kwds))
 
 # Two types of completions; defined here for autocomplete_w import below.
 ATTRS, FILES = 0, 1
@@ -221,8 +254,16 @@ class AutoComplete:
             return smalll, bigl
 
     def get_entity(self, name):
-        "Lookup name in a namespace spanning sys.modules and __main.dict__."
-        return eval(name, {**sys.modules, **__main__.__dict__})
+        "Lookup name in a namespace spanning sys.modules, __main__.__dict__, and Haven modules."
+        haven_symbols = {}
+        try:
+            import haven
+            haven_symbols.update({k: getattr(haven, k) for k in getattr(haven, "__all__", []) if hasattr(haven, k)})
+            import ofcs
+            haven_symbols.update({k: getattr(ofcs, k) for k in getattr(ofcs, "__all__", []) if hasattr(ofcs, k)})
+        except Exception:
+            pass
+        return eval(name, {**sys.modules, **__main__.__dict__, **haven_symbols})
 
 
 AutoComplete.reload()

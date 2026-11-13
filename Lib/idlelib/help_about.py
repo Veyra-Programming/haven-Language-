@@ -86,18 +86,16 @@ class AboutDialog(Toplevel):
                        fg=self.fg, bg=self.bg)
         byline.grid(row=2, column=0, sticky=W, columnspan=3, padx=10, pady=5)
 
-        forums_url = "https://discuss.python.org"
-        forums = Button(frame_background, text='Python (and IDLE) Discussion', width=35,
-                                 highlightbackground=self.bg,
-                                 command=lambda: webbrowser.open(forums_url))
-        forums.grid(row=6, column=0, sticky=W, padx=10, pady=10)
+        community_url = "https://github.com/Veyra-Programming/haven-Language-"
+        community = Button(frame_background, text='Haven Community & Repository', width=35,
+                           highlightbackground=self.bg,
+                           command=lambda: webbrowser.open(community_url))
+        community.grid(row=6, column=0, sticky=W, padx=10, pady=10)
 
-
-        docs_url = ("https://docs.python.org/%d.%d/library/idle.html" %
-                    sys.version_info[:2])
-        docs = Button(frame_background, text='IDLE Documentation', width=35,
-                                 highlightbackground=self.bg,
-                                 command=lambda: webbrowser.open(docs_url))
+        docs_url = "https://api.odcs.in"
+        docs = Button(frame_background, text='ODCS & OFCS Documentation', width=35,
+                      highlightbackground=self.bg,
+                      command=lambda: webbrowser.open(docs_url))
         docs.grid(row=7, column=0, columnspan=2, sticky=W, padx=10, pady=10)
 
 

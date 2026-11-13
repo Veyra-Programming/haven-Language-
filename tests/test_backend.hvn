@@ -1,0 +1,145 @@
+# Haven Backend Framework Verification Suite
+# Open Digital Continuity Standard (ODCS) & Open Financial Continuity Standard (OFCS)
+# Standard Specification & Architecture by Anirudha Puthraya
+# Copyright (c) 2026 Haven Language Foundation & Anirudha Puthraya.
+
+import urllib.request
+import urllib.parse
+import json
+import time
+
+from haven import (
+    HavenServer, HavenApp, Router, Request, Response,
+    CORSMiddleware, ContinuityAuditMiddleware, RateLimiterMiddleware,
+    Money, USD, durable_record
+)
+from haven.continuity import _GLOBAL_LEDGER
+
+print("=========================================================")
+print("     Haven Backend & Microservices Verification Suite    ")
+print("  Architecture & Specification by Anirudha Puthraya      ")
+print("=========================================================")
+
+# ------------------------------------------------------------------------------
+# 1. Declarative Routing & Path Parameter Pattern Matching
+# ------------------------------------------------------------------------------
+router = Router()
+
+@router.get("/api/v1/health")
+def handle_health(req: Request):
+    return {"status": "UP", "version": "1.0.0"}
+
+@router.post("/api/v1/orders")
+def handle_create_order(req: Request):
+    return Response.json({"order_id": "ORD-999", "status": "CREATED"}, status_code=201)
+
+@router.get("/api/v1/accounts/{account_id}/balance")
+def handle_balance(req: Request):
+    acct = req.path_params.get("account_id")
+    return {"account": acct, "balance": "1000.00"}
+
+# Test router matching
+handler, params = router.match("GET", "/api/v1/health")
+assert handler is not None and params == {}
+
+handler, params = router.match("POST", "/api/v1/orders")
+assert handler is not None
+
+handler, params = router.match("GET", "/api/v1/accounts/AC-1002/balance")
+assert handler is not None
+assert params.get("account_id") == "AC-1002"
+
+no_match = router.match("DELETE", "/api/v1/health")
+assert no_match is None
+
+print("[PASS] Declarative routing & path regex extraction verified.")
+
+# ------------------------------------------------------------------------------
+# 2. JSON Serialization with ODCS/OFCS Types
+# ------------------------------------------------------------------------------
+@durable_record
+class ProductItem:
+    sku: str
+    price: Money
+
+prod = ProductItem("HVN-PRO-100", Money("49.99", USD))
+resp = Response.json({"product": prod, "timestamp": 1234567890})
+resp_dict = json.loads(resp.body_bytes.decode("utf-8"))
+assert resp_dict["product"]["sku"] == "HVN-PRO-100"
+assert resp_dict["product"]["price"]["amount"] == "49.99"
+assert resp_dict["product"]["price"]["currency"] == "USD"
+print("[PASS] ODCS / OFCS JSON encoder integration verified.")
+
+# ------------------------------------------------------------------------------
+# 3. Live Concurrent Multi-threaded Server & ODCS Verification
+# ------------------------------------------------------------------------------
+TEST_PORT = 19125
+app = HavenApp(name="TestEngine", host="127.0.0.1", port=TEST_PORT, cors=True, continuity_audit=True)
+
+@app.get("/api/echo")
+def echo_route(req: Request):
+    msg = req.get_query("msg", "default")
+    return {"echo": msg}
+
+@app.post("/api/submit")
+def submit_route(req: Request):
+    data = req.json
+    return {"received": data, "ack": True}
+
+server = app.run(blocking=False)
+time.sleep(0.5)
+
+base_url = f"http://127.0.0.1:{TEST_PORT}"
+
+try:
+    # Test 1: Echo endpoint with query param
+    req1 = urllib.request.Request(f"{base_url}/api/echo?msg=HavenRocks")
+    with urllib.request.urlopen(req1, timeout=3.0) as resp1:
+        assert resp1.status == 200
+        headers1 = dict(resp1.headers)
+        assert "X-Haven-Continuity-Receipt" in headers1
+        assert "Access-Control-Allow-Origin" in headers1
+        data1 = json.loads(resp1.read().decode())
+        assert data1["echo"] == "HavenRocks"
+
+    # Test 2: Standard ODCS Health verification endpoint
+    req2 = urllib.request.Request(f"{base_url}/odcs/health")
+    with urllib.request.urlopen(req2, timeout=3.0) as resp2:
+        assert resp2.status == 200
+        data2 = json.loads(resp2.read().decode())
+        assert data2["standard"] == "ODCS-1.0.0"
+        assert data2["architecture_author"] == "Anirudha Puthraya"
+        assert data2["status"] == "HEALTHY"
+        assert data2["integrity_verified"] is True
+
+    # Test 3: POST endpoint with JSON body
+    post_body = json.dumps({"client": "EnterpriseApp", "intent": "TRANSFER"}).encode()
+    req3 = urllib.request.Request(
+        f"{base_url}/api/submit",
+        data=post_body,
+        headers={"Content-Type": "application/json"},
+        method="POST"
+    )
+    with urllib.request.urlopen(req3, timeout=3.0) as resp3:
+        assert resp3.status == 200
+        data3 = json.loads(resp3.read().decode())
+        assert data3["ack"] is True
+        assert data3["received"]["intent"] == "TRANSFER"
+
+    # Test 4: OPTIONS pre-flight CORS check
+    req4 = urllib.request.Request(f"{base_url}/api/echo", method="OPTIONS")
+    with urllib.request.urlopen(req4, timeout=3.0) as resp4:
+        assert resp4.status == 204
+        headers4 = dict(resp4.headers)
+        assert headers4["Access-Control-Allow-Origin"] == "*"
+        assert "GET" in headers4["Access-Control-Allow-Methods"]
+
+    print("[PASS] Live HTTP Server, CORS headers, and ODCS Health endpoints verified.")
+
+finally:
+    app.stop()
+    print("[PASS] Haven HTTP Server cleanly terminated.")
+
+print("=========================================================")
+print("   ALL HAVEN BACKEND FRAMEWORK TESTS PASSED (100% GREEN) ")
+print("=========================================================")

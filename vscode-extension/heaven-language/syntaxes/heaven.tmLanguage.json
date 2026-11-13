@@ -1,0 +1,312 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Heaven",
+  "scopeName": "source.heaven",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#natural-declarations" },
+    { "include": "#control-flow" },
+    { "include": "#english-comparisons" },
+    { "include": "#durable-records" },
+    { "include": "#continuity-prelude" },
+    { "include": "#types" },
+    { "include": "#constants" },
+    { "include": "#subroutines" },
+    { "include": "#operators" },
+    { "include": "#function-calls" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.heaven",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.line.number-sign.heaven",
+          "match": "#.*$"
+        },
+        {
+          "name": "comment.block.heaven",
+          "begin": "/\\*",
+          "end": "\\*/"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.triple.heaven",
+          "begin": "\"\"\"",
+          "end": "\"\"\"",
+          "patterns": [
+            { "include": "#interpolations" },
+            { "include": "#escapes" }
+          ]
+        },
+        {
+          "name": "string.quoted.double.heaven",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            { "include": "#interpolations" },
+            { "include": "#escapes" }
+          ]
+        },
+        {
+          "name": "string.quoted.single.heaven",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            { "include": "#escapes" }
+          ]
+        }
+      ]
+    },
+    "escapes": {
+      "name": "constant.character.escape.heaven",
+      "match": "\\\\([nrtbfv0\\'\"\\\\]|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4})"
+    },
+    "interpolations": {
+      "name": "meta.interpolation.heaven",
+      "begin": "\\{",
+      "end": "\\}",
+      "beginCaptures": { "0": { "name": "punctuation.definition.interpolation.begin.heaven" } },
+      "endCaptures": { "0": { "name": "punctuation.definition.interpolation.end.heaven" } },
+      "patterns": [
+        { "include": "$self" }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.heaven",
+          "match": "\\b0x[0-9a-fA-F]+\\b"
+        },
+        {
+          "name": "constant.numeric.float.heaven",
+          "match": "\\b[0-9]+\\.[0-9]+([eE][+-]?[0-9]+)?\\b"
+        },
+        {
+          "name": "constant.numeric.integer.heaven",
+          "match": "\\b[0-9]+\\b"
+        }
+      ]
+    },
+    "natural-declarations": {
+      "patterns": [
+        {
+          "match": "\\b(set)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s+(to)\\b",
+          "captures": {
+            "1": { "name": "keyword.declaration.set.heaven" },
+            "2": { "name": "variable.other.assignment.heaven" },
+            "3": { "name": "keyword.operator.to.heaven" }
+          }
+        },
+        {
+          "match": "\\b(let)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s+(be|=)\\b",
+          "captures": {
+            "1": { "name": "keyword.declaration.let.heaven" },
+            "2": { "name": "variable.other.assignment.heaven" },
+            "3": { "name": "keyword.operator.be.heaven" }
+          }
+        },
+        {
+          "match": "\\b(remember)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s+(as)\\b",
+          "captures": {
+            "1": { "name": "keyword.declaration.remember.heaven" },
+            "2": { "name": "variable.other.constant.heaven" },
+            "3": { "name": "keyword.operator.as.heaven" }
+          }
+        },
+        {
+          "match": "\\b(increase)\\s+([a-zA-Z_][a-zA-Z0-9_\\.]*)\\s+(by)\\b",
+          "captures": {
+            "1": { "name": "keyword.control.mutation.heaven" },
+            "2": { "name": "variable.other.heaven" },
+            "3": { "name": "keyword.operator.by.heaven" }
+          }
+        },
+        {
+          "match": "\\b(decrease)\\s+([a-zA-Z_][a-zA-Z0-9_\\.]*)\\s+(by)\\b",
+          "captures": {
+            "1": { "name": "keyword.control.mutation.heaven" },
+            "2": { "name": "variable.other.heaven" },
+            "3": { "name": "keyword.operator.by.heaven" }
+          }
+        },
+        {
+          "match": "\\b(say)\\b",
+          "name": "keyword.control.say.heaven"
+        }
+      ]
+    },
+    "control-flow": {
+      "patterns": [
+        {
+          "match": "\\b(whenever|when|otherwise\\s+if|or\\s+whenever|otherwise)\\b",
+          "name": "keyword.control.conditional.heaven"
+        },
+        {
+          "match": "\\b(repeat)\\s+([0-9]+|[a-zA-Z_][a-zA-Z0-9_]*)\\s+(times)\\b",
+          "captures": {
+            "1": { "name": "keyword.control.repeat.heaven" },
+            "2": { "name": "constant.numeric.heaven" },
+            "3": { "name": "keyword.control.times.heaven" }
+          }
+        },
+        {
+          "match": "\\b(for\\s+each)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\s+(in)\\b",
+          "captures": {
+            "1": { "name": "keyword.control.foreach.heaven" },
+            "2": { "name": "variable.parameter.heaven" },
+            "3": { "name": "keyword.operator.in.heaven" }
+          }
+        },
+        {
+          "match": "\\b(while)\\b",
+          "name": "keyword.control.loop.heaven"
+        },
+        {
+          "match": "\\b(give\\s+back|return)\\b",
+          "name": "keyword.control.flow.return.heaven"
+        },
+        {
+          "match": "\\b(stop|skip)\\b",
+          "name": "keyword.control.flow.break.heaven"
+        },
+        {
+          "match": "\\b(try|on\\s+error|recover|always)\\b",
+          "name": "keyword.control.exception.heaven"
+        }
+      ]
+    },
+    "english-comparisons": {
+      "patterns": [
+        {
+          "match": "\\b(is\\s+greater\\s+than\\s+or\\s+equal\\s+to|is\\s+at\\s+least)\\b",
+          "name": "keyword.operator.comparison.heaven"
+        },
+        {
+          "match": "\\b(is\\s+less\\s+than\\s+or\\s+equal\\s+to|is\\s+at\\s+most)\\b",
+          "name": "keyword.operator.comparison.heaven"
+        },
+        {
+          "match": "\\b(is\\s+not\\s+equal\\s+to)\\b",
+          "name": "keyword.operator.comparison.heaven"
+        },
+        {
+          "match": "\\b(is\\s+equal\\s+to)\\b",
+          "name": "keyword.operator.comparison.heaven"
+        },
+        {
+          "match": "\\b(is\\s+greater\\s+than|is\\s+less\\s+than)\\b",
+          "name": "keyword.operator.comparison.heaven"
+        },
+        {
+          "match": "\\b(and|or|not|in|is)\\b",
+          "name": "keyword.operator.logical.heaven"
+        }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        {
+          "match": "\\b(true|false|nothing|True|False|None)\\b",
+          "name": "constant.language.heaven"
+        }
+      ]
+    },
+    "durable-records": {
+      "patterns": [
+        {
+          "match": "\\b(durable\\s+record)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\b",
+          "captures": {
+            "1": { "name": "keyword.declaration.durable-record.heaven" },
+            "2": { "name": "entity.name.type.class.heaven" }
+          }
+        },
+        {
+          "match": "\\b(checkpoint)\\s+(.+?)\\s+(as)\\s+(.+?)\\s+(into)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\b",
+          "captures": {
+            "1": { "name": "keyword.control.checkpoint.heaven" },
+            "2": { "name": "variable.other.heaven" },
+            "3": { "name": "keyword.operator.as.heaven" },
+            "4": { "name": "string.quoted.heaven" },
+            "5": { "name": "keyword.operator.into.heaven" },
+            "6": { "name": "variable.other.ledger.heaven" }
+          }
+        }
+      ]
+    },
+    "continuity-prelude": {
+      "patterns": [
+        {
+          "match": "\\b(ContinuityLedger|PNCounter|ZeroIntentLoss)\\b",
+          "name": "support.class.odcs.heaven"
+        },
+        {
+          "match": "\\b(canonical_json|seal_hash|now_ms|uuid7)\\b",
+          "name": "support.function.odcs.heaven"
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        {
+          "match": "\\b(String|Integer|Float|Boolean|List|Map|ByteSequence|Timestamp|Any)\\b",
+          "name": "entity.name.type.primitive.heaven"
+        }
+      ]
+    },
+    "subroutines": {
+      "patterns": [
+        {
+          "match": "\\b(define)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\b",
+          "captures": {
+            "1": { "name": "keyword.declaration.function.heaven" },
+            "2": { "name": "entity.name.function.heaven" }
+          }
+        },
+        {
+          "match": "\\b(class)\\s+([a-zA-Z_][a-zA-Z0-9_]*)\\b",
+          "captures": {
+            "1": { "name": "keyword.declaration.class.heaven" },
+            "2": { "name": "entity.name.type.class.heaven" }
+          }
+        },
+        {
+          "match": "\\b(import|from)\\b",
+          "name": "keyword.control.import.heaven"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.pipeline.heaven",
+          "match": "\\|>"
+        },
+        {
+          "name": "keyword.operator.arithmetic.heaven",
+          "match": "[\\+\\-\\*/%]"
+        },
+        {
+          "name": "keyword.operator.assignment.heaven",
+          "match": "="
+        }
+      ]
+    },
+    "function-calls": {
+      "patterns": [
+        {
+          "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)(?=\\s*\\()",
+          "name": "entity.name.function.call.heaven"
+        }
+      ]
+    }
+  }
+}
+

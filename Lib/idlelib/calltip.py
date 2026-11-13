@@ -123,19 +123,110 @@ class Calltip:
             rpcclt = self.editwin.flist.pyshell.interp.rpcclt
         except AttributeError:
             rpcclt = None
+
+        clean_expr = expression.strip() if expression else ""
+        if clean_expr.startswith("@"):
+            clean_expr = clean_expr[1:]
+
+        if clean_expr in HAVEN_STATIC_CALLTIPS:
+            return HAVEN_STATIC_CALLTIPS[clean_expr]
+
         if rpcclt:
-            return rpcclt.remotecall("exec", "get_the_calltip",
+            tip = rpcclt.remotecall("exec", "get_the_calltip",
                                      (expression,), {})
+            return tip or HAVEN_STATIC_CALLTIPS.get(clean_expr, "")
         else:
-            return get_argspec(get_entity(expression))
+            tip = get_argspec(get_entity(expression))
+            return tip or HAVEN_STATIC_CALLTIPS.get(clean_expr, "")
+
+
+# Built-in Type Suggestions and Signatures for Haven, ODCS, OFCS & Enterprise Concurrency
+HAVEN_STATIC_CALLTIPS = {
+    # Durability & Checkpoints (ODCS)
+    "checkpoint": "(asset: Any, alias: Optional[str] = None, ledger: Optional[ContinuityLedger] = None) -> LedgerEntry\nODCS Invariant: Cryptographically seals an asset into the append-only Merkle ledger.",
+    "durable_record": "@durable_record\nclass RecordName:\nODCS Invariant: Generates immutable state record with deterministic RFC 8785 hashing.",
+    "verify_continuity": "(record: Any, proof: Optional[dict] = None) -> bool\nODCS Invariant: Verifies cryptographic hash and ledger integrity of the record.",
+    "ContinuityLedger": "(name: str = 'primary', storage_path: Optional[str] = None) -> ContinuityLedger\nODCS Append-only cryptographic ledger with Merkle DAG integrity verification.",
+    "LedgerEntry": "(index: int, timestamp: float, previous_hash: str, entry_hash: str, payload: dict) -> LedgerEntry\nImmutable single block entry in an ODCS ledger.",
+    "MerkleTree": "(leaves: List[str] = None) -> MerkleTree\nCryptographic binary Merkle Tree for tamper-evident data proofs.",
+    "VectorClock": "(node_id: Optional[str] = None) -> VectorClock\nDistributed causality tracker for partial ordering across nodes.",
+    "PNCounter": "(node_id: str) -> PNCounter\nConflict-Free Replicated Data Type (CRDT) positive-negative counter.",
+    "AWORSet": "(node_id: str) -> AWORSet\nAdd-Wins Observed-Removed Set CRDT collection.",
+    "OutboxPipeline": "(node_id: str) -> OutboxPipeline\nStore-and-forward outbox queue with monotonic deduplication.",
+    "MeshNode": "(node_id: str, host: str, port: int) -> MeshNode\nP2P Mesh participant node in the gossip network.",
+    "GossipMesh": "(local_node: MeshNode) -> GossipMesh\nDecentralized peer-to-peer epidemic dissemination mesh.",
+    "EnvironmentalTelemetry": "() -> EnvironmentalTelemetry\nProbes connectivity mode, latency, and power budget.",
+    "ZeroIntentLossManager": "() -> ZeroIntentLossManager\nODCS Layer 4 Invariant: Guarantees zero lost user operations during network failure.",
+
+    # Open Financial Continuity Standard (OFCS)
+    "Money": "(amount: Union[str, int, float, Decimal], currency: Currency = USD) -> Money\nOFCS Invariant: Zero-drift decimal currency representation with exact monetary arithmetic.",
+    "Currency": "(code: str, symbol: str, precision: int = 2) -> Currency\nOFCS Invariant: ISO-4217 financial currency descriptor.",
+    "ExchangeRate": "(source: Currency, target: Currency, rate: Union[str, Decimal]) -> ExchangeRate\nOFCS Invariant: Deterministic cross-currency atomic exchange rate multiplier.",
+    "DoubleEntryRecord": "(tx_id: str, debits: List[Money], credits: List[Money], description: str = '') -> DoubleEntryRecord\nOFCS Invariant 1: sum(debits) == sum(credits). Prevents unbalanced entries.",
+    "FinancialAccount": "(account_id: str, currency: Currency = USD, allow_overdraft: bool = False) -> FinancialAccount\nOFCS Invariant: Double-entry ledger balance account with audit trail.",
+    "OFCSFinancialLedger": "(ledger_name: str = 'ofcs_primary', storage_path: Optional[str] = None) -> OFCSFinancialLedger\nOFCS Invariant: Tamper-evident financial double-entry ledger with WAL commit log.",
+    "ReconciliationEngine": "(primary_ledger: OFCSFinancialLedger) -> ReconciliationEngine\nPerforms branch reconciliation and zero-loss convergence for offline financial ledgers.",
+
+    # Annotations & Contracts
+    "interface": "@interface\nclass CustomAnnotation:\nDefines a custom Java-style metadata annotation.",
+    "Retention": "@Retention(policy: RetentionPolicy = RetentionPolicy.RUNTIME)\nSpecifies annotation availability at RUNTIME, CLASS, or SOURCE.",
+    "Target": "@Target(targets: Tuple[ElementType, ...])\nRestricts annotation application to TYPE, METHOD, FIELD, or PARAMETER.",
+    "Override": "@Override\nEnforces that the annotated method overrides a superclass or interface method.",
+    "Deprecated": "@Deprecated(since: str = '', for_removal: bool = False)\nMarks an API element as deprecated.",
+    "Synchronized": "@Synchronized(lock: Optional[threading.Lock] = None)\nAcquires reentrant mutex lock before executing method.",
+    "Volatile": "@Volatile\nEnsures variable memory visibility across threads.",
+    "Sealed": "@Sealed(permits: Tuple[Type, ...])\nJava 17 style sealed hierarchy restricting permitted subclasses.",
+    "Durable": "@Durable\nEnforces state preservation into ODCS append-only ledger.",
+    "Transactional": "@Transactional(rollback_on: Tuple[Type[Exception], ...] = (Exception,), audit: bool = True)\nODCS Transactional Boundary: Checks in receipt on success, records rollback entry on failure.",
+    "Audit": "@Audit(action_name: Optional[str] = None, ledger: Optional[ContinuityLedger] = None)\nODCS Invariant: Logs function invocation, parameters, and return value to the ledger.",
+    "ContinuityCheck": "@ContinuityCheck\nVerifies system continuity invariants before and after invocation.",
+    "CircuitBreaker": "@CircuitBreaker(failure_threshold: int = 5, recovery_timeout: float = 30.0, fallback: Optional[Callable] = None)\nEnterprise fault tolerance circuit breaker preventing cascading outages.",
+    "Retry": "@Retry(max_attempts: int = 3, backoff_factor: float = 2.0, exceptions: Tuple[Type[Exception], ...] = (Exception,))\nEnterprise exponential backoff retry policy.",
+    "FinancialTransaction": "@FinancialTransaction(idempotency_key: Optional[str] = None, ledger: Optional[OFCSFinancialLedger] = None)\nOFCS Invariant: Wraps financial flow in double-entry atomicity.",
+    "Idempotent": "@Idempotent(key_field: str = 'tx_id')\nPrevents duplicate execution of identical operations.",
+    "ZeroDrift": "@ZeroDrift(allowed_tolerance: Decimal = Decimal('0'))\nOFCS Invariant: Asserts zero floating-point loss across all calculated output.",
+
+    # Concurrency Primitives
+    "CompletableFuture": "CompletableFuture[T]()\nAsynchronous promise-like computation model for non-blocking reactive concurrency.",
+    "CompletableFuture.supply_async": "(supplier: Callable[[], T], executor: Optional[VirtualExecutor] = None) -> CompletableFuture[T]\nExecutes supplier asynchronously on a virtual worker thread.",
+    "CompletableFuture.run_async": "(runnable: Callable[[], None], executor: Optional[VirtualExecutor] = None) -> CompletableFuture[None]\nExecutes runnable asynchronously without return value.",
+    "AtomicInteger": "(initial_value: int = 0) -> AtomicInteger\nLock-free atomic integer supporting compare_and_set, increment, and decrement.",
+    "AtomicBoolean": "(initial_value: bool = False) -> AtomicBoolean\nLock-free atomic boolean supporting atomic toggle and CAS.",
+    "AtomicReference": "(initial_value: Any = None) -> AtomicReference\nLock-free atomic object reference with compare_and_set.",
+    "CountDownLatch": "(count: int) -> CountDownLatch\nSynchronization barrier blocking threads until count reaches zero.",
+    "ReentrantLock": "() -> ReentrantLock\nReentrant mutual exclusion lock supporting try_lock with timeout.",
+    "VirtualExecutor": "(max_workers: int = 32) -> VirtualExecutor\nLightweight concurrent execution pool.",
+
+    # Backend Framework
+    "HavenApp": "(name: str = 'HavenApplication', host: str = '127.0.0.1', port: int = 8080, cors: bool = True, continuity_audit: bool = True, rate_limit: int = 1200) -> HavenApp\nEnterprise Haven Microservice Application Container with built-in ODCS REST endpoints.",
+    "HavenServer": "(host: str = '127.0.0.1', port: int = 8080, router: Optional[Router] = None, verbose: bool = False) -> HavenServer\nHigh-Performance Concurrent Multi-Threaded HTTP Server.",
+    "Router": "() -> Router\nDeclarative HTTP router supporting @router.get, @router.post, and {param} path templates.",
+    "Request": "(method: str, path: str, headers: Optional[dict] = None, query_params: Optional[dict] = None, body_bytes: bytes = b'') -> Request\nIncoming HTTP request object in Haven backend.",
+    "Response": "(status_code: int = 200, headers: Optional[dict] = None, body_bytes: bytes = b'') -> Response\nOutgoing HTTP response object.",
+    "Response.json": "(data: Any, status_code: int = 200, headers: Optional[dict] = None) -> Response\nMints JSON response with automatic ODCS/OFCS type serialization.",
+    "Response.ok": "(message: str = 'OK', data: Any = None) -> Response\nMints standard 200 OK response.",
+    "Response.error": "(message: str, status_code: int = 400, error_code: str = 'ERROR') -> Response\nMints structured JSON error response.",
+    "Response.text": "(content: str, status_code: int = 200, content_type: str = 'text/plain; charset=utf-8') -> Response\nMints raw text response.",
+    "CORSMiddleware": "(allow_origins: str = '*', allow_methods: str = 'GET, POST, PUT, DELETE, OPTIONS, PATCH') -> CORSMiddleware\nCross-Origin Resource Sharing middleware.",
+    "ContinuityAuditMiddleware": "(ledger: Optional[ContinuityLedger] = None) -> ContinuityAuditMiddleware\nODCS Invariant: Seals every incoming transaction into the Merkle ledger.",
+    "RateLimiterMiddleware": "(max_requests_per_minute: int = 600) -> RateLimiterMiddleware\nSliding-window rate limiter protecting API endpoints.",
+}
 
 
 def get_entity(expression):
     """Return the object corresponding to expression evaluated
-    in a namespace spanning sys.modules and __main.dict__.
+    in a namespace spanning sys.modules, __main__.dict__, and Haven libraries.
     """
     if expression:
-        namespace = {**sys.modules, **__main__.__dict__}
+        haven_symbols = {}
+        try:
+            import haven
+            haven_symbols.update({k: getattr(haven, k) for k in getattr(haven, "__all__", []) if hasattr(haven, k)})
+            import ofcs
+            haven_symbols.update({k: getattr(ofcs, k) for k in getattr(ofcs, "__all__", []) if hasattr(ofcs, k)})
+        except Exception:
+            pass
+        namespace = {**sys.modules, **__main__.__dict__, **haven_symbols}
         try:
             return eval(expression, namespace)  # Only protect user code.
         except BaseException:

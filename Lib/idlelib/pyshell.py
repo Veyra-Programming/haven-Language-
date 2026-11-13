@@ -844,7 +844,7 @@ class ModifiedInterpreter(InteractiveInterpreter):
         messagebox.showerror(
             "Port Binding Error",
             "IDLE can't bind to a TCP/IP port, which is necessary to "
-            "communicate with its Python execution server.  This might be "
+            "communicate with its Haven execution server.  This might be "
             "because no networking is installed on this computer.  "
             "Run IDLE with the -n command line switch to start without a "
             "subprocess and refer to Help/IDLE Help 'Running without a "
@@ -855,14 +855,14 @@ class ModifiedInterpreter(InteractiveInterpreter):
         messagebox.showerror(
             "Subprocess Connection Error",
             "IDLE's subprocess didn't make connection.\n"
-            "See the 'Startup failure' section of the IDLE doc, online at\n"
-            "https://docs.python.org/3/library/idle.html#startup-failure",
+            "See the 'Startup failure' section of the Haven documentation at\n"
+            "https://github.com/Veyra-Programming/haven-Language-#startup-failure",
             parent=self.tkconsole.text)
 
     def display_executing_dialog(self):
         messagebox.showerror(
             "Already executing",
-            "The Python Shell window is already executing a command; "
+            "The Haven Shell window is already executing a command; "
             "please wait until it is finished.",
             parent=self.tkconsole.text)
 
