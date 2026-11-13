@@ -48,3 +48,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Real-time AST linter and diagnostic error reporting in the Problems pane.
 - Rich Markdown hover documentation for keywords (`set`, `let`, `remember`, `whenever`, `unless`, `until`, `repeat`, `give back`, `recover`, `ensure`, `say`, `show`, `checkpoint`, `preserve`, `verify`).
 - Basic terminal runner and test suite integration.
+
