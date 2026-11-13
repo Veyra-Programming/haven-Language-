@@ -1,40 +1,48 @@
-# CPython source code
+# Haven Source Code & Architecture
 
-This section gives an overview of CPython's code structure and provides
-a summary of file locations for modules and built-ins.
+This section gives an overview of Haven Language's code structure and provides a summary of file locations for language subsystems, core modules, and ODCS/OFCS built-ins.
 
+Standard Architecture & Specification by **Anirudha Puthraya**.
 
-## Source code layout
+---
 
-For a Python module, the typical layout is:
+## Source Code Layout
 
-* `Lib/<module>.py`
-* `Modules/_<module>.c` (if there's also a C accelerator module)
-* `Lib/test/test_<module>.py`
-* `Doc/library/<module>.rst`
+### 1. Standard Library & Continuity Subsystems
+For a Haven module or subsystem, the typical layout is:
+* `Lib/haven/<module>.py` — Core Haven standard library, backend framework, and enterprise annotations.
+* `Lib/odcs/<module>.py` — Open Digital Continuity Standard (ODCS) CRDTs, Merkle DAG, mesh, and telemetry.
+* `Lib/ofcs/<module>.py` — Open Financial Continuity Standard (OFCS) high-precision money, ledger, and reconciliation.
+* `Modules/_<module>.c` — High-speed C accelerator extension module.
+* `tests/test_<module>.hvn` — Native Haven test suite executed via `haven test`.
 
-For an extension module, the typical layout is:
-
+### 2. Extension Modules
+For native C extension modules:
 * `Modules/<module>module.c`
-* `Lib/test/test_<module>.py`
+* `tests/test_<module>.hvn`
 * `Doc/library/<module>.rst`
 
-For builtin types, the typical layout is:
-
+### 3. Builtin Objects & Memory Model
+For built-in types:
 * `Objects/<builtin>object.c`
 * `Lib/test/test_<builtin>.py`
-* [`Doc/builtins/stdtypes.rst`](../Doc/builtins/stdtypes.rst)
+* `Doc/builtins/stdtypes.rst`
 
-For builtin functions, the typical layout is:
+Key core types:
+* Built-in type `int`: [`Objects/longobject.c`](../Objects/longobject.c)
+* Built-in type `str`: [`Objects/unicodeobject.c`](../Objects/unicodeobject.c)
+* Built-in type `tuple`: [`Objects/tupleobject.c`](../Objects/tupleobject.c)
+* Built-in type `dict`: [`Objects/dictobject.c`](../Objects/dictobject.c)
 
-* [`Python/bltinmodule.c`](../Python/bltinmodule.c)
-* [`Lib/test/test_builtin.py`](../Lib/test/test_builtin.py)
-* [`Doc/builtins/functions.rst`](../Doc/builtins/functions.rst)
+### 4. Haven Grammar & Parser Architecture
+* [`Grammar/haven.gram`](../Grammar/haven.gram) & [`Grammar/python.gram`](../Grammar/python.gram) — Formal PEG grammar definitions for natural-English syntax (`set`, `let`, `remember`, `increase`, `decrease`, `whenever`, `unless`, `until`, `repeat`, `give back`, `forever`, `durable record`, `checkpoint`).
+* [`Parser/parser.c`](../Parser/parser.c) — Generated deterministic recursive-descent parser.
+* [`Parser/action_helpers.c`](../Parser/action_helpers.c) — AST constructor actions and keyword mappings.
 
-Some exceptions to these layouts are:
-
-* built-in type `int` is at [`Objects/longobject.c`](../Objects/longobject.c)
-* built-in type `str` is at [`Objects/unicodeobject.c`](../Objects/unicodeobject.c)
-* built-in module `sys` is at [`Python/sysmodule.c`](../Python/sysmodule.c)
-* built-in module `marshal` is at [`Python/marshal.c`](../Python/marshal.c)
-* Windows-only module `winreg` is at [`PC/winreg.c`](../PC/winreg.c)
+### 5. Haven Virtual Machine & Execution Engine
+* [`Python/ceval.c`](../Python/ceval.c) — Main bytecode dispatch loop.
+* [`Python/compile.c`](../Python/compile.c) — AST to bytecode compiler.
+* [`Python/bltinmodule.c`](../Python/bltinmodule.c) — Native built-in functions.
+* [`Python/sysmodule.c`](../Python/sysmodule.c) — System state and Haven runtime introspection.
+* [`PCbuild/amd64/haven.exe`](../PCbuild/amd64/haven.exe) — Native Windows binary executable.
+* [`haven.bat`](../haven.bat) — Haven CLI entry-point launcher.

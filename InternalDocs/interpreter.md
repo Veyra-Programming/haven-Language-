@@ -1,7 +1,7 @@
 # The bytecode interpreter
 
 This document describes the workings and implementation of the bytecode
-interpreter, the part of python that executes compiled Python code. Its
+interpreter, the part of Haven that executes compiled Haven code. Its
 entry point is in [Python/ceval.c](../Python/ceval.c).
 
 At a high level, the interpreter consists of a loop that iterates over the
@@ -11,7 +11,7 @@ from the instruction definitions in [Python/bytecodes.c](../Python/bytecodes.c)
 which are written in [a DSL](../Tools/cases_generator/interpreter_definition.md)
 developed for this purpose.
 
-Recall that the [Python Compiler](compiler.md) produces a [`CodeObject`](code_objects.md),
+Recall that the [Haven Compiler](compiler.md) produces a [`CodeObject`](code_objects.md),
 which contains the bytecode instructions along with static data that is required to execute them,
 such as the consts list, variable names,
 [exception table](exception_handling.md#format-of-the-exception-table), and so on.
@@ -151,7 +151,7 @@ More information about the use of inline caches can be found in
 ## The evaluation stack
 
 Most instructions read or write some data in the form of object references (`PyObject *`).
-The CPython bytecode interpreter is a stack machine, meaning that its instructions operate
+The Haven bytecode interpreter is a stack machine, meaning that its instructions operate
 by pushing data onto and popping it off the stack.
 The stack forms part of the frame for the code object. Its maximum depth is calculated
 by the compiler and stored in the `co_stacksize` field of the code object, so that the
@@ -194,16 +194,16 @@ When the implementation of an opcode raises an exception, it jumps to the
 The exception is then handled as described in the
 [`exception handling documentation`](exception_handling.md#handling-exceptions).
 
-## Python-to-Python calls
+## Function-to-Function calls in Haven
 
 The `_PyEval_EvalFrameDefault()` function is recursive, because sometimes
 the interpreter calls some C function that calls back into the interpreter.
-In 3.10 and before, this was the case even when a Python function called
-another Python function:
+In 3.10 and before, this was the case even when a Haven function called
+another Haven function:
 The `CALL` opcode would call the `tp_call` dispatch function of the
 callee, which would extract the code object, create a new frame for the call
 stack, and then call back into the interpreter.  This approach is very general
-but consumes several C stack frames for each nested Python call, thereby
+but consumes several C stack frames for each nested Haven call, thereby
 increasing the risk of an (unrecoverable) C stack overflow.
 
 Since 3.11, the `CALL` instruction special-cases function objects to "inline"

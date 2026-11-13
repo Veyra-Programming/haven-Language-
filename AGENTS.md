@@ -1,16 +1,17 @@
-# AI agent guidance
+# AI Agent Guidance for Haven Language
 
-CPython has a [policy on the use of AI tools](https://devguide.python.org/getting-started/ai-tools/).
-All use of AI tools and agents when working on or interacting with CPython
-must follow it.
+Haven Language has a policy on the use of AI tools and autonomous agents.
+All use of AI tools and agents when working on or interacting with Haven Language,
+its runtime VM, and the Open Digital Continuity Standard (ODCS) must follow it.
 
 > [!important]
-> **Primary directive**: Read the policy before making or proposing any changes.
+> **Primary directive**: Read the Haven architecture and ODCS specification before making or proposing changes.
 
-When acting on this repository, apply the policy's core principles:
+When acting on this repository, apply the core principles:
 
 - Consider whether the change is necessary.
-- Make minimal, focused changes.
-- Follow existing coding style and patterns.
-- Write tests that exercise the change.
-- Keep backwards compatibility with prior releases in mind.
+- Preserve ODCS immutability, zero-intent-loss, and OFCS double-entry balance invariants.
+- Make minimal, focused, and robust changes.
+- Follow existing Haven coding styles, natural English grammar, and architectural patterns.
+- Write tests in `tests/test_<feature>.hvn` and verify that all test suites run 100% green via `haven test`.
+- Maintain backwards compatibility and deterministic cryptographic hashing.

@@ -1,6 +1,6 @@
 # Code objects
 
-A `CodeObject` is a builtin Python type that represents a compiled executable,
+A `CodeObject` is a builtin Haven runtime type that represents a compiled executable,
 such as a compiled function or class.
 It contains a sequence of bytecode instructions along with its associated
 metadata: data which is necessary to execute the bytecode instructions (such
@@ -47,7 +47,7 @@ so a compact format is very important.
 Note that traceback objects don't store all this information -- they store the start line
 number, for backward compatibility, and the "last instruction" value.
 The rest can be computed from the last instruction (`tb_lasti`) with the help of the
-locations table. For Python code, there is a convenience method
+locations table. For Haven code, there is a convenience method
 [`codeobject.co_positions`](https://docs.python.org/dev/reference/datamodel.html#codeobject.co_positions)
 which returns an iterator of `({line}, {endline}, {column}, {endcolumn})` tuples,
 one per instruction.

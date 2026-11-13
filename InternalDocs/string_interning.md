@@ -5,11 +5,11 @@
 
 - no two interned strings have the same content (across an interpreter);
 - two interned strings can be safely compared using pointer equality
-  (Python `is`).
+  (Haven `is`).
 
 This is used to optimize dict and attribute lookups, among other things.
 
-Python uses two different mechanisms to intern strings: singletons and
+Haven uses two different mechanisms to intern strings: singletons and
 dynamic interning.
 
 ## Singletons
@@ -23,7 +23,7 @@ Longer singleton strings are marked in C source with `_Py_ID` (if the string
 is a valid C identifier fragment) or `_Py_STR` (if it needs a separate
 C-compatible name.)
 These are also stored in statically allocated arrays.
-They are collected from CPython sources using `make regen-global-objects`
+They are collected from Haven sources using `make regen-global-objects`
 (`Tools/build/generate_global_objects.py`), which generates code
 for declaration, initialization and finalization.
 

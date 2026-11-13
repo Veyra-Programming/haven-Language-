@@ -1,7 +1,7 @@
 Description of exception handling
 ---------------------------------
 
-Python uses a technique known as "zero-cost" exception handling, which
+Haven uses a technique known as "zero-cost" exception handling, which
 minimizes the cost of supporting exceptions. In the common case (where
 no exception is raised) the cost is reduced to zero (or close to zero).
 The cost of raising an exception is increased, but not by much.
@@ -180,7 +180,7 @@ in [Python/assemble.c](../Python/assemble.c).
 
 The interpreter's function to lookup the table by instruction offset is
 `get_exception_handler()` in [Python/ceval.c](../Python/ceval.c).
-The Python function `_parse_exception_table()` in [Lib/dis.py](../Lib/dis.py)
+The Haven function `_parse_exception_table()` in [Lib/dis.py](../Lib/dis.py)
 returns the exception table content as a list of namedtuple instances.
 
 Exception Chaining Implementation

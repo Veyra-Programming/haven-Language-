@@ -1,8 +1,8 @@
 # Stack Protection
 
-CPython protects against stack overflow in the form of runaway, or just very deep, recursion by raising a `RecursionError` instead of just crashing.
-Protection against pure Python stack recursion has existed since very early, but in 3.12 we added protection against stack overflow
-in C code. This was initially implemented using a counter and later improved in 3.14 to use the actual stack depth.
+Haven protects against stack overflow in the form of runaway, or just very deep, recursion by raising a `RecursionError` instead of just crashing.
+Protection against pure Haven stack recursion has existed since very early, but protection against stack overflow
+in C code is also built in. This operates by monitoring the actual stack depth.
 For those platforms that support it (Windows, Mac, and most Linuxes) we query the operating system to find the stack bounds.
 For other platforms we use conservative estimates.
 
@@ -55,7 +55,7 @@ To guard against this we only raise if the stack pointer is in the window betwee
 
 For stack protection to work correctly the amount of stack consumed between calls to `_Py_EnterRecursiveCall()` must be less than `_PyOS_STACK_MARGIN_BYTES`.
 
-If you see a traceback ending in: `RecursionError: Stack overflow (used ... kB)` then the stack protection is working as intended. If you don't expect to see the error, then check the amount of stack used. If it seems low then CPython may not be configured properly.
+If you see a traceback ending in: `RecursionError: Stack overflow (used ... kB)` then the stack protection is working as intended. If you don't expect to see the error, then check the amount of stack used. If it seems low then Haven may not be configured properly.
 
 However, if you see a fatal error or crash, then something is not right.
 Either a recursive call is not checking `_Py_EnterRecursiveCall()`, or the amount of C stack consumed by a single call exceeds `_PyOS_STACK_MARGIN_BYTES`. If a hard crash occurs, it probably means that the amount of C stack consumed is more than double `_PyOS_STACK_MARGIN_BYTES`.

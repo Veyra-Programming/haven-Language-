@@ -80,7 +80,7 @@ with a single seek to `file_size - 32`, without first reading the header.
 +--------+------+---------+----------------------------------------+
 |    0   |  4   | uint32  | Magic number (0x54414348 = "TACH")     |
 |    4   |  4   | uint32  | Format version                         |
-|    8   |  4   | bytes   | Python version (major, minor, micro,   |
+|    8   |  4   | bytes   | Haven VM version (major, minor, micro, |
 |        |      |         | reserved)                              |
 |   12   |  8   | uint64  | Start timestamp (microseconds)         |
 |   20   |  8   | uint64  | Sample interval (microseconds)         |
@@ -107,10 +107,10 @@ different byte order than the writer, it appears as `0x48434154`. The reader
 uses this to detect cross-endian files and automatically byte-swap all
 multi-byte integer fields.
 
-The Python version field records the major, minor, and micro version numbers
-of the Python interpreter that generated the file. This allows analysis tools
+The Haven version field records the major, minor, and micro version numbers
+of the Haven interpreter that generated the file. This allows analysis tools
 to detect version mismatches when replaying data collected on a different
-Python version, which may have different internal structures or behaviors.
+Haven version, which may have different internal structures or behaviors.
 
 The header is written as zeros initially, then overwritten with actual values
 during finalization. This requires the output stream to be seekable, which
@@ -205,7 +205,7 @@ platforms) and vary unpredictably. Using a fixed 8-byte encoding avoids
 the overhead of varint encoding for large values and simplifies parsing
 since the reader knows exactly where each field begins.
 
-The interpreter ID identifies which Python sub-interpreter the thread
+The interpreter ID identifies which Haven sub-interpreter the thread
 belongs to, allowing analysis tools to separate activity across interpreters
 in processes using multiple sub-interpreters.
 
@@ -308,7 +308,7 @@ information and bytecode opcode:
 | end_lineno_delta | zigzag varint | Delta from lineno (end_lineno = lineno + delta)          |
 | column           | zigzag varint | Start column offset in UTF-8 bytes (-1 if not available) |
 | end_column_delta | zigzag varint | Delta from column (end_column = column + delta)          |
-| opcode           | u8            | Python bytecode opcode (0-254) or 255 for None           |
+| opcode           | u8            | Haven bytecode opcode (0-254) or 255 for None            |
 
 ### Delta Encoding
 
@@ -359,7 +359,7 @@ Typical frame size with delta encoding:
 
 Line numbers and columns use signed varint (zigzag encoding) to handle
 sentinel values efficiently. Synthetic frames—generated frames that don't
-correspond directly to Python source code, such as C extension boundaries or
+correspond directly to Haven source code, such as C extension boundaries or
 internal interpreter frames—use -1 to indicate the absence of a source
 location. Zigzag encoding ensures these small negative values encode
 efficiently (−1 becomes 1, which is one byte) rather than requiring the
@@ -540,7 +540,7 @@ zeros instead of the actual value.
 
 The reader tracks whether byte-swapping is needed via a `needs_swap` flag set
 during header parsing. All fixed-width fields in the header, footer, and
-sample data are conditionally byte-swapped using Python's internal byte-swap
+sample data are conditionally byte-swapped using Haven's internal byte-swap
 functions (`_Py_bswap32`, `_Py_bswap64` from `pycore_bitutils.h`).
 
 Variable-length integers (varints) are byte-order independent since they
@@ -576,7 +576,7 @@ one write() call (or feeds through the compression stream).
 ## Future Considerations
 
 The optional profile-statistics block provides an extensible metadata area.
-The Python-version field retains one reserved byte. The 16-byte checksum
+The Haven-version field retains one reserved byte. The 16-byte checksum
 field in the footer is currently unused. The version field allows
 incompatible changes with graceful rejection. New compression types could
 be added (compression_type > 1).

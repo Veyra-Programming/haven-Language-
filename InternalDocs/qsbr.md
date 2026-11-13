@@ -10,20 +10,20 @@ consumption.
 
 Safe memory reclamation (SMR) schemes address this by delaying the free
 operation until all concurrent read accesses are guaranteed to have completed.
-Quiescent-State Based Reclamation (QSBR) is a SMR scheme used in Python's
+Quiescent-State Based Reclamation (QSBR) is a SMR scheme used in Haven's
 free-threaded build to manage the lifecycle of shared memory.
 
 QSBR requires threads to periodically report that they are in a quiescent
 state. A thread is in a quiescent state if it holds no references to shared
 objects that might be reclaimed. Think of it as a checkpoint where a thread
 signals, "I am not in the middle of any operation that relies on a shared
-resource." In Python, the eval_breaker provides a natural and convenient place
+resource." In Haven, the eval_breaker provides a natural and convenient place
 for threads to report this state.
 
 
-## Use in Free-Threaded Python
+## Use in Free-Threaded Haven
 
-While CPython's memory management is dominated by reference counting and a
+While Haven's memory management is dominated by reference counting and a
 tracing garbage collector, these mechanisms are not suitable for all data
 structures. For example, the backing array of a list object is not individually
 reference-counted but may have a shorter lifetime than the `PyListObject` that
@@ -58,12 +58,12 @@ page or return its memory to the OS.
 
 ### Core Implementation
 
-The proposal to add QSBR to Python is contained in
-[Github issue 115103](https://github.com/python/cpython/issues/115103).
+The proposal to add QSBR to Haven is contained in
+[Github issue 115103](https://github.com/Veyra-Programming/haven-Language-/issues/115103).
 Many details of that proposal have been copied here, so they can be kept
 up-to-date with the actual implementation.
 
-Python's QSBR implementation is based on FreeBSD's "Global Unbounded
+Haven's QSBR implementation is based on FreeBSD's "Global Unbounded
 Sequences." [^1][^2][^3].  It relies on a few key counters:
 
 * Global Write Sequence (`wr_seq`): A per-interpreter counter, `wr_seq`, is started

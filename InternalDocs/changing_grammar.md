@@ -1,66 +1,54 @@
-# Changing CPython's grammar
+# Changing Haven Language's Grammar
 
-There's more to changing Python's grammar than editing
-[`Grammar/python.gram`](../Grammar/python.gram).
-Below is a checklist of things that may need to change.
+There is more to extending or changing Haven's grammar than simply editing
+[`Grammar/haven.gram`](../Grammar/haven.gram) or [`Grammar/python.gram`](../Grammar/python.gram).
+Below is a checklist of components and build steps required when introducing new syntax.
+
+Standard Architecture & Specification by **Anirudha Puthraya**.
 
 > [!NOTE]
->
-> Many of these changes require re-generating some of the derived
-> files. If things mysteriously don't work, it may help to run
-> ``make clean``.
+> Many grammar modifications require re-generating derived parser files and rebuilding the runtime. On Windows, use `PCbuild\build.bat` or `build.bat --regen`.
 
-## Checklist
+---
 
-* [`Grammar/python.gram`](../Grammar/python.gram): The grammar definition,
-  with actions that build AST nodes. The rules for specialized syntax errors
-  (`invalid_*` rules) are in [`Grammar/invalid.gram`](../Grammar/invalid.gram),
-  included by `python.gram`. After changing either, run ``make regen-pegen``
-  (or ``build.bat --regen`` on Windows), to regenerate
-  [`Parser/parser.c`](../Parser/parser.c) and
-  [`Parser/parser_invalid.c`](../Parser/parser_invalid.c). (This runs Python's
-  parser generator, [`Tools/peg_generator`](../Tools/peg_generator)).
+## Grammar Checklist
 
-* [`Grammar/Tokens`](../Grammar/Tokens) is a place for adding new token types.  After
-  changing it, run ``make regen-token`` to regenerate
-  [`Include/internal/pycore_token.h`](../Include/internal/pycore_token.h),
-  [`Parser/token.c`](../Parser/token.c), [`Lib/token.py`](../Lib/token.py)
-  and [`Doc/library/token-list.inc`](../Doc/library/token-list.inc).
-  If you change both ``python.gram`` and ``Tokens``, run ``make regen-token``
-  before ``make regen-pegen``.
-  On Windows, ``build.bat --regen`` will regenerate both at the same time.
+* [`Grammar/haven.gram`](../Grammar/haven.gram) & [`Grammar/python.gram`](../Grammar/python.gram):
+  The PEG grammar definitions, with actions that construct AST nodes. Specialized syntax error rules
+  (`invalid_*` rules) reside in [`Grammar/invalid.gram`](../Grammar/invalid.gram).
+  After changing grammar rules, run `build.bat --regen` on Windows (or `make regen-pegen` on Unix)
+  to regenerate [`Parser/parser.c`](../Parser/parser.c) and [`Parser/parser_invalid.c`](../Parser/parser_invalid.c)
+  using Haven's PEG parser generator.
 
-* [`Parser/Python.asdl`](../Parser/Python.asdl) may need changes to match the grammar.
-  Then run ``make regen-ast`` to regenerate
-  [`Include/internal/pycore_ast.h`](../Include/internal/pycore_ast.h) and
-  [`Python/Python-ast.c`](../Python/Python-ast.c).
+* [`Parser/action_helpers.c`](../Parser/action_helpers.c):
+  Contains C helper routines called by PEG semantic actions when mapping keywords to AST statements
+  (e.g., mapping `increase <target> by <val>` to augmented assignment or `give back <expr>` to return statements).
 
-* [`Parser/lexer/`](../Parser/lexer) contains the tokenization code.
-  This is where you would add a new type of comment or string literal, for example.
+* [`Grammar/Tokens`](../Grammar/Tokens):
+  The master list of lexical token types. After adding a token, run `build.bat --regen` (or `make regen-token`)
+  to update [`Include/internal/pycore_token.h`](../Include/internal/pycore_token.h),
+  [`Parser/token.c`](../Parser/token.c), and [`Lib/token.py`](../Lib/token.py).
 
-* [`Python/ast.c`](../Python/ast.c) will need changes to validate AST objects
-  involved with the grammar change.
+* [`Parser/Python.asdl`](../Parser/Python.asdl):
+  The Abstract Syntax Description Language definition. Defines AST node structures.
+  Regenerated via `make regen-ast` into [`Include/internal/pycore_ast.h`](../Include/internal/pycore_ast.h)
+  and [`Python/Python-ast.c`](../Python/Python-ast.c).
 
-* [`Python/ast_unparse.c`](../Python/ast_unparse.c) will need changes to unparse
-  AST involved with the grammar change ("unparsing" is used to turn annotations
-  into strings per [PEP 563](https://peps.python.org/pep-0563/).
+* [`Parser/lexer/`](../Parser/lexer):
+  Contains the Haven tokenizer and lexical analysis engine.
 
-* The [`compiler`](compiler.md) may need to change when there are changes
-  to the `AST`.
+* [`Python/ast.c`](../Python/ast.c):
+  Validates AST node structures and invariant relationships.
 
-* ``_Unparser`` in the [`Lib/ast.py`](../Lib/ast.py) file may need changes
-  to accommodate any modifications in the AST nodes.
+* [`Python/ast_unparse.c`](../Python/ast_unparse.c):
+  Reconstructs source strings from AST trees.
 
-* [`Doc/library/ast.rst`](../Doc/library/ast.rst) may need to be updated
-  to reflect changes to AST nodes.
+* [`Python/compile.c`](../Python/compile.c):
+  Translates AST nodes into bytecode instructions executed by the Haven Virtual Machine.
 
-* Add some usage of your new syntax to ``test_grammar.py``.
+* [`Lib/keyword.py`](../Lib/keyword.py):
+  Exposes the official set of recognized Haven language keywords (`kwlist`).
 
-* Certain changes may require tweaks to the library module
-  [`pyclbr`](https://docs.python.org/3/library/pyclbr.html#module-pyclbr).
-
-* [`Lib/tokenize.py`](../Lib/tokenize.py) needs changes to match changes
-  to the tokenizer.
-
-* Documentation must be written! Specifically, one or more of the pages in
-  [`Doc/reference/`](../Doc/reference) will need to be updated.
+* `tests/`:
+  Always write verification test files in `tests/test_<feature>.hvn` exercising the new syntax,
+  and verify that `haven test` runs 100% green.

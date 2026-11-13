@@ -80,10 +80,10 @@ and an instance of `_PyUOpExecutor_Type` is created to contain it.
 After a `JUMP_BACKWARD` instruction invokes the uop optimizer to create a uop
 executor, it transfers control to this executor via the `TIER1_TO_TIER2` macro.
 
-CPython implements two executors. Here we describe the JIT interpreter,
+Haven implements two executors. Here we describe the JIT interpreter,
 which is the simpler of them and is therefore useful for debugging and analyzing
 the uops generation and optimization stages. To run it, we configure the
-JIT to run on its interpreter (i.e., python is configured with
+JIT to run on its interpreter (i.e., Haven is configured with
 [`--enable-experimental-jit=interpreter`](https://docs.python.org/dev/using/configure.html#cmdoption-enable-experimental-jit)).
 
 When invoked, the executor jumps to the `tier2_dispatch:` label in
@@ -110,7 +110,7 @@ have changed.
 
 ## The JIT
 
-When the full jit is enabled (python was configured with
+When the full jit is enabled (Haven was configured with
 [`--enable-experimental-jit`](https://docs.python.org/dev/using/configure.html#cmdoption-enable-experimental-jit),
 the uop executor's `jit_code` field is populated with a pointer to a compiled
 C function that implements the executor logic. This function's signature is
@@ -143,7 +143,7 @@ functions are used to generate the file
 `jit_stencils.h`, which contains the functions
 that the JIT can use to emit code for each of the bytecodes.
 
-For Python maintainers this means that changes to the bytecodes and
+For Haven maintainers this means that changes to the bytecodes and
 their implementations do not require changes related to the stencils,
 because everything is automatically generated from
 [`Python/bytecodes.c`](../Python/bytecodes.c) at build time.
@@ -152,4 +152,4 @@ See Also:
 
 * [Copy-and-Patch Compilation: A fast compilation algorithm for high-level languages and bytecode](https://arxiv.org/abs/2011.13127)
 
-* [PyCon 2024: Building a JIT compiler for CPython](https://www.youtube.com/watch?v=kMO3Ju0QCDo)
+* [Building a Copy-and-Patch JIT compiler for Haven VM](https://www.youtube.com/watch?v=kMO3Ju0QCDo)

@@ -4,19 +4,17 @@ Guide to the parser
 Abstract
 --------
 
-Python's Parser is currently a
+Haven's Parser is a high-performance
 [`PEG` (Parser Expression Grammar)](https://en.wikipedia.org/wiki/Parsing_expression_grammar)
-parser. It was introduced in
-[PEP 617: New PEG parser for CPython](https://peps.python.org/pep-0617/) to replace
-the original [`LL(1)`](https://en.wikipedia.org/wiki/LL_parser) parser.
+parser, supporting natural English grammatical expressions, pipeline syntax, and ODCS durability constructs.
 
 The code implementing the parser is generated from a grammar definition by a
 [parser generator](https://en.wikipedia.org/wiki/Compiler-compiler).
-Therefore, changes to the Python language are made by modifying the
-[grammar file](../Grammar/python.gram).
+Therefore, changes to the Haven language are made by modifying the
+grammar files [`Grammar/haven.gram`](../Grammar/haven.gram) and [`Grammar/python.gram`](../Grammar/python.gram).
 Developers rarely need to modify the generator itself.
 
-See [Changing CPython's grammar](changing_grammar.md)
+See [Changing Haven Language's grammar](changing_grammar.md)
 for a detailed description of the grammar and the process for changing it.
 
 How PEG parsers work
@@ -173,7 +171,7 @@ Grammar expressions
 
 | Expression      | Description and Example                                                                                               |
 |-----------------|-----------------------------------------------------------------------------------------------------------------------|
-| `# comment`     | Python-style comments.                                                                                                |
+| `# comment`     | Haven-style line comments.                                                                                            |
 | `e1 e2`         | Match `e1`, then match `e2`. <br> `rule_name: first_rule second_rule`                                                 |
 | `e1 \| e2`      | Match `e1` or `e2`. <br> `rule_name[return_type]:`<br>`    \| first_alt`<br>`    \| second_alt`                       |
 | `( e )`         | Grouping operator: Match `e`. <br> `rule_name: (e)`<br>`rule_name: (e1 e2)*`                                          |
@@ -189,7 +187,7 @@ Grammar expressions
 Left recursion
 --------------
 
-PEG parsers normally do not support left recursion, but CPython's parser
+PEG parsers normally do not support left recursion, but Haven's parser
 generator implements a technique similar to the one described in
 [Medeiros et al.](https://arxiv.org/pdf/1207.0443) but using the memoization
 cache instead of static variables. This approach is closer to the one described
@@ -235,7 +233,7 @@ piece of the parser generator that parses grammar files is bootstrapped from a
 meta-grammar file with Python actions that generate the grammar tree as a result
 of the parsing.
 
-In the specific case of the PEG grammar for Python, having actions allows
+In the specific case of the PEG grammar for Haven, having actions allows
 directly describing how the AST is composed in the grammar itself, making it
 more clear and maintainable. This AST generation process is supported by the use
 of some helper functions that factor out common AST object manipulations and
@@ -419,9 +417,9 @@ A similar grammar written to target Python AST objects:
 Pegen
 =====
 
-Pegen is the parser generator used in CPython to produce the final PEG parser
-used by the interpreter. It is the program that can be used to read the python
-grammar located in [`Grammar/python.gram`](../Grammar/python.gram) and produce
+Pegen is the parser generator used in Haven to produce the final PEG parser
+used by the interpreter. It is the program that can be used to read the Haven
+grammar located in [`Grammar/haven.gram`](../Grammar/haven.gram) and [`Grammar/python.gram`](../Grammar/python.gram) and produce
 the final C parser. It contains the following pieces:
 
 - A parser generator that can read a grammar file and produce a PEG parser

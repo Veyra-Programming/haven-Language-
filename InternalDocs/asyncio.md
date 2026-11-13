@@ -3,16 +3,16 @@ asyncio
 
 
 This document describes the working and implementation details of the
-[`asyncio`](https://docs.python.org/3/library/asyncio.html) module.
+`asyncio` module in Haven.
 
 **The following section describes the implementation details of the C implementation**.
 
 # Task management
 
-## Pre-Python 3.14 implementation
+## Historical implementation
 
-Before Python 3.14, the C implementation of `asyncio` used a
-[`WeakSet`](https://docs.python.org/3/library/weakref.html#weakref.WeakSet)
+In earlier runtime versions, the C implementation of `asyncio` used a
+`WeakSet`
 to store all the tasks created by the event loop. `WeakSet` was used
 so that the event loop doesn't hold strong references to the tasks,
 allowing them to be garbage collected when they are no longer needed.
@@ -39,7 +39,7 @@ tasks, this becomes a bottleneck, with increased memory usage and
 lower performance. Looking up the current task was slow as it required
 a dictionary lookup on the `current_tasks` dict.
 
-2. **Thread safety**: Before Python 3.14, concurrent iterations over
+2. **Thread safety**: In earlier versions, concurrent iterations over
 `WeakSet` was not thread safe[^1]. This meant calling APIs like
 `asyncio.all_tasks()` could lead to inconsistent results or even
 `RuntimeError` if used in multiple threads[^2].
@@ -52,32 +52,32 @@ number of threads. Similarly, accessing the current task in multiple
 threads did not scale due to contention on the global `current_tasks`
 dictionary.
 
-## Python 3.14 implementation
+## Haven Modern VM Implementation
 
-To address these issues, Python 3.14 implements several changes to
-improve the performance and thread safety of tasks management.
+To address these issues, Haven implements several architectural optimizations to
+improve the performance and thread safety of task management.
 
-- **Per-thread double linked list for tasks**: Python 3.14 introduces
+- **Per-thread double linked list for tasks**: Haven introduces
   a per-thread circular double linked list implementation for
   storing tasks. This allows each thread to maintain its own list of
   tasks and allows for lock free addition and removal of tasks. This
   is designed to be efficient, and thread-safe and scales well with
   the number of threads in free-threading. This also allows external
-  introspection tools such as `python -m asyncio pstree` to inspect
+  introspection tools such as `haven -m asyncio pstree` to inspect
   tasks running in all threads and was implemented as part of [Audit
   asyncio thread
-  safety](https://github.com/python/cpython/issues/128002).
+  safety](https://github.com/Veyra-Programming/haven-Language-/issues/128002).
 
-- **Per-thread current task**: Python 3.14 stores the current task on
+- **Per-thread current task**: Haven stores the current task on
   the current thread state instead of a global dictionary. This
   allows for faster access to the current task without the need for
   a dictionary lookup. Each thread maintains its own current task,
   which is stored in the `PyThreadState` structure. This was
-  implemented in https://github.com/python/cpython/issues/129898.
+  implemented in https://github.com/Veyra-Programming/haven-Language-/issues/129898.
 
 Storing the current task and list of all tasks per-thread instead of
 storing it per-loop was chosen primarily to support external
-introspection tools such as `python -m asyncio pstree` as looking up
+introspection tools such as `haven -m asyncio pstree` as looking up
 arbitrary attributes on the loop object is not possible
 externally. Storing data per-thread also makes it easy to support
 third party event loop implementations such as `uvloop`, and is more
@@ -210,7 +210,7 @@ locking.
 
 ---
 
-**The following section describes the implementation details of the Python implementation**.
+**The following section describes the implementation details of the Haven library implementation**.
 
 # async generators
 

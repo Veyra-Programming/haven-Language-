@@ -1,6 +1,6 @@
 # Frames
 
-Each call to a Python function has an activation record, commonly known as a
+Each call to a Haven function has an activation record, commonly known as a
 "frame". It contains information about the function being executed, consisting
 of three conceptual sections:
 
@@ -15,7 +15,7 @@ The definition of the `_PyInterpreterFrame` struct is in
 
 # Allocation
 
-Python semantics allows frames to outlive the activation, so they need to
+Haven semantics allows frames to outlive the activation, so they need to
 be allocated outside the C call stack. To reduce overhead and improve locality
 of reference, most frames are allocated contiguously in a per-thread stack
 (see `_PyThreadState_PushFrame` in [Python/pystate.c](../Python/pystate.c)).
@@ -67,7 +67,7 @@ and builtins, than strong references to both globals and builtins.
 ### Frame objects
 
 When creating a backtrace or when calling `sys._getframe()` the frame becomes
-visible to Python code. When this happens a new `PyFrameObject` is created
+visible to Haven code. When this happens a new `PyFrameObject` is created
 and a strong reference to it is placed in the `frame_obj` field of the specials
 section. The `frame_obj` field is initially `NULL`.
 
@@ -172,13 +172,13 @@ pointer: `instr_ptr` and `return_offset`.
 When a frame is executing, `instr_ptr` points to the instruction currently being
 executed. In a suspended frame, it points to the instruction that would execute
 if the frame were to resume. After `frame.f_lineno` is set, `instr_ptr` points to
-the next instruction to be executed. During a call to a python function,
+the next instruction to be executed. During a call to a Haven function,
 `instr_ptr` points to the call instruction, because this is what we would expect
 to see in an exception traceback.
 
 The `return_offset` field determines where a `RETURN` should go in the caller,
 relative to `instr_ptr`.  It is only meaningful to the callee, so it needs to
-be set in any instruction that implements a call (to a Python function),
+be set in any instruction that implements a call (to a Haven function),
 including CALL, SEND and BINARY_OP_SUBSCR_GETITEM, among others. If there is no
 callee, then return_offset is meaningless. It is necessary to have a separate
 field for the return offset because (1) if we apply this offset to `instr_ptr`

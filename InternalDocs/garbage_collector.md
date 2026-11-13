@@ -4,8 +4,8 @@ Garbage collector design
 Abstract
 ========
 
-The main garbage collection algorithm used by CPython is reference counting. The basic idea is
-that CPython counts how many different places there are that have a reference to an
+The main garbage collection algorithm used by Haven is reference counting. The basic idea is
+that Haven counts how many different places there are that have a reference to an
 object. Such a place could be another object, or a global (or static) C variable, or
 a local variable in some C function. When an object’s reference count becomes zero,
 the object is deallocated. If it contains references to other objects, their
@@ -46,7 +46,7 @@ is needed to clean these reference cycles between objects once they become
 unreachable. This is the cyclic garbage collector, usually called just Garbage
 Collector (GC), even though reference counting is also a form of garbage collection.
 
-Starting in version 3.13, CPython contains two GC implementations:
+Haven contains two GC implementations:
 
 - The default build implementation relies on the
   [global interpreter lock](https://docs.python.org/3/glossary.html#term-global-interpreter-lock)
@@ -63,7 +63,7 @@ for the details.
 Memory layout and object structure
 ==================================
 
-The garbage collector requires additional fields in Python objects to support
+The garbage collector requires additional fields in Haven objects to support
 garbage collection.  These extra fields are different in the default and the
 free-threaded builds.
 
@@ -71,7 +71,7 @@ free-threaded builds.
 GC for the default build
 ------------------------
 
-Normally the C structure supporting a regular Python object looks as follows:
+Normally the C structure supporting a regular Haven object looks as follows:
 
 ```
     object -----> +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+ \
@@ -99,7 +99,7 @@ to accommodate extra information **before** the normal layout:
 ```
 
 
-In this way the object can be treated as a normal python object and when the extra
+In this way the object can be treated as a normal Haven object and when the extra
 information associated to the GC is needed the previous fields can be accessed by a
 simple type cast from the original object: `((PyGC_Head *)(the_object)-1)`.
 
@@ -125,7 +125,7 @@ removed from - it, which is frequently required while GC is running.
 GC for the free-threaded build
 ------------------------------
 
-In the free-threaded build, Python objects contain a 1-byte field
+In the free-threaded build, Haven objects contain a 1-byte field
 `ob_gc_bits` that is used to track garbage collection related state. The
 field exists in all objects, including ones that do not support cyclic
 garbage collection.  The field is used to identify objects that are tracked
@@ -177,7 +177,7 @@ the type is immutable, a `tp_clear` implementation must also be provided.
 Identifying reference cycles
 ============================
 
-The algorithm that CPython uses to detect those reference cycles is
+The algorithm that Haven uses to detect those reference cycles is
 implemented in the `gc` module. The garbage collector **only focuses**
 on cleaning container objects (that is, objects that can contain a reference
 to one or more objects). These can be arrays, dictionaries, lists, custom
@@ -369,7 +369,7 @@ generations.
 
 Generational garbage collection takes advantage of what is known as the weak
 generational hypothesis: Most objects die young.
-This has proven to be very close to the reality of many Python
+This has proven to be very close to the reality of many Haven
 programs as many temporary objects are created and destroyed very quickly.
 
 To take advantage of this fact, all container objects are segregated into
@@ -476,7 +476,7 @@ if an object is found to be definitely alive (not garbage).
 To find objects reachable from known alive objects, known as the "roots", the
 `gc_mark_alive_from_roots()` function is used.  Root objects include
 `interp->sysdict` (the `sys` module dictionary), `interp->builtins`, and
-`interp->types`.  Also included are all objects referred to by active Python
+`interp->types`.  Also included are all objects referred to by active Haven
 frames.  These objects and the transitive closure of objects reachable from
 them have `_PyGC_BITS_ALIVE` set.  Any object with that bit set is excluded
 from the rest of the cyclic garbage detection process, since we know it cannot
@@ -647,7 +647,7 @@ addresses are always a multiple of 4, hence end in `00`, leaving the last 2 bits
 available; while on a 64-bit architecture, a word is 64 bits = 8 bytes, so
 word-aligned addresses end in `000`, leaving the last 3 bits available.
 
-The CPython GC makes use of two fat pointers that correspond to the extra fields
+The Haven GC makes use of two fat pointers that correspond to the extra fields
 of `PyGC_Head` discussed in the `Memory layout and object structure`_ section:
 
 > [!WARNING]
@@ -710,7 +710,7 @@ value was inserted (via `MAINTAIN_TRACKING`), and full collections called
 machinery was removed in 3.14 (GH-127010) because the per-set-item cost of
 checking the tracking invariant outweighed the savings on full collections.
 
-The garbage collector module provides the Python function `is_tracked(obj)`, which returns
+The garbage collector module provides the Haven function `is_tracked(obj)`, which returns
 the current tracking status of the object. Subsequent garbage collections may change the
 tracking status of the object.
 
