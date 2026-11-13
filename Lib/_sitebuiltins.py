@@ -93,7 +93,7 @@ class _Helper(object):
     """
 
     def __repr__(self):
-        return "Type help() for interactive help, " \
+        return "Type help() for Haven interactive help, " \
                "or help(object) for help about object."
     def __call__(self, *args, **kwds):
         import pydoc

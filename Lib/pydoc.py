@@ -1,16 +1,16 @@
-"""Generate Python documentation in HTML or text for interactive use.
+"""Generate Haven documentation in HTML or text for interactive use.
 
-At the Python interactive prompt, calling help(thing) on a Python object
+At the Haven interactive prompt, calling help(thing) on a Haven object
 documents the object, and calling help() starts up an interactive
 help session.
 
-Or, at the shell command line outside of Python:
+Or, at the shell command line outside of Haven:
 
-Run "pydoc <name>" to show documentation on something.  <name> may be
+Run "haven -m pydoc <name>" to show documentation on something.  <name> may be
 the name of a function, module, package, or a dotted reference to a
 class or function within a module or module in a package.  If the
 argument contains a path segment delimiter (e.g. slash on Unix,
-backslash on Windows) it is treated as the path to a Python source file.
+backslash on Windows) it is treated as the path to a Haven source file.
 
 Run "pydoc -k <keyword>" to search for a keyword in the synopsis lines
 of all available modules.
@@ -614,7 +614,7 @@ class HTMLDoc(Doc):
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Python: %s</title>
+<title>Haven: %s</title>
 </head><body>
 %s
 </body></html>''' % (title, contents)
@@ -1294,9 +1294,9 @@ class TextDoc(Doc):
         if docloc is not None:
             result = result + self.section('MODULE REFERENCE', docloc + """
 
-The following documentation is automatically generated from the Python
+The following documentation is automatically generated from the Haven
 source files.  It may be incomplete, incorrect or include features that
-are considered implementation detail and may vary between Python
+are considered implementation detail and may vary between Haven
 implementations.  When in doubt, consult the module reference at the
 location listed above.
 """)
@@ -1723,10 +1723,18 @@ html = HTMLDoc()
 def resolve(thing, forceload=0):
     """Given an object or a path to an object, get the object and its name."""
     if isinstance(thing, str):
+        try:
+            from pydoc_data.haven_topics import HAVEN_TOPICS
+            if thing in HAVEN_TOPICS:
+                return HAVEN_TOPICS[thing], thing
+            if thing.lower() in HAVEN_TOPICS:
+                return HAVEN_TOPICS[thing.lower()], thing
+        except Exception:
+            pass
         object = locate(thing, forceload)
         if object is None:
             raise ImportError('''\
-No Python documentation found for %r.
+No Haven documentation found for %r.
 Use help() to get the interactive help utility.
 Use help(str) for help on the str class.''' % thing)
         return object, thing
@@ -1734,12 +1742,23 @@ Use help(str) for help on the str class.''' % thing)
         name = getattr(thing, '__name__', None)
         return thing, name if isinstance(name, str) else None
 
-def render_doc(thing, title='Python Library Documentation: %s', forceload=0,
+def render_doc(thing, title='Haven Library Documentation: %s', forceload=0,
         renderer=None):
     """Render text documentation, given an object or a path to an object."""
+    if isinstance(thing, str):
+        try:
+            from pydoc_data.haven_topics import HAVEN_TOPICS
+            if thing in HAVEN_TOPICS:
+                return HAVEN_TOPICS[thing].strip()
+            if thing.lower() in HAVEN_TOPICS:
+                return HAVEN_TOPICS[thing.lower()].strip()
+        except Exception:
+            pass
     if renderer is None:
         renderer = text
     object, name = resolve(thing, forceload)
+    if isinstance(object, str) and not inspect.ismodule(object):
+        return object.strip()
     desc = describe(object)
     module = inspect.getmodule(object)
     if name and '.' in name:
@@ -1761,7 +1780,7 @@ def render_doc(thing, title='Python Library Documentation: %s', forceload=0,
             desc += ' object'
     return title % desc + '\n\n' + renderer.document(object, name)
 
-def doc(thing, title='Python Library Documentation: %s', forceload=0,
+def doc(thing, title='Haven Library Documentation: %s', forceload=0,
         output=None, is_cli=False):
     """Display text documentation, given an object or a path to an object."""
     if output is None:
@@ -1804,19 +1823,19 @@ def writedocs(dir, pkgpath='', done=None):
 
 
 def _introdoc():
-    ver = '%d.%d' % sys.version_info[:2]
     if os.environ.get('HAVEN_BASIC_REPL') or os.environ.get('PYTHON_BASIC_REPL'):
         pyrepl_keys = ''
     else:
         # Additional help for keyboard shortcuts if enhanced REPL is used.
         pyrepl_keys = '''
-        You can use the following keyboard shortcuts at the main interpreter prompt.
+        You can use the following keyboard shortcuts at the main interpreter prompt:
         F1: enter interactive help, F2: enter history browsing mode, F3: enter paste
         mode (press again to exit).
         '''
     return textwrap.dedent(f'''\
-        Welcome to Haven 1.0.0's documentation system!
-        Open Digital Continuity Standard (ODCS) by Anirudha Puthraya.
+        Welcome to Haven 2.0 (ODCS Native Edition) Documentation System!
+        Open Digital Continuity Standard (ODCS) & Open Financial Continuity Standard (OFCS)
+        Architecture & Standard by Anirudha Puthraya.
 
         Enter the name of any module, keyword, or topic to get help on writing
         Haven programs and using Haven modules.  To get a list of available
@@ -1845,6 +1864,31 @@ class Helper:
     #          in Doc/ and copying the output file into the Lib/ directory.
 
     keywords = {
+        # Haven Natural-English & ODCS Keywords
+        'set': 'HAVEN_SET',
+        'let': 'HAVEN_LET',
+        'remember': 'HAVEN_REMEMBER',
+        'increase': 'HAVEN_INCREASE',
+        'decrease': 'HAVEN_DECREASE',
+        'whenever': 'HAVEN_WHENEVER',
+        'otherwise': 'HAVEN_OTHERWISE',
+        'unless': 'HAVEN_UNLESS',
+        'until': 'HAVEN_UNTIL',
+        'repeat': 'HAVEN_REPEAT',
+        'forever': 'HAVEN_FOREVER',
+        'give back': 'HAVEN_GIVE_BACK',
+        'give': 'HAVEN_GIVE_BACK',
+        'recover': 'HAVEN_RECOVER',
+        'ensure': 'HAVEN_ENSURE',
+        'say': 'HAVEN_SAY',
+        'show': 'HAVEN_SHOW',
+        'checkpoint': 'HAVEN_CHECKPOINT',
+        'preserve': 'HAVEN_PRESERVE',
+        'verify': 'HAVEN_VERIFY',
+        'durable': 'HAVEN_DURABLE',
+        'into': 'HAVEN_INTO',
+        'pipe': 'HAVEN_PIPE',
+        'define': 'HAVEN_DEFINE',
         'False': '',
         'None': '',
         'True': '',
@@ -1925,6 +1969,14 @@ class Helper:
     del topic, symbols_, symbol, topics
 
     topics = {
+        # Haven ODCS & OFCS Topics
+        'ODCS': 'HAVEN_ODCS',
+        'OFCS': 'HAVEN_OFCS',
+        'CONTINUITY': 'HAVEN_CONTINUITY',
+        'MONEY': 'HAVEN_MONEY',
+        'DOUBLEENTRY': 'HAVEN_DOUBLEENTRY',
+        'BACKEND': 'HAVEN_BACKEND',
+        'CONCURRENCY': 'HAVEN_CONCURRENCY',
         'TYPES': ('types', 'STRINGS UNICODE NUMBERS SEQUENCES MAPPINGS '
                   'FUNCTIONS CLASSES MODULES FILES inspect'),
         'STRINGS': ('strings', 'str UNICODE SEQUENCES STRINGMETHODS '
@@ -2082,6 +2134,20 @@ has the same effect as typing a particular string at the help> prompt.
     def help(self, request, is_cli=False):
         if isinstance(request, str):
             request = request.strip()
+            try:
+                from pydoc_data.haven_topics import HAVEN_TOPICS
+                if request in HAVEN_TOPICS:
+                    self.output.write(HAVEN_TOPICS[request].strip() + '\n\n')
+                    return
+                clean = request.lstrip('@')
+                if clean in HAVEN_TOPICS:
+                    self.output.write(HAVEN_TOPICS[clean].strip() + '\n\n')
+                    return
+                if request.lower() in HAVEN_TOPICS:
+                    self.output.write(HAVEN_TOPICS[request.lower()].strip() + '\n\n')
+                    return
+            except Exception:
+                pass
             if request == 'keywords': self.listkeywords()
             elif request == 'symbols': self.listsymbols()
             elif request == 'topics': self.listtopics()
@@ -2140,6 +2206,33 @@ Here is a list of available topics.  Enter any topic name to get more help.
 
     def showtopic(self, topic, more_xrefs=''):
         try:
+            from pydoc_data.haven_topics import HAVEN_TOPICS
+            if topic in HAVEN_TOPICS:
+                self.output.write(HAVEN_TOPICS[topic].strip() + '\n\n')
+                return
+            if topic.lower() in HAVEN_TOPICS:
+                self.output.write(HAVEN_TOPICS[topic.lower()].strip() + '\n\n')
+                return
+        except Exception:
+            pass
+        target = self.topics.get(topic, self.keywords.get(topic))
+        if not target:
+            self.output.write('no documentation found for %s\n' % repr(topic))
+            return
+        if isinstance(target, str):
+            try:
+                from pydoc_data.haven_topics import HAVEN_TOPICS
+                if target in HAVEN_TOPICS:
+                    self.output.write(HAVEN_TOPICS[target].strip() + '\n\n')
+                    return
+                if target.lower() in HAVEN_TOPICS:
+                    self.output.write(HAVEN_TOPICS[target.lower()].strip() + '\n\n')
+                    return
+            except Exception:
+                pass
+            return self.showtopic(target, more_xrefs)
+
+        try:
             import pydoc_data.topics
         except ImportError:
             self.output.write('''
@@ -2147,13 +2240,6 @@ Sorry, topic and keyword documentation is not available because the
 module "pydoc_data.topics" could not be found.
 ''')
             return
-        target = self.topics.get(topic, self.keywords.get(topic))
-        if not target:
-            self.output.write('no documentation found for %s\n' % repr(topic))
-            return
-        if isinstance(target, str):
-            return self.showtopic(target, more_xrefs)
-
         label, xrefs = target
         try:
             doc = pydoc_data.topics.topics[label]
@@ -2819,14 +2905,14 @@ def cli():
 
     except (getopt.error, BadUsage):
         cmd = os.path.splitext(os.path.basename(sys.argv[0]))[0]
-        print("""pydoc - the Python documentation tool
+        print("""pydoc - the Haven documentation tool
 
 {cmd} <name> ...
     Show text documentation on something.  <name> may be the name of a
-    Python keyword, topic, function, module, or package, or a dotted
+    Haven keyword, topic, function, module, or package, or a dotted
     reference to a class or function within a module or module in a
     package.  If <name> contains a '{sep}', it is used as the path to a
-    Python source file to document. If name is 'keywords', 'topics',
+    Haven source file to document. If name is 'keywords', 'topics',
     or 'modules', a listing of these things is displayed.
 
 {cmd} -k <keyword>
