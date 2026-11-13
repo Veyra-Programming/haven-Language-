@@ -7,6 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2.2.0] - 2026-11-13
+
+### Added
+- **Star Language Ergonomics & Dual-Grammar Engine**:
+  - `use <module>` clean module imports side-by-side with `import`.
+  - `variable <name> = <val>` mutable state variable declarations.
+  - `constant <NAME> = <val>` immutable constant bindings.
+  - `end` statement explicit block terminators for functions, conditionals, and loops.
+  - Star arrow lambdas: `() -> expr` and `(x, y) -> expr`.
+- **Active-Record `DurableModel` ORM**:
+  - Full Active-Record pattern backed by the Open Digital Continuity Standard (ODCS).
+  - Schema constraints via `Field(primary_key=True, unique=True, default=...)`.
+  - O(1) in-memory primary key and indexed lookup: `.create()`, `.find()`, `.filter()`, `.all()`, `.count()`, `.update()`, `.delete()`.
+  - 100% deterministic disaster recovery and audit replay via `.replay_from_ledger()`.
+- **Advanced Backend & Microservices Suite**:
+  - **In-Memory `TestClient`**: Zero-port direct HTTP request dispatcher for blazing-fast unit and integration testing.
+  - **Turnkey OFCS Financial Vault**: Zero-boilerplate banking microservice endpoints (`/vault/accounts`, `/vault/transfers`, `/vault/audit`) enforcing Invariant 1 (Debits == Credits).
+  - **Automated OpenAPI 3.0 & Dark-Mode Interactive Docs**: Auto-generated `/openapi.json` schema and turnkey `/docs` web GUI.
+  - **Security Middlewares**: `APIKeyAuthMiddleware`, `BearerAuthMiddleware`, and `@require_auth` decorator.
+  - **Asynchronous Worker Pool**: `BackgroundTaskPool` for non-blocking background task dispatching.
+- **Extension Tooling & Intellisense**:
+  - Added full autocompletions, type suggestions, hover documentation, and 12+ new signature entries for all Backend ORM and Star syntax constructs.
+  - Added snippets for `use`, `variable`, `constant`, `end`, `durable-model`, `test-client`, and `mount-vault`.
+
+---
+
 ## [2.1.0] - 2026-11-13
 
 ### Added

@@ -2,7 +2,7 @@
   "name": "haven-language",
   "displayName": "Haven Programming Language",
   "description": "Official Visual Studio Code extension for Haven Language: natural-English syntax highlighting, Haven Fox mascot branding, autocompletion, hover signatures, and ODCS digital continuity integration.",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "publisher": "star-lang",
   "repository": {
     "type": "git",

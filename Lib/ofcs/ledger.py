@@ -180,6 +180,14 @@ class OFCSFinancialLedger:
         self.accounts[account.account_id] = account
         return account
 
+    def create_account(self, account_id: str, currency: Union[str, Currency] = USD,
+                       initial_balance: Union[Decimal, float, int, str] = 0,
+                       allow_negative: bool = False) -> FinancialAccount:
+        """Creates and registers a new sovereign FinancialAccount within the ledger."""
+        acc = FinancialAccount(account_id=account_id, currency=currency,
+                               initial_balance=initial_balance, allow_negative=allow_negative)
+        return self.register_account(acc)
+
     def get_account(self, account_id: str) -> FinancialAccount:
         if account_id not in self.accounts:
             raise KeyError(f"Account '{account_id}' not found in ledger '{self.ledger_name}'")

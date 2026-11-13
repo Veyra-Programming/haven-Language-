@@ -86,6 +86,8 @@ def run_code(code_str: str) -> int:
     sys.modules["__main__"] = main_mod
 
     try:
+        from haven.transpiler import preprocess_haven
+        code_str = preprocess_haven(code_str)
         compiled = compile(code_str, "<haven-eval>", "exec")
         exec(compiled, main_globals)
         return 0
@@ -159,6 +161,8 @@ def run_script(file_path: str, script_args: list, measure_time: bool = False, ve
         else:
             with open(file_path, "r", encoding="utf-8") as f:
                 code_str = f.read()
+            from haven.transpiler import preprocess_haven
+            code_str = preprocess_haven(code_str)
             compiled = compile(code_str, file_path, "exec")
 
         exec(compiled, main_globals)

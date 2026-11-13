@@ -1,5 +1,5 @@
 """
-Haven Backend Framework v1.0.0
+Haven Backend Framework v2.0.0
 High-Performance, Multi-Threaded Microservices & ODCS/OFCS Native Server.
 Open Digital Continuity Standard (ODCS) & Open Financial Continuity Standard (OFCS)
 Standard Specification & Architecture by Anirudha Puthraya.
@@ -16,6 +16,12 @@ from .middleware import (
 )
 from .server import HavenHTTPHandler, HavenServer, HavenApp
 from .odcs_endpoints import register_continuity_endpoints
+from .docs import build_openapi_spec, generate_interactive_docs_html
+from .client import TestClient, TestResponse
+from .orm import DurableModel, Field
+from .auth import APIKeyAuthMiddleware, BearerAuthMiddleware, require_auth
+from .tasks import BackgroundTaskPool
+from .vault import mount_ofcs_vault
 
 __all__ = [
     "Response",
@@ -31,5 +37,15 @@ __all__ = [
     "HavenServer",
     "HavenApp",
     "register_continuity_endpoints",
+    "build_openapi_spec",
+    "generate_interactive_docs_html",
+    "TestClient",
+    "TestResponse",
+    "DurableModel",
+    "Field",
+    "APIKeyAuthMiddleware",
+    "BearerAuthMiddleware",
+    "require_auth",
+    "BackgroundTaskPool",
+    "mount_ofcs_vault",
 ]
-

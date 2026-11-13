@@ -2,7 +2,7 @@
   "name": "heaven-programming-language",
   "displayName": "Heaven (Haven) Programming Language",
   "description": "Official Visual Studio Code extension for Heaven & Haven: natural-English syntax highlighting, AST diagnostics, hover tooltips, snippets, and ODCS continuity gateway integration.",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "publisher": "star-lang",
   "repository": {
     "type": "git",

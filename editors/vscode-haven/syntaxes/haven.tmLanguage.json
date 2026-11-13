@@ -75,7 +75,7 @@
       "patterns": [
         {
           "name": "keyword.control.english.haven",
-          "match": "\\b(set|to|let|be|unless|until|repeat|times|time|function|pipe|into|remember|whenever|otherwise\\s+if|otherwise|try|recover|ensure|say|show|forever|increase|decrease|by|give\\s+back|stop|skip)\\b"
+          "match": "\\b(set|to|let|be|unless|until|repeat|times|time|function|pipe|into|remember|whenever|otherwise\\s+if|otherwise|try|recover|ensure|say|show|forever|increase|decrease|by|give\\s+back|stop|skip|use|variable|constant|end)\\b"
         },
         {
           "name": "keyword.control.english.for-each.haven",
@@ -147,7 +147,7 @@
       "patterns": [
         {
           "name": "support.class.backend.haven",
-          "match": "\\b(HavenApp|HavenServer|Router|Request|Response|CORSMiddleware|ContinuityAuditMiddleware|RateLimiterMiddleware)\\b"
+          "match": "\\b(HavenApp|HavenServer|Router|Request|Response|CORSMiddleware|ContinuityAuditMiddleware|RateLimiterMiddleware|DurableModel|Field|TestClient|APIKeyAuthMiddleware|BearerAuthMiddleware|BackgroundTaskPool|mount_ofcs_vault|require_auth)\\b"
         }
       ]
     },

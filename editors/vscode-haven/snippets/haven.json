@@ -389,5 +389,59 @@
       "CompletableFuture[${1|str,int,bool,Money,Response|}]"
     ],
     "description": "Type Suggestion: Reactive asynchronous promise type annotation."
+  },
+  "Star Module Import": {
+    "prefix": "use",
+    "body": [
+      "use ${1:module}"
+    ],
+    "description": "Star-style module import: 'use <module>'."
+  },
+  "Star Variable Declaration": {
+    "prefix": "variable",
+    "body": [
+      "variable ${1:name} = ${2:value}"
+    ],
+    "description": "Star-style variable declaration: 'variable <name> = <value>'."
+  },
+  "Star Constant Declaration": {
+    "prefix": "constant",
+    "body": [
+      "constant ${1:NAME} = ${2:value}"
+    ],
+    "description": "Star-style constant declaration: 'constant <NAME> = <value>'."
+  },
+  "Star End Statement": {
+    "prefix": "end",
+    "body": [
+      "end"
+    ],
+    "description": "Star-style block terminator: 'end'."
+  },
+  "Durable Model Entity": {
+    "prefix": "durable-model",
+    "body": [
+      "class ${1:ModelName}(DurableModel):",
+      "    id: str = Field(primary_key=True)",
+      "    ${2:name}: str",
+      "    ${3:balance}: Money = Money(\"0.00\", USD)"
+    ],
+    "description": "Active-Record ODCS ORM entity backed by an append-only Merkle ledger."
+  },
+  "Haven TestClient": {
+    "prefix": "test-client",
+    "body": [
+      "let client be ${1:app}.test_client()",
+      "let res be client.get(\"${2:/api/v1/resource}\")",
+      "ensure res.status_code == 200 otherwise \"Request failed\""
+    ],
+    "description": "In-memory zero-port testing client for Haven backend apps."
+  },
+  "Turnkey OFCS Vault": {
+    "prefix": "mount-vault",
+    "body": [
+      "${1:app}.mount_vault(${2:OFCSFinancialLedger(ledger_name=\"master_vault\")})"
+    ],
+    "description": "Mounts turnkey enterprise double-entry banking vault endpoints into HavenApp."
   }
 }

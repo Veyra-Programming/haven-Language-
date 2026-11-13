@@ -117,14 +117,15 @@ def durable_record(cls):
 
 
 class LedgerEntry:
-    __slots__ = ("index", "timestamp", "asset_id", "payload_hash", "prev_hash", "entry_hash")
+    __slots__ = ("index", "timestamp", "asset_id", "payload_hash", "prev_hash", "entry_hash", "payload")
 
-    def __init__(self, index: int, asset_id: str, payload_hash: str, prev_hash: str):
+    def __init__(self, index: int, asset_id: str, payload_hash: str, prev_hash: str, payload: Any = None):
         self.index = index
         self.timestamp = time.time_ns()
         self.asset_id = asset_id
         self.payload_hash = payload_hash
         self.prev_hash = prev_hash
+        self.payload = payload
         self.entry_hash = self._calculate_hash()
 
     def _calculate_hash(self) -> str:
@@ -171,7 +172,8 @@ class ContinuityLedger:
             index=len(self.chain),
             asset_id=asset_id,
             payload_hash=payload_hash,
-            prev_hash=self.head_hash
+            prev_hash=self.head_hash,
+            payload=asset
         )
         self.chain.append(entry)
         self.head_hash = entry.entry_hash

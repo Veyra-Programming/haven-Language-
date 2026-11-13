@@ -137,6 +137,15 @@ from .backend import (
     HavenServer,
     HavenApp,
     register_continuity_endpoints,
+    TestClient,
+    TestResponse,
+    DurableModel,
+    Field,
+    APIKeyAuthMiddleware,
+    BearerAuthMiddleware,
+    require_auth,
+    BackgroundTaskPool,
+    mount_ofcs_vault,
 )
 
 __version__ = "1.0.0"
@@ -283,4 +292,13 @@ __all__ = [
     "HavenServer",
     "HavenApp",
     "register_continuity_endpoints",
+    "TestClient",
+    "TestResponse",
+    "DurableModel",
+    "Field",
+    "APIKeyAuthMiddleware",
+    "BearerAuthMiddleware",
+    "require_auth",
+    "BackgroundTaskPool",
+    "mount_ofcs_vault",
 ]

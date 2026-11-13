@@ -1,0 +1,193 @@
+# =====================================================================
+#   HAVEN LANGUAGE • STAR SYNTAX & ADVANCED BACKEND VERIFICATION SUITE
+#   Architecture & Specification by Anirudha Puthraya
+#   Standard: ODCS-1.0.0 & OFCS-1.0.0
+# =====================================================================
+
+use haven
+use ofcs
+
+say "========================================================="
+say "  Haven + Star Syntax & Advanced Backend Test Suite      "
+say "  Specification & Architecture by Anirudha Puthraya      "
+say "========================================================="
+
+# ---------------------------------------------------------------------
+# TEST 1: Star-Style Language Ergonomics
+# ---------------------------------------------------------------------
+constant SERVICE_NAME = "StarCommerceEngine"
+variable total_nodes = 5
+increase total_nodes by 3
+decrease total_nodes by 1
+ensure total_nodes == 7 otherwise "Star variable state failed"
+
+function compute_points(base, multiplier):
+    whenever multiplier > 1:
+        give back base * multiplier
+    otherwise:
+        give back base
+    end
+end
+
+let pts be compute_points(50, 3)
+ensure pts == 150 otherwise "Star function call failed"
+
+# Star Arrow lambda
+let double_fn be (x) -> x * 2
+ensure double_fn(21) == 42 otherwise "Star arrow lambda failed"
+
+say "[PASS] Star Syntax Ergonomics: use, variable, constant, end, and arrow lambdas verified."
+
+# ---------------------------------------------------------------------
+# TEST 2: Active-Record DurableModel ORM
+# ---------------------------------------------------------------------
+class Customer(DurableModel):
+    id: str = Field(primary_key=True)
+    name: str
+    email: str
+    balance: Money = Money("0.00", USD)
+
+# Create entities
+let c1 be Customer.create(id="CUST-101", name="Alice Sterling", email="alice@haven.dev", balance=Money("500.00", USD))
+let c2 be Customer.create(id="CUST-102", name="Bob Vance", email="bob@haven.dev", balance=Money("150.00", USD))
+
+ensure Customer.count() == 2 otherwise "Customer count mismatch"
+ensure Customer.find("CUST-101").name == "Alice Sterling" otherwise "Customer find failed"
+
+# Update entity
+c1.update(name="Alice Puthraya")
+ensure Customer.find("CUST-101").name == "Alice Puthraya" otherwise "Customer update failed"
+
+# Filter entities
+let filtered be Customer.filter(lambda c: c.balance.amount > 200)
+ensure len(filtered) == 1 otherwise "Customer filter failed"
+ensure filtered[0].id == "CUST-101" otherwise "Customer filter mismatch"
+
+# Ledger Replay Verification
+let replayed be Customer.replay_from_ledger()
+ensure replayed >= 3 otherwise "Ledger replay count error"
+ensure Customer.find("CUST-101").name == "Alice Puthraya" otherwise "Replay state restoration failed"
+
+say "[PASS] ODCS DurableModel ORM: CRUD, In-Memory Indexing & Ledger Replay verified."
+
+# ---------------------------------------------------------------------
+# TEST 3: Advanced Backend App, Docs & In-Memory TestClient
+# ---------------------------------------------------------------------
+let app be HavenApp(name="CommerceMicroservice", port=9090)
+app.with_docs(True)
+
+@app.get("/api/v1/ping")
+def ping_handler(req: Request) -> Response:
+    give back Response.ok("Pong from Haven Star Backend!")
+
+@app.post("/api/v1/echo")
+def echo_handler(req: Request) -> Response:
+    give back Response.json({"echo": req.json, "received": True})
+
+# Test In-Memory Client
+let client be app.test_client()
+
+let res_ping be client.get("/api/v1/ping")
+ensure res_ping.status_code == 200 otherwise "TestClient GET /ping failed"
+ensure res_ping.json["message"] == "Pong from Haven Star Backend!" otherwise "Ping payload error"
+
+let res_echo be client.post("/api/v1/echo", json={"order_id": "ORD-99", "amount": 1250})
+ensure res_echo.status_code == 200 otherwise "TestClient POST /echo failed"
+ensure res_echo.json["echo"]["order_id"] == "ORD-99" otherwise "Echo payload error"
+
+# Verify Auto-Generated OpenAPI 3.0 & Interactive Docs
+let res_spec be client.get("/openapi.json")
+ensure res_spec.status_code == 200 otherwise "GET /openapi.json failed"
+ensure res_spec.json["openapi"] == "3.0.3" otherwise "Invalid OpenAPI version"
+ensure "/api/v1/ping" in res_spec.json["paths"] otherwise "Missing route in OpenAPI paths"
+
+let res_docs be client.get("/docs")
+ensure res_docs.status_code == 200 otherwise "GET /docs failed"
+ensure "Haven Interactive API Explorer" in res_docs.text otherwise "Missing title in docs HTML"
+
+say "[PASS] Advanced Backend App: Declarative Routing, OpenAPI 3.0 & TestClient verified."
+
+# ---------------------------------------------------------------------
+# TEST 4: Security & Authentication Middleware
+# ---------------------------------------------------------------------
+let secure_app be HavenApp(name="SecuredService", port=9091)
+secure_app.with_api_key("SECRET_HAVEN_KEY_777")
+
+@secure_app.get("/api/v1/secret-vault")
+@require_auth
+def secret_handler(req: Request) -> Response:
+    give back Response.json({"secret": "CONTINUITY_GRANTED"})
+
+let secure_client be secure_app.test_client()
+
+# Request without key -> 401 Unauthorized
+let unauth_res be secure_client.get("/api/v1/secret-vault")
+ensure unauth_res.status_code == 401 otherwise "Unauthenticated request should return 401"
+
+# Request with valid key -> 200 OK
+let auth_res be secure_client.get("/api/v1/secret-vault", headers={"X-API-Key": "SECRET_HAVEN_KEY_777"})
+ensure auth_res.status_code == 200 otherwise "Authenticated request should return 200"
+ensure auth_res.json["secret"] == "CONTINUITY_GRANTED" otherwise "Auth payload mismatch"
+
+say "[PASS] Security & Authentication: API Key Middleware & @require_auth verified."
+
+# ---------------------------------------------------------------------
+# TEST 5: Turnkey Financial Vault Microservice Gateway
+# ---------------------------------------------------------------------
+let banking_app be HavenApp(name="BankVaultService", port=9092)
+let vault_ledger be OFCSFinancialLedger(ledger_name="unit_test_vault")
+banking_app.mount_vault(vault_ledger)
+
+let bank_client be banking_app.test_client()
+
+# 1. Create Source Account
+let create_res1 be bank_client.post("/vault/accounts", json={"account_id": "ACC-SOURCE", "currency": "USD", "initial_balance": "1000.00"})
+ensure create_res1.status_code == 201 otherwise "Failed to open source account"
+
+# 2. Create Destination Account
+let create_res2 be bank_client.post("/vault/accounts", json={"account_id": "ACC-DEST", "currency": "USD", "initial_balance": "0.00"})
+ensure create_res2.status_code == 201 otherwise "Failed to open dest account"
+
+# 3. Execute Transfer
+let tx_res be bank_client.post("/vault/transfers", json={
+    "from_account": "ACC-SOURCE",
+    "to_account": "ACC-DEST",
+    "amount": "250.00",
+    "description": "Star-Heaven P2P Transfer"
+})
+ensure tx_res.status_code == 200 otherwise "Vault transfer failed"
+ensure tx_res.json["status"] == "SUCCESS" otherwise "Vault transfer error"
+
+# 4. Verify Destination Balance
+let dest_bal be bank_client.get("/vault/accounts/ACC-DEST")
+ensure dest_bal.status_code == 200 otherwise "Fetch dest balance failed"
+ensure dest_bal.json["balance"] == "250.00" otherwise "Dest balance incorrect"
+
+# 5. Check Cryptographic Audit Trail
+let audit_res be bank_client.get("/vault/audit")
+ensure audit_res.status_code == 200 otherwise "Audit trail failed"
+ensure audit_res.json["total_blocks"] >= 1 otherwise "Missing blocks in audit trail"
+
+say "[PASS] Turnkey OFCS Financial Vault: Account Opening, Balanced Transfers & Merkle Audit verified."
+
+# ---------------------------------------------------------------------
+# TEST 6: Asynchronous Background Tasks
+# ---------------------------------------------------------------------
+let background_completed be False
+
+def async_worker_task(param):
+    global background_completed
+    import time
+    time.sleep(0.01)
+    background_completed = True
+
+app.dispatch_task(async_worker_task, "payload")
+import time
+time.sleep(0.05)
+ensure background_completed == True otherwise "Background task failed to complete"
+
+say "[PASS] Asynchronous Worker Pool: Background task dispatching verified."
+
+say "========================================================="
+say " ALL STAR SYNTAX & ADVANCED BACKEND TESTS PASSED (100%)  "
+say "========================================================="

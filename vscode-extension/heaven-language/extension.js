@@ -565,6 +565,44 @@ const HAVEN_TYPE_ITEMS = [
         kind: vscode.CompletionItemKind.Class,
         detail: 'type (Backend) • Sliding-Window Rate Limiter',
         documentation: new vscode.MarkdownString('**Haven Backend: `RateLimiterMiddleware`**\n\nProtects API endpoints with sliding-window rate limiting.')
+    },
+    {
+        label: 'DurableModel',
+        kind: vscode.CompletionItemKind.Class,
+        detail: 'type (Backend ORM) • Active-Record ODCS Entity Backed by Merkle Ledger',
+        insertText: new vscode.SnippetString('class ${1:ModelName}(DurableModel):\n    id: str = Field(primary_key=True)\n    ${2:name}: str\n    ${3:balance}: Money = Money("0.00", USD)'),
+        documentation: new vscode.MarkdownString('**Haven Backend ORM: `DurableModel`**\n\nActive-Record entity backed by the Open Digital Continuity Standard (ODCS). Every mutation is cryptographically sealed into an append-only Merkle ledger, enabling zero-loss disaster recovery and audit replay.\n\n*Methods:* `.create()`, `.find()`, `.filter()`, `.all()`, `.count()`, `.update()`, `.delete()`, `.replay_from_ledger()`.')
+    },
+    {
+        label: 'Field',
+        kind: vscode.CompletionItemKind.Class,
+        detail: 'type (Backend ORM) • Entity Schema Field Descriptor',
+        insertText: new vscode.SnippetString('Field(primary_key=${1:False})'),
+        documentation: new vscode.MarkdownString('**Haven Backend ORM: `Field`**\n\nSchema field descriptor defining primary key, uniqueness, default values, and nullable constraints.')
+    },
+    {
+        label: 'TestClient',
+        kind: vscode.CompletionItemKind.Class,
+        detail: 'type (Backend Testing) • Zero-Port In-Memory Request Dispatcher',
+        documentation: new vscode.MarkdownString('**Haven Backend: `TestClient`**\n\nDirect, zero-port in-memory test runner dispatching simulated requests directly into the router with full cookie, header, and JSON verification.')
+    },
+    {
+        label: 'APIKeyAuthMiddleware',
+        kind: vscode.CompletionItemKind.Class,
+        detail: 'type (Backend Security) • API Key Guard Middleware',
+        documentation: new vscode.MarkdownString('**Haven Backend: `APIKeyAuthMiddleware`**\n\nValidates incoming requests against secret API keys via `X-API-Key` header or query param.')
+    },
+    {
+        label: 'BearerAuthMiddleware',
+        kind: vscode.CompletionItemKind.Class,
+        detail: 'type (Backend Security) • Bearer Token Guard Middleware',
+        documentation: new vscode.MarkdownString('**Haven Backend: `BearerAuthMiddleware`**\n\nValidates incoming HTTP Bearer tokens via `Authorization: Bearer <token>`.')
+    },
+    {
+        label: 'BackgroundTaskPool',
+        kind: vscode.CompletionItemKind.Class,
+        detail: 'type (Backend Async) • Background Worker Task Queue',
+        documentation: new vscode.MarkdownString('**Haven Backend: `BackgroundTaskPool`**\n\nHigh-throughput worker pool executing asynchronous side-effects, ledger syncs, and telemetry broadcasts.')
     }
 ];
 
@@ -572,6 +610,13 @@ const HAVEN_TYPE_ITEMS = [
  * Autocompletion Catalog for Keywords, Annotations and Snippets
  */
 const HAVEN_KEYWORD_ITEMS = [
+    // Star Language Ergonomics
+    { label: 'use', detail: 'use <module> (Star import)', kind: vscode.CompletionItemKind.Keyword, insertText: new vscode.SnippetString('use ${1:module}') },
+    { label: 'variable', detail: 'variable <name> = <val> (Star declaration)', kind: vscode.CompletionItemKind.Keyword, insertText: new vscode.SnippetString('variable ${1:name} = ${2:value}') },
+    { label: 'constant', detail: 'constant <NAME> = <val> (Star constant)', kind: vscode.CompletionItemKind.Keyword, insertText: new vscode.SnippetString('constant ${1:NAME} = ${2:value}') },
+    { label: 'end', detail: 'end (Star block terminator)', kind: vscode.CompletionItemKind.Keyword, insertText: new vscode.SnippetString('end') },
+    { label: '@require_auth', detail: '@require_auth (Security guard)', kind: vscode.CompletionItemKind.Snippet, insertText: new vscode.SnippetString('@require_auth') },
+    { label: 'mount_ofcs_vault', detail: 'mount_ofcs_vault(app, ledger=None)', kind: vscode.CompletionItemKind.Function, insertText: new vscode.SnippetString('mount_ofcs_vault(${1:app}, ${2:vault_ledger})') },
     // Keywords & English Statements
     { label: 'set', detail: 'set <variable> to <value>', kind: vscode.CompletionItemKind.Keyword, insertText: new vscode.SnippetString('set ${1:variable} to ${2:value}') },
     { label: 'let', detail: 'let <variable> be <value>', kind: vscode.CompletionItemKind.Keyword, insertText: new vscode.SnippetString('let ${1:variable} be ${2:value}') },
@@ -885,6 +930,50 @@ const HAVEN_SIGNATURES = {
     'RateLimiterMiddleware': {
         label: 'RateLimiterMiddleware(max_requests_per_minute: int = 600) -> RateLimiterMiddleware',
         doc: 'Sliding-window rate limiter protecting API endpoints.'
+    },
+    'DurableModel': {
+        label: 'class DurableModel(metaclass=DurableModelMeta)',
+        doc: 'Active-Record ODCS Entity backed by Merkle append-only ledger.'
+    },
+    'DurableModel.create': {
+        label: 'DurableModel.create(**kwargs) -> DurableModel',
+        doc: 'Instantiates entity and seals an append-only commit entry in the ledger.'
+    },
+    'DurableModel.find': {
+        label: 'DurableModel.find(pk: Any) -> Optional[DurableModel]',
+        doc: 'Finds an entity by primary key in O(1) time.'
+    },
+    'DurableModel.filter': {
+        label: 'DurableModel.filter(predicate: Optional[Callable] = None, **kwargs) -> List[DurableModel]',
+        doc: 'Filters stored entities matching criteria or custom predicate.'
+    },
+    'DurableModel.replay_from_ledger': {
+        label: 'DurableModel.replay_from_ledger(ledger: Optional[ContinuityLedger] = None) -> int',
+        doc: 'Deterministic disaster recovery: reconstructs entity table from cryptographic Merkle ledger.'
+    },
+    'Field': {
+        label: 'Field(default: Any = None, primary_key: bool = False, nullable: bool = False, unique: bool = False)',
+        doc: 'Descriptor defining schema constraints for a DurableModel column.'
+    },
+    'TestClient': {
+        label: 'TestClient(app: HavenApp) -> TestClient',
+        doc: 'In-memory zero-port testing client for Haven backend applications.'
+    },
+    'APIKeyAuthMiddleware': {
+        label: 'APIKeyAuthMiddleware(api_key: str, header_name: str = "X-API-Key")',
+        doc: 'Secures backend endpoints with cryptographic API key verification.'
+    },
+    'BearerAuthMiddleware': {
+        label: 'BearerAuthMiddleware(token: str)',
+        doc: 'Secures backend endpoints with HTTP Bearer token verification.'
+    },
+    'BackgroundTaskPool': {
+        label: 'BackgroundTaskPool(max_workers: int = 8)',
+        doc: 'High-throughput asynchronous background job worker pool.'
+    },
+    'mount_ofcs_vault': {
+        label: 'mount_ofcs_vault(app: HavenApp, ledger: Optional[OFCSFinancialLedger] = None) -> OFCSFinancialLedger',
+        doc: 'Mounts turnkey OFCS double-entry banking vault endpoints into HavenApp.'
     }
 };
 
@@ -892,6 +981,16 @@ const HAVEN_SIGNATURES = {
  * Hover Documentation Catalog
  */
 const HAVEN_HOVER_DOCS = {
+    // Star Language Keywords
+    'use': '**Star Language Ergonomics: `use <module>`**\n\nImports a module or package into the local namespace, identical to `import <module>`.\n\n*Example:*\n```haven\nuse haven\nuse ofcs\n```',
+    'variable': '**Star Language Ergonomics: `variable <name> = <value>`**\n\nDeclares a mutable state variable, identical to `set <name> to <value>`.\n\n*Example:*\n```haven\nvariable active_nodes = 5\nincrease active_nodes by 2\n```',
+    'constant': '**Star Language Ergonomics: `constant <NAME> = <value>`**\n\nDeclares a compile-time immutable constant, identical to `remember <NAME> as <value>`.\n\n*Example:*\n```haven\nconstant TIMEOUT_MS = 5000\n```',
+    'end': '**Star Language Ergonomics: `end`**\n\nExplicit block terminator for functions, conditionals, and loops.\n\n*Example:*\n```haven\nfunction compute(x):\n    whenever x > 0:\n        give back x * 2\n    end\nend\n```',
+    'require_auth': '**Haven Backend: `@require_auth`**\n\nRoute decorator enforcing API Key or Bearer token authentication before handler dispatch.\n\n*Example:*\n```haven\n@app.get("/secret")\n@require_auth\ndef get_secret(req: Request) -> Response:\n    give back Response.ok("Granted")\n```',
+    'mount_ofcs_vault': '**Haven Backend: `mount_ofcs_vault(app, ledger=None)`**\n\nMounts turnkey enterprise banking endpoints (`/vault/accounts`, `/vault/transfers`, `/vault/audit`) enforcing OFCS Invariant 1 (Debits == Credits).\n\n*Example:*\n```haven\napp.mount_vault(vault_ledger)\n```',
+    'DurableModel': '**Haven Backend ORM: `DurableModel`**\n\nActive-Record entity backed by the Open Digital Continuity Standard (ODCS). Mutations are cryptographically sealed into an append-only Merkle ledger for 100% deterministic disaster recovery.\n\n*Example:*\n```haven\nclass Customer(DurableModel):\n    id: str = Field(primary_key=True)\n    name: str\n    balance: Money\n```',
+    'Field': '**Haven Backend ORM: `Field`**\n\nField schema descriptor for `DurableModel` entities.\n\n*Example:*\n```haven\nid: str = Field(primary_key=True)\n```',
+    'TestClient': '**Haven Backend: `TestClient`**\n\nDirect, zero-port in-memory test runner for Haven backend applications.\n\n*Example:*\n```haven\nlet client be app.test_client()\nlet res be client.get("/api/v1/ping")\nensure res.status_code == 200 otherwise "Ping failed"\n```',
     // English Keywords
     'set': '**Haven Language Keyword: `set ... to`**\n\nSets or mutates state in natural English.\n\n*Example:*\n```haven\nset active_connections: int to 42\n```',
     'let': '**Haven Language Keyword: `let ... be`**\n\nBinds local variables.\n\n*Example:*\n```haven\nlet rate: float be 0.05\n```',

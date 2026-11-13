@@ -183,7 +183,8 @@ class HavenApp:
         port: int = 8080,
         cors: bool = True,
         continuity_audit: bool = True,
-        rate_limit: int = 1200
+        rate_limit: int = 1200,
+        enable_docs: bool = True
     ):
         self.name = name
         self.host = host
@@ -193,9 +194,45 @@ class HavenApp:
         self._cors = cors
         self._audit = continuity_audit
         self._rate_limit = rate_limit
+        self._enable_docs = enable_docs
         self.custom_middlewares: List[Middleware] = []
+        self._task_pool = None
 
-    def use(self, middleware: Middleware):
+    def with_port(self, port: int) -> 'HavenApp':
+        self.port = port
+        return self
+
+    def with_host(self, host: str) -> 'HavenApp':
+        self.host = host
+        return self
+
+    def with_cors(self, enable: bool = True) -> 'HavenApp':
+        self._cors = enable
+        return self
+
+    def with_audit(self, enable: bool = True) -> 'HavenApp':
+        self._audit = enable
+        return self
+
+    def with_rate_limit(self, max_requests: int) -> 'HavenApp':
+        self._rate_limit = max_requests
+        return self
+
+    def with_docs(self, enable: bool = True) -> 'HavenApp':
+        self._enable_docs = enable
+        return self
+
+    def with_api_key(self, *keys: str) -> 'HavenApp':
+        from .auth import APIKeyAuthMiddleware
+        self.use(APIKeyAuthMiddleware(list(keys)))
+        return self
+
+    def with_bearer_token(self, *tokens: str) -> 'HavenApp':
+        from .auth import BearerAuthMiddleware
+        self.use(BearerAuthMiddleware(list(tokens)))
+        return self
+
+    def use(self, middleware: Middleware) -> 'HavenApp':
         self.custom_middlewares.append(middleware)
         return self
 
@@ -214,7 +251,43 @@ class HavenApp:
     def patch(self, path: str):
         return self.router.patch(path)
 
+    def enable_docs_endpoints(self, docs_path: str = "/docs", spec_path: str = "/openapi.json"):
+        """Registers OpenAPI 3.0 specification and interactive dark-mode documentation."""
+        from .docs import build_openapi_spec, generate_interactive_docs_html
+
+        @self.router.get(spec_path)
+        def get_spec(req: Request) -> Response:
+            spec = build_openapi_spec(self.name, self.router)
+            return Response.json(spec)
+
+        @self.router.get(docs_path)
+        def get_docs(req: Request) -> Response:
+            html = generate_interactive_docs_html(self.name, spec_url=spec_path)
+            return Response.html(html)
+
+    def test_client(self):
+        """Returns an In-Memory Test Client for zero-port unit testing."""
+        from .client import TestClient
+        if self._enable_docs:
+            self.enable_docs_endpoints()
+        return TestClient(self)
+
+    def dispatch_task(self, func: Callable, *args, **kwargs):
+        """Dispatches an asynchronous background task."""
+        from .tasks import BackgroundTaskPool
+        if self._task_pool is None:
+            self._task_pool = BackgroundTaskPool()
+        return self._task_pool.dispatch(func, *args, **kwargs)
+
+    def mount_vault(self, ledger=None):
+        """Mounts turnkey OFCS double-entry financial banking microservice."""
+        from .vault import mount_ofcs_vault
+        return mount_ofcs_vault(self, ledger=ledger)
+
     def run(self, blocking: bool = True, verbose: bool = False) -> HavenServer:
+        if self._enable_docs:
+            self.enable_docs_endpoints()
+
         self.server = HavenServer(
             host=self.host,
             port=self.port,
@@ -237,6 +310,8 @@ class HavenApp:
         return self.server
 
     def stop(self):
+        if self._task_pool:
+            self._task_pool.shutdown()
         if self.server:
             self.server.stop()
 

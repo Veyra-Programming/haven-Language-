@@ -38,6 +38,10 @@ class Currency:
     def __hash__(self) -> int:
         return hash(self.code)
 
+    @classmethod
+    def get(cls, code_or_obj: Any) -> 'Currency':
+        return get_currency(code_or_obj)
+
 
 # Standard Currencies
 USD = Currency("USD", "$", 2)

@@ -20,6 +20,8 @@ def check_file(file_path: str) -> int:
         with open(file_path, "r", encoding="utf-8") as f:
             code_str = f.read()
 
+        from haven.transpiler import preprocess_haven
+        code_str = preprocess_haven(code_str)
         compile(code_str, file_path, "exec")
         print(f"[{green('OK')}]")
 
