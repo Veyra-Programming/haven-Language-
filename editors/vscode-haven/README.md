@@ -1,4 +1,12 @@
-# Haven Programming Language (ODCS Native Edition) - VS Code Extension
+# 🦊 Haven Programming Language (ODCS Native Edition) - VS Code Extension
+
+<p align="center">
+  <img src="./assets/logo.png" alt="Haven Fox Mascot Logo" width="180" height="180" style="border-radius: 24px; box-shadow: 0 8px 32px rgba(0,255,200,0.3);" />
+</p>
+
+<p align="center">
+  <strong>Guarded by Haven Fox · Sovereign Digital Continuity · Zero Intent Loss</strong>
+</p>
 
 Official Visual Studio Code extension for the **Haven Programming Language** (`.hvn`, `.haven`) and the **Open Digital Continuity Standard (ODCS)** / **Open Financial Continuity Standard (OFCS)**.
 
@@ -7,11 +15,23 @@ Maintained by the Haven Language Foundation.
 
 ---
 
+## 🦊 The Haven Fox Mascot
+
+Meet **Haven Fox** — the official celestial guardian of Haven Language:
+- **Agility & Disruption Tolerance**: Swift, resilient execution that effortlessly bridges online and airgap offline modes.
+- **Cryptographic Vigilance**: Guarding append-only Merkle ledgers and ensuring Zero Intent Loss (sub-16ms receipt minting).
+- **Mathematical Exactness**: Enforcing Invariant 1 (Debits == Credits) with zero floating-point drift.
+
+---
+
 ## Features
 
+- 🦊 **Haven Fox Branding**: High-resolution icons, mascot theme, and status-bar indicator.
 - 🌈 **Syntax Highlighting**: Full grammar definitions for Haven natural English keywords, ODCS durable constructs, OFCS monetary records, pipeline operators (`|>`), and enterprise annotations.
-- ⚡ **Type Suggestions & Snippets**: Over 30 productivity snippets covering backend routing, OFCS financial transactions, enterprise concurrency, and circuit breakers.
-- 📐 **Keyword Uses & Examples**: Built-in syntax references and contextual documentation.
+- ⚡ **Dynamic Autocomplete & Type Suggestions**: Context-aware completion items for all keywords, classes, methods, and decorators.
+- 📝 **Intelligent Signature Help**: Instant parameter tooltips and type contracts triggered upon typing `(`.
+- 📐 **Keyword Uses & Hover Docs**: Comprehensive markdown documentation tooltips for every keyword.
+- 🧪 **1-Click Test Runner & Microservice Launcher**: Run tests (`haven.test`) and launch backend microservices directly from the editor.
 - 🛡️ **ODCS Invariant Security**: Native highlighting for `@Transactional`, `@Audit`, `checkpoint`, `preserve`, and `durable record`.
 
 ---
@@ -163,3 +183,4 @@ entry = ledger.post_transaction(tx)
 - **Repository**: [https://github.com/Veyra-Programming/haven-Language-](https://github.com/Veyra-Programming/haven-Language-)
 - **ODCS Global Gateway**: [https://api.odcs.in](https://api.odcs.in)
 - **Architecture & Standard**: Anirudha Puthraya
+

@@ -63,3 +63,4 @@ def register_continuity_endpoints(router: Router):
             return Response.not_found(f"Account '{acct_id}' not found")
         acct = _GLOBAL_FINANCIAL_LEDGER.get_account(acct_id)
         return Response.json(acct.to_dict())
+

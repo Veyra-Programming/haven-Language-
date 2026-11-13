@@ -93,3 +93,4 @@ class Response:
     @classmethod
     def unauthorized(cls, message: str = "Authentication required") -> "Response":
         return cls.error(message, status_code=401, error_code="UNAUTHORIZED")
+

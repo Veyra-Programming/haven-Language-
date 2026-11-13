@@ -1,15 +1,50 @@
 {
   "name": "haven-language",
   "displayName": "Haven Programming Language",
-  "description": "Language support for the Haven Programming Language and Open Digital Continuity Standard (ODCS).",
-  "version": "1.0.0",
-  "publisher": "anirudha-puthraya",
-  "engines": {
-    "vscode": "^1.70.0"
+  "description": "Official Visual Studio Code extension for Haven Language: natural-English syntax highlighting, Haven Fox mascot branding, autocompletion, hover signatures, and ODCS digital continuity integration.",
+  "version": "2.0.0",
+  "publisher": "Veyra-Programming",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Veyra-Programming/haven-Language-"
   },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "icon": "assets/logo.png",
   "categories": [
     "Programming Languages",
-    "Snippets"
+    "Snippets",
+    "Linters"
+  ],
+  "keywords": [
+    "haven",
+    "heaven",
+    "fox",
+    "natural-english",
+    "odcs",
+    "ofcs",
+    "digital-continuity",
+    "crdt",
+    "zero-intent-loss",
+    "hvn"
+  ],
+  "main": "./extension.js",
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    },
+    "virtualWorkspaces": true
+  },
+  "activationEvents": [
+    "onLanguage:haven",
+    "onLanguage:heaven",
+    "workspaceContains:**/*.hvn",
+    "workspaceContains:**/*.haven"
   ],
   "contributes": {
     "languages": [
@@ -17,13 +52,19 @@
         "id": "haven",
         "aliases": [
           "Haven",
-          "haven"
+          "haven",
+          "Heaven",
+          "heaven"
         ],
         "extensions": [
           ".hvn",
           ".haven"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./assets/file_icon.png",
+          "dark": "./assets/file_icon.png"
+        }
       }
     ],
     "grammars": [
@@ -38,7 +79,73 @@
         "language": "haven",
         "path": "./snippets/haven.json"
       }
-    ]
+    ],
+    "commands": [
+      {
+        "command": "haven.run",
+        "title": "Haven: Run Active File",
+        "icon": "$(play)"
+      },
+      {
+        "command": "haven.test",
+        "title": "Haven: Run Test Suites",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "haven.lint",
+        "title": "Haven: Lint & Validate Syntax",
+        "icon": "$(check)"
+      },
+      {
+        "command": "haven.startServer",
+        "title": "Haven: Start ODCS Continuity Server",
+        "icon": "$(server)"
+      },
+      {
+        "command": "haven.repl",
+        "title": "Haven: Launch Interactive REPL",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "haven.showMenu",
+        "title": "Haven: Show Actions Menu"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "haven.run",
+          "when": "editorLangId == haven",
+          "group": "navigation@1"
+        },
+        {
+          "command": "haven.test",
+          "when": "editorLangId == haven",
+          "group": "navigation@2"
+        },
+        {
+          "command": "haven.lint",
+          "when": "editorLangId == haven",
+          "group": "navigation@3"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "haven.run",
+          "when": "resourceExtname == .hvn || resourceExtname == .haven",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Haven Language",
+      "properties": {
+        "haven.runnerPath": {
+          "type": "string",
+          "default": "",
+          "description": "Explicit path to haven executable binary."
+        }
+      }
+    }
   }
 }
-

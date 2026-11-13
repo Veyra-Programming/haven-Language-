@@ -239,3 +239,4 @@ class HavenApp:
     def stop(self):
         if self.server:
             self.server.stop()
+

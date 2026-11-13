@@ -32,3 +32,4 @@ __all__ = [
     "HavenApp",
     "register_continuity_endpoints",
 ]
+

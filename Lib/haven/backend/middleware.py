@@ -107,3 +107,4 @@ class RateLimiterMiddleware(Middleware):
         if len(client_times) > self.max_requests:
             return Response.error("Rate limit exceeded. Too many requests.", status_code=429, error_code="RATE_LIMITED")
         return None
+

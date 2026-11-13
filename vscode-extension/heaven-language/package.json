@@ -3,10 +3,10 @@
   "displayName": "Heaven (Haven) Programming Language",
   "description": "Official Visual Studio Code extension for Heaven & Haven: natural-English syntax highlighting, AST diagnostics, hover tooltips, snippets, and ODCS continuity gateway integration.",
   "version": "2.0.0",
-  "publisher": "star-lang",
+  "publisher": "Veyra-Programming",
   "repository": {
     "type": "git",
-    "url": "https://github.com/odcs-standard/heaven-language"
+    "url": "https://github.com/Veyra-Programming/haven-Language-"
   },
   "engines": {
     "vscode": "^1.75.0"
@@ -92,8 +92,13 @@
       },
       {
         "command": "heaven.compile",
-        "title": "Heaven: Transpile to Python Target",
+        "title": "Haven: View Intermediate Representation (IR)",
         "icon": "$(symbol-operator)"
+      },
+      {
+        "command": "heaven.test",
+        "title": "Haven: Run Test Suites",
+        "icon": "$(beaker)"
       },
       {
         "command": "heaven.startServer",
@@ -126,6 +131,11 @@
           "command": "heaven.compile",
           "when": "editorLangId == heaven",
           "group": "navigation@3"
+        },
+        {
+          "command": "heaven.test",
+          "when": "editorLangId == heaven",
+          "group": "navigation@4"
         }
       ],
       "explorer/context": [
