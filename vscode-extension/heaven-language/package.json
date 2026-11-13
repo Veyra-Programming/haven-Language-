@@ -40,6 +40,7 @@
   },
   "activationEvents": [
     "onLanguage:heaven",
+    "onLanguage:haven",
     "workspaceContains:**/*.hvn",
     "workspaceContains:**/*.heaven",
     "workspaceContains:**/*.haven"

@@ -328,5 +328,66 @@
       "        self.description = description"
     ],
     "description": "Rich Java-style Enum supporting custom constructors, attributes, and methods."
+  },
+  "Typed Function Definition": {
+    "prefix": "def-typed",
+    "body": [
+      "define ${1:function_name}(${2:param}: ${3|str,int,float,bool,Money,DurableRecord|}) -> ${4|bool,str,int,Money,None|}:",
+      "    ${5:give back True}"
+    ],
+    "description": "Type Suggestion: Defines a typed Haven function with parameter and return type hints."
+  },
+  "Typed Let Assignment": {
+    "prefix": "let-typed",
+    "body": [
+      "let ${1:variable}: ${2|str,int,float,bool,Money,ContinuityLedger|} be ${3:value}"
+    ],
+    "description": "Type Suggestion: Declares a strongly-typed local variable binding."
+  },
+  "Typed Set Assignment": {
+    "prefix": "set-typed",
+    "body": [
+      "set ${1:variable}: ${2|str,int,float,bool,Money,ContinuityLedger|} to ${3:value}"
+    ],
+    "description": "Type Suggestion: Updates a strongly-typed state variable."
+  },
+  "Typed Durable Record": {
+    "prefix": "durable-typed",
+    "body": [
+      "durable record ${1:RecordName}:",
+      "    ${2:id}: str",
+      "    ${3:timestamp}: int",
+      "    ${4:amount}: Money",
+      "    ${5:is_active}: bool"
+    ],
+    "description": "Type Suggestion: Creates a schema-enforced, cryptographically sealed ODCS record with typed fields."
+  },
+  "Type Hint: Optional": {
+    "prefix": "type-optional",
+    "body": [
+      "Optional[${1|str,int,float,bool,Money,DurableRecord,CompletableFuture|}]"
+    ],
+    "description": "Type Suggestion: Nullable type annotation."
+  },
+  "Type Hint: List": {
+    "prefix": "type-list",
+    "body": [
+      "List[${1|str,int,float,bool,Money,LedgerEntry,DurableRecord|}]"
+    ],
+    "description": "Type Suggestion: Homogeneous list type annotation."
+  },
+  "Type Hint: Dict": {
+    "prefix": "type-dict",
+    "body": [
+      "Dict[${1:str}, ${2|Any,Money,int,str,DurableRecord|}]"
+    ],
+    "description": "Type Suggestion: Key-value dictionary type annotation."
+  },
+  "Type Hint: CompletableFuture": {
+    "prefix": "type-future",
+    "body": [
+      "CompletableFuture[${1|str,int,bool,Money,Response|}]"
+    ],
+    "description": "Type Suggestion: Reactive asynchronous promise type annotation."
   }
 }

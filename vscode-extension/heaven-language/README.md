@@ -29,10 +29,50 @@ Meet **Haven Fox** — the official celestial guardian of Haven Language:
 - 🦊 **Haven Fox Branding**: High-resolution icons, mascot theme, and status-bar indicator.
 - 🌈 **Syntax Highlighting**: Full grammar definitions for Haven natural English keywords, ODCS durable constructs, OFCS monetary records, pipeline operators (`|>`), and enterprise annotations.
 - ⚡ **Dynamic Autocomplete & Type Suggestions**: Context-aware completion items for all keywords, classes, methods, and decorators.
-- 📝 **Intelligent Signature Help**: Instant parameter tooltips and type contracts triggered upon typing `(`.
+- 🏷️ **Intelligent Type Suggestions**: Context-driven type hints triggered upon typing `:`, `->`, or `[` for Primitives, Generics, ODCS Merkle types, OFCS Money, and Java Concurrency types.
+- 📝 **Intelligent Signature Help**: Instant parameter tooltips and 59+ type contracts triggered upon typing `(`.
 - 📐 **Keyword Uses & Hover Docs**: Comprehensive markdown documentation tooltips for every keyword.
 - 🧪 **1-Click Test Runner & Microservice Launcher**: Run tests (`haven.test`) and launch backend microservices directly from the editor.
 - 🛡️ **ODCS Invariant Security**: Native highlighting for `@Transactional`, `@Audit`, `checkpoint`, `preserve`, and `durable record`.
+
+---
+
+## 🏷️ Type Suggestions & Static Verification
+
+Haven Language extension provides full context-aware type hints that appear at the top of the autocompletion menu when typing colons (`:`), return arrows (`->`), generic brackets (`[`), or defining fields inside `durable record`:
+
+```haven
+durable record PatientVitals:
+    patient_id: str
+    heart_rate: int
+    blood_pressure: str
+    recorded_at: int
+    is_critical: bool
+
+define transfer_funds(
+    sender: FinancialAccount,
+    recipient: FinancialAccount,
+    amount: Money
+) -> DoubleEntryRecord:
+    ensure amount.is_positive() otherwise "Invalid transfer amount"
+    give back DoubleEntryRecord(
+        tx_id=uuid7(),
+        debits=[amount],
+        credits=[amount],
+        description="P2P Transfer"
+    )
+```
+
+### Type Suggestions Matrix
+
+| Category | Available Types & Suggestions |
+| :--- | :--- |
+| **Primitives** | `str`, `int`, `float`, `bool`, `bytes`, `bytearray`, `list`, `dict`, `set`, `tuple`, `Decimal`, `object`, `None` |
+| **Generics** | `Any`, `Optional[T]`, `Union[T1, T2]`, `List[T]`, `Dict[K, V]`, `Set[T]`, `Tuple[T, ...]`, `Callable[[Args], Ret]`, `Type[T]`, `Iterable[T]` |
+| **ODCS Continuity** | `DurableRecord`, `ContinuityLedger`, `LedgerEntry`, `MerkleTree`, `VectorClock`, `LWWRegister`, `PNCounter`, `AWORSet`, `OutboxPipeline`, `MeshNode`, `GossipMesh`, `ContinuityMode`, `EnvironmentalTelemetry`, `IntentReceipt`, `ZeroIntentLossManager` |
+| **OFCS Financial** | `Money`, `Currency`, `ExchangeRate`, `DoubleEntryRecord`, `FinancialAccount`, `OFCSFinancialLedger`, `ReconciliationEngine`, `ReconciliationReport` |
+| **Java Enterprise** | `Interface`, `SealedClass`, `HavenEnum`, `Record`, `TypeBound`, `GenericContainer`, `CompletableFuture`, `AtomicInteger`, `AtomicBoolean`, `AtomicReference`, `CountDownLatch`, `ReentrantLock`, `VirtualExecutor` |
+| **Backend Framework** | `HavenApp`, `HavenServer`, `Router`, `Request`, `Response`, `CORSMiddleware`, `ContinuityAuditMiddleware`, `RateLimiterMiddleware` |
 
 ---
 

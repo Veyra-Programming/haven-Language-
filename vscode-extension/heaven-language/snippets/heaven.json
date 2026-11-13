@@ -1,164 +1,393 @@
 {
-  "ODCS Continuity Gateway Server": {
-    "prefix": "heaven-server",
-    "body": [
-      "// ==============================================================================",
-      "// 🕊️ ${1:My Haven Continuity Gateway} (ODCS-2.0.0)",
-      "// ==============================================================================",
-      "",
-      "import json",
-      "import time",
-      "import os",
-      "import http.server",
-      "import socketserver",
-      "import urllib.parse",
-      "",
-      "set SERVER_NAME to \"${1:My Haven Continuity Gateway}\"",
-      "remember STANDARD as \"ODCS-2.0.0\"",
-      "remember DEFAULT_PORT as ${2:8000}",
-      "",
-      "set ledger to ContinuityLedger.open(\"haven://${3:gateway-wal}\")",
-      "set crdt to PNCounter(\"${4:node-alpha}\")",
-      "",
-      "class HavenRequestHandler(http.server.SimpleHTTPRequestHandler):",
-      "",
-      "    define end_headers(self):",
-      "        self.send_header(\"Access-Control-Allow-Origin\", \"*\")",
-      "        self.send_header(\"X-ODCS-Standard\", STANDARD)",
-      "        self.send_header(\"X-Powered-By\", \"Haven Language v2.0\")",
-      "        super().end_headers()",
-      "",
-      "    define do_GET(self):",
-      "        parsed = urllib.parse.urlparse(self.path)",
-      "        path = parsed.path",
-      "",
-      "        whenever path is equal to \"/healthz\":",
-      "            self.send_json_response(200, {",
-      "                \"status\": \"HEALTHY\",",
-      "                \"standard\": STANDARD,",
-      "                \"merkle_height\": ledger.height()",
-      "            })",
-      "            give back",
-      "",
-      "        self.send_json_response(404, {\"error\": \"Not Found\", \"path\": path})",
-      "",
-      "    define send_json_response(self, code, data):",
-      "        payload_bytes = json.dumps(data, indent=2).encode(\"utf-8\")",
-      "        self.send_response(code)",
-      "        self.send_header(\"Content-Type\", \"application/json; charset=utf-8\")",
-      "        self.send_header(\"Content-Length\", str(len(payload_bytes)))",
-      "        self.end_headers()",
-      "        self.wfile.write(payload_bytes)",
-      "",
-      "class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):",
-      "    daemon_threads = True",
-      "    allow_reuse_address = True",
-      "",
-      "define start_server(port=DEFAULT_PORT):",
-      "    server = ThreadedHTTPServer((\"0.0.0.0\", port), HavenRequestHandler)",
-      "    say \"🕊️ Haven Gateway listening on http://0.0.0.0:{port}\"",
-      "    server.serve_forever()",
-      "",
-      "start_server(DEFAULT_PORT)"
-    ],
-    "description": "Scaffold an official ODCS HTTP Continuity Gateway in Heaven Language"
-  },
-
   "Durable Record": {
-    "prefix": "heaven-record",
+    "prefix": "durable",
     "body": [
-      "durable record ${1:EncounterRecord}:",
-      "    ${2:record_id}: String",
-      "    ${3:timestamp}: Integer",
-      "    ${4:sealed_by}: String"
+      "durable record ${1:AssetRecord}:",
+      "    def __init__(self, ${2:asset_id}, ${3:value}):",
+      "        self.${2:asset_id} = ${2:asset_id}",
+      "        self.${3:value} = ${3:value}"
     ],
-    "description": "Define an immutable durable record in Heaven"
+    "description": "Keyword use: 'durable record' creates an immutable, cryptographically sealed ODCS record."
   },
-
-  "Continuity Checkpoint": {
-    "prefix": "heaven-checkpoint",
+  "Checkpoint Statement": {
+    "prefix": "checkpoint",
     "body": [
-      "set ${1:record} to ${2:EncounterRecord}(${3:\"REC-001\"}, now_ms(), \"${4:actor}\")",
-      "checkpoint ${1:record} as \"${5:triage_checkpoint}\" into ${6:ledger}",
-      "say \"Preserved record into Merkle block {${6:ledger}.height()} with hash {${6:ledger}.merkle_root()}\""
+      "checkpoint ${1:asset} as \"${2:alias}\" into ${3:ledger}"
     ],
-    "description": "Checkpoint a durable record into an append-only WAL ledger"
+    "description": "Keyword use: 'checkpoint <asset> as <label> into <ledger>' commits a tamper-evident Merkle block."
   },
-
-  "Zero Intent Loss Preservation": {
-    "prefix": "heaven-zil",
+  "Preserve Statement": {
+    "prefix": "preserve",
     "body": [
-      "set receipt to ZeroIntentLoss.preserve(\"${1:USER_ACTION}\", ${2:payload}, actor=\"${3:gateway-client}\")",
-      "set block to ${4:ledger}.append({\"intent\": receipt[\"intent_id\"], \"receipt_hash\": receipt[\"receipt_hash\"]})",
-      "say \"Minted ZIL receipt: {receipt['receipt_id']} | Block #{block['height']}\""
+      "preserve ${1:payload} as \"${2:label}\" into ${3:ledger}"
     ],
-    "description": "Mint a sub-16ms tamper-evident Zero Intent Loss receipt"
+    "description": "Keyword use: 'preserve <payload> as <label> into <ledger>' seals operational intent into append-only storage."
   },
-
-  "CRDT PN-Counter Mesh": {
-    "prefix": "heaven-crdt",
+  "Verify Statement": {
+    "prefix": "verify",
     "body": [
-      "set ${1:node_counter} to PNCounter(\"${2:node-id}\")",
-      "${1:node_counter}.inc(${3:1})",
-      "say \"Converged CRDT mesh counter: {${1:node_counter}.value()}\""
+      "verify ${1:asset} with ${2:proof}"
     ],
-    "description": "Create and increment a conflict-free replicated PN-counter"
+    "description": "Keyword use: 'verify <asset> with <proof>' validates cryptographic SHA-256 Merkle proofs."
   },
-
-  "Function Definition": {
-    "prefix": "heaven-fn",
+  "English Assignment (set)": {
+    "prefix": "set",
     "body": [
-      "define ${1:process_payload}(${2:item}, ${3:flag}=true):",
-      "    whenever ${3:flag}:",
-      "        give back ${1:process_payload}_internal(${2:item})",
-      "    otherwise:",
-      "        give back nothing"
+      "set ${1:variable} to ${2:value}"
     ],
-    "description": "Define a function with natural English syntax and return"
+    "description": "Keyword use: 'set <variable> to <value>' declares or updates variable state in natural English."
   },
-
+  "English Assignment (let)": {
+    "prefix": "let",
+    "body": [
+      "let ${1:variable} be ${2:value}"
+    ],
+    "description": "Keyword use: 'let <variable> be <value>' introduces local variable bindings."
+  },
+  "English Constant (remember)": {
+    "prefix": "remember",
+    "body": [
+      "remember ${1:CONSTANT_NAME} as ${2:value}"
+    ],
+    "description": "Keyword use: 'remember <NAME> as <value>' assigns an immutable constant binding."
+  },
+  "English Increment": {
+    "prefix": "increase",
+    "body": [
+      "increase ${1:variable} by ${2:1}"
+    ],
+    "description": "Keyword use: 'increase <var> by <delta>' increments numerical state by the given amount."
+  },
+  "English Decrement": {
+    "prefix": "decrease",
+    "body": [
+      "decrease ${1:variable} by ${2:1}"
+    ],
+    "description": "Keyword use: 'decrease <var> by <delta>' decrements numerical state by the given amount."
+  },
   "Whenever Conditional": {
-    "prefix": "heaven-cond",
+    "prefix": "whenever",
     "body": [
-      "whenever ${1:status} is equal to \"${2:ONLINE}\":",
-      "    say \"Node is active\"",
-      "otherwise if ${1:status} is equal to \"${3:DEGRADED}\":",
-      "    say \"Operating in degraded offline mode\"",
+      "whenever ${1:condition}:",
+      "    ${2:pass}",
+      "otherwise if ${3:other_condition}:",
+      "    ${4:pass}",
       "otherwise:",
-      "    say \"Node partitioned from mesh\""
+      "    ${5:pass}"
     ],
-    "description": "Natural English conditional block"
+    "description": "Keyword use: 'whenever <cond>: ... otherwise if ...: ... otherwise:' natural conditional branch."
   },
-
-  "For Each Loop": {
-    "prefix": "heaven-foreach",
+  "Unless Conditional": {
+    "prefix": "unless",
     "body": [
-      "for each ${1:item} in ${2:collection}:",
-      "    say \"Processing: {${1:item}}\""
+      "unless ${1:condition}:",
+      "    ${2:pass}"
     ],
-    "description": "Iterate over elements with for each"
+    "description": "Keyword use: 'unless <condition>:' executes when condition evaluates to false."
   },
-
+  "Until Loop": {
+    "prefix": "until",
+    "body": [
+      "until ${1:condition}:",
+      "    ${2:pass}"
+    ],
+    "description": "Keyword use: 'until <condition>:' repeats while condition remains false."
+  },
   "Repeat Loop": {
-    "prefix": "heaven-repeat",
+    "prefix": "repeat",
     "body": [
       "repeat ${1:5} times:",
-      "    say \"Heartbeat pulse sent\""
+      "    ${2:pass}"
     ],
-    "description": "Repeat a block N times"
+    "description": "Keyword use: 'repeat <N> times:' concise, high-performance counting loop."
   },
-
-  "Error Handling Block": {
-    "prefix": "heaven-try",
+  "For Each Loop": {
+    "prefix": "for each",
+    "body": [
+      "for each ${1:item} in ${2:collection}:",
+      "    ${3:pass}"
+    ],
+    "description": "Keyword use: 'for each <item> in <collection>:' natural iteration over iterables."
+  },
+  "Forever Loop": {
+    "prefix": "forever",
+    "body": [
+      "forever:",
+      "    ${1:pass}"
+    ],
+    "description": "Keyword use: 'forever:' infinite execution loop with sub-millisecond dispatch."
+  },
+  "Give Back Statement": {
+    "prefix": "give back",
+    "body": [
+      "give back ${1:expression}"
+    ],
+    "description": "Keyword use: 'give back <expression>' returns a value from a function or subroutine."
+  },
+  "Try Recover Always": {
+    "prefix": "recover",
     "body": [
       "try:",
-      "    ${1:// execute operation}",
-      "on error as err:",
-      "    say \"[Continuity Fallback] Caught error: {err}\"",
+      "    ${1:pass}",
+      "recover as ${2:err}:",
+      "    ${3:pass}",
       "always:",
-      "    ${2:// cleanup resources}"
+      "    ${4:pass}"
     ],
-    "description": "Try / on error / always exception handling block"
+    "description": "Keyword use: 'try: ... recover as err: ... always:' natural error trapping and cleanup."
+  },
+  "Ensure Assertion": {
+    "prefix": "ensure",
+    "body": [
+      "ensure ${1:condition} otherwise \"${2:Error description}\""
+    ],
+    "description": "Keyword use: 'ensure <cond> otherwise <msg>' asserts an invariant with custom error message."
+  },
+  "Say Statement": {
+    "prefix": "say",
+    "body": [
+      "say ${1:\"Output message\"}"
+    ],
+    "description": "Keyword use: 'say <expr>' prints expressions to standard output."
+  },
+  "Show Statement": {
+    "prefix": "show",
+    "body": [
+      "show ${1:\"Display output\"}"
+    ],
+    "description": "Keyword use: 'show <expr>' prints formatted values directly to output."
+  },
+  "Pipeline Transformation": {
+    "prefix": "pipe",
+    "body": [
+      "${1:data} |> ${2:step1} |> ${3:step2}"
+    ],
+    "description": "Keyword use: '<val> |> <fn>' functional pipeline forwarding with placeholder support."
+  },
+  "Haven Backend App Container": {
+    "prefix": "haven-app",
+    "body": [
+      "from haven import HavenApp, Request, Response",
+      "",
+      "app = HavenApp(name=\"${1:EnterpriseService}\", port=${2:8080}, cors=True, continuity_audit=True)",
+      "",
+      "@app.get(\"/api/v1/health\")",
+      "def health_check(req: Request):",
+      "    return Response.ok(\"Service is operational\")",
+      "",
+      "@app.get(\"/api/v1/items/{item_id}\")",
+      "def get_item(req: Request):",
+      "    item_id = req.path_params.get(\"item_id\")",
+      "    return Response.json({\"id\": item_id, \"name\": f\"Item {item_id}\"})",
+      "",
+      "@app.post(\"/api/v1/submit\")",
+      "def handle_submit(req: Request):",
+      "    payload = req.json",
+      "    return Response.json({\"received\": payload, \"status\": \"PROCESSED\"}, status_code=201)",
+      "",
+      "if __name__ == \"__main__\":",
+      "    app.run(blocking=True, verbose=True)"
+    ],
+    "description": "Scaffold a complete Haven Enterprise Microservice with declarative routing and ODCS audit."
+  },
+  "Haven Route GET": {
+    "prefix": "hvn-get",
+    "body": [
+      "@app.get(\"${1:/api/resource}\")",
+      "def handle_${2:get_resource}(req: Request) -> Response:",
+      "    ${3:return Response.json({\"data\": \"value\"})}"
+    ],
+    "description": "Declarative HTTP GET route handler with typed Request/Response."
+  },
+  "Haven Route POST": {
+    "prefix": "hvn-post",
+    "body": [
+      "@app.post(\"${1:/api/resource}\")",
+      "def handle_${2:create_resource}(req: Request) -> Response:",
+      "    data = req.json",
+      "    ${3:return Response.json({\"created\": data}, status_code=201)}"
+    ],
+    "description": "Declarative HTTP POST route handler with JSON payload decoding."
+  },
+  "OFCS Double-Entry Record": {
+    "prefix": "ofcs-double-entry",
+    "body": [
+      "from ofcs import DoubleEntryRecord, Money, USD",
+      "",
+      "tx = DoubleEntryRecord(",
+      "    tx_id=\"${1:TX-10001}\",",
+      "    debits=[Money(\"${2:500.00}\", USD)],",
+      "    credits=[Money(\"${2:500.00}\", USD)],",
+      "    description=\"${3:Inter-account balance transfer}\"",
+      ")"
+    ],
+    "description": "OFCS Invariant 1: Double-Entry Record enforcing sum(debits) == sum(credits)."
+  },
+  "OFCS Financial Ledger": {
+    "prefix": "ofcs-ledger",
+    "body": [
+      "from ofcs import OFCSFinancialLedger, FinancialAccount, USD",
+      "",
+      "ledger = OFCSFinancialLedger(ledger_name=\"${1:primary_vault}\")",
+      "acct_source = ledger.create_account(\"${2:ACC-101}\", USD, initial_balance=\"${3:1000.00}\")",
+      "acct_dest = ledger.create_account(\"${4:ACC-102}\", USD, initial_balance=\"0.00\")"
+    ],
+    "description": "Initialize a high-integrity OFCS Financial Ledger with dual-account balance tracking."
+  },
+  "OFCS Financial Transaction": {
+    "prefix": "ofcs-tx",
+    "body": [
+      "@FinancialTransaction",
+      "def process_payout(from_acc: str, to_acc: str, amount: Money):",
+      "    ${1:# Invariant protected payment execution}",
+      "    pass"
+    ],
+    "description": "Decorator: @FinancialTransaction ensures zero floating-point drift and double-entry atomicity."
+  },
+  "Enterprise CompletableFuture": {
+    "prefix": "completable-future",
+    "body": [
+      "from haven import CompletableFuture",
+      "",
+      "future = CompletableFuture.supply_async(lambda: ${1:expensive_calculation()}) \\",
+      "    .then_apply(lambda result: ${2:format_result(result)}) \\",
+      "    .then_accept(lambda final_res: print(\"Completed:\", final_res))"
+    ],
+    "description": "Java-style reactive non-blocking CompletableFuture pipeline."
+  },
+  "Enterprise CircuitBreaker": {
+    "prefix": "circuit-breaker",
+    "body": [
+      "@CircuitBreaker(failure_threshold=${1:5}, recovery_timeout=${2:30.0}, fallback=${3:fallback_fn})",
+      "def call_external_service(${4:arg}):",
+      "    ${5:pass}"
+    ],
+    "description": "Decorator: @CircuitBreaker prevents cascading failure across microservice endpoints."
+  },
+  "Enterprise Retry Policy": {
+    "prefix": "retry",
+    "body": [
+      "@Retry(max_attempts=${1:3}, backoff_factor=${2:2.0})",
+      "def resilient_operation():",
+      "    ${3:pass}"
+    ],
+    "description": "Decorator: @Retry automatically retries operations with exponential backoff."
+  },
+  "Enterprise Java Interface": {
+    "prefix": "java-interface",
+    "body": [
+      "from haven import Interface, default, implements",
+      "",
+      "class ${1:IService}(Interface):",
+      "    def execute(self, payload: dict) -> dict:",
+      "        \"\"\"Contractual method must be implemented by subtypes.\"\"\"",
+      "        pass",
+      "",
+      "    @default",
+      "    def ping(self) -> str:",
+      "        return \"PONG\"",
+      "",
+      "@implements(${1:IService})",
+      "class ${2:ServiceImpl}:",
+      "    def execute(self, payload: dict) -> dict:",
+      "        return {\"status\": \"SUCCESS\", \"data\": payload}"
+    ],
+    "description": "Java-style Interface with @default methods and @implements structural validation."
+  },
+  "Enterprise Sealed Class": {
+    "prefix": "sealed-class",
+    "body": [
+      "from haven import Sealed",
+      "",
+      "@Sealed(permits=(${2:SuccessResult}, ${3:FailureResult}))",
+      "class ${1:ServiceResult}:",
+      "    pass",
+      "",
+      "class ${2:SuccessResult}(${1:ServiceResult}):",
+      "    def __init__(self, value):",
+      "        self.value = value",
+      "",
+      "class ${3:FailureResult}(${1:ServiceResult}):",
+      "    def __init__(self, error):",
+      "        self.error = error"
+    ],
+    "description": "Java 17 style @Sealed class hierarchy restricting inheritance to permitted classes."
+  },
+  "Enterprise Rich Enum": {
+    "prefix": "haven-enum",
+    "body": [
+      "from haven import HavenEnum",
+      "",
+      "class ${1:TransactionStatus}(HavenEnum):",
+      "    PENDING = (100, \"Awaiting verification\")",
+      "    COMMITTED = (200, \"Sealed in ledger\")",
+      "    REJECTED = (400, \"Invariant check failed\")",
+      "",
+      "    def __init__(self, code: int, description: str):",
+      "        self.code = code",
+      "        self.description = description"
+    ],
+    "description": "Rich Java-style Enum supporting custom constructors, attributes, and methods."
+  },
+  "Typed Function Definition": {
+    "prefix": "def-typed",
+    "body": [
+      "define ${1:function_name}(${2:param}: ${3|str,int,float,bool,Money,DurableRecord|}) -> ${4|bool,str,int,Money,None|}:",
+      "    ${5:give back True}"
+    ],
+    "description": "Type Suggestion: Defines a typed Haven function with parameter and return type hints."
+  },
+  "Typed Let Assignment": {
+    "prefix": "let-typed",
+    "body": [
+      "let ${1:variable}: ${2|str,int,float,bool,Money,ContinuityLedger|} be ${3:value}"
+    ],
+    "description": "Type Suggestion: Declares a strongly-typed local variable binding."
+  },
+  "Typed Set Assignment": {
+    "prefix": "set-typed",
+    "body": [
+      "set ${1:variable}: ${2|str,int,float,bool,Money,ContinuityLedger|} to ${3:value}"
+    ],
+    "description": "Type Suggestion: Updates a strongly-typed state variable."
+  },
+  "Typed Durable Record": {
+    "prefix": "durable-typed",
+    "body": [
+      "durable record ${1:RecordName}:",
+      "    ${2:id}: str",
+      "    ${3:timestamp}: int",
+      "    ${4:amount}: Money",
+      "    ${5:is_active}: bool"
+    ],
+    "description": "Type Suggestion: Creates a schema-enforced, cryptographically sealed ODCS record with typed fields."
+  },
+  "Type Hint: Optional": {
+    "prefix": "type-optional",
+    "body": [
+      "Optional[${1|str,int,float,bool,Money,DurableRecord,CompletableFuture|}]"
+    ],
+    "description": "Type Suggestion: Nullable type annotation."
+  },
+  "Type Hint: List": {
+    "prefix": "type-list",
+    "body": [
+      "List[${1|str,int,float,bool,Money,LedgerEntry,DurableRecord|}]"
+    ],
+    "description": "Type Suggestion: Homogeneous list type annotation."
+  },
+  "Type Hint: Dict": {
+    "prefix": "type-dict",
+    "body": [
+      "Dict[${1:str}, ${2|Any,Money,int,str,DurableRecord|}]"
+    ],
+    "description": "Type Suggestion: Key-value dictionary type annotation."
+  },
+  "Type Hint: CompletableFuture": {
+    "prefix": "type-future",
+    "body": [
+      "CompletableFuture[${1|str,int,bool,Money,Response|}]"
+    ],
+    "description": "Type Suggestion: Reactive asynchronous promise type annotation."
   }
 }
-
