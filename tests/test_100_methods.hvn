@@ -1,0 +1,312 @@
+# ==============================================================================
+# Haven Language • 100+ Methods Verification Suite
+# Standard: Open Digital Continuity Standard (ODCS) Standard Library
+# Architecture & Specification: Anirudha Puthraya
+# ==============================================================================
+
+import haven
+from haven import (
+    # 1. Math & Stats
+    clamp,
+    lerp,
+    sign,
+    sqrt_val,
+    hypot_val,
+    pow_mod,
+    gcd_val,
+    lcm_val,
+    factorial_val,
+    comb_val,
+    perm_val,
+    is_prime,
+    prime_factors,
+    next_prime,
+    fibonacci,
+    deg_to_rad,
+    rad_to_deg,
+    sin_val,
+    cos_val,
+    mean_val,
+    median_val,
+    std_dev_val,
+    percentile_val,
+    norm_min_max,
+    # 2. Strings & Text
+    slugify,
+    camel_case,
+    snake_case,
+    kebab_case,
+    pascal_case,
+    sponge_case,
+    strip_html,
+    remove_accents,
+    collapse_whitespace,
+    truncate_words,
+    truncate_chars,
+    is_palindrome,
+    is_anagram,
+    count_vowels,
+    count_consonants,
+    levenshtein_distance,
+    hamming_distance,
+    to_base64,
+    from_base64,
+    mask_sensitive,
+    rot13,
+    reverse_str,
+    # 3. Collections & Functional
+    chunk_list,
+    window_list,
+    flatten_list,
+    unique_list,
+    frequencies_map,
+    group_by_key,
+    partition_list,
+    intersperse_val,
+    compact_list,
+    find_first,
+    find_last,
+    find_index,
+    take_while_fn,
+    drop_while_fn,
+    cartesian_product,
+    intersect_sets,
+    union_sets,
+    difference_sets,
+    map_values_dict,
+    merge_dicts,
+    # 4. Chrono & Temporal
+    now_utc,
+    now_iso,
+    now_ms,
+    now_micros,
+    add_days,
+    diff_seconds,
+    is_leap_year,
+    days_in_month,
+    start_of_day,
+    end_of_day,
+    is_weekend,
+    humanize_duration,
+    # 5. Cryptography & Security
+    sha256_hex,
+    sha512_hex,
+    sha3_256_hex,
+    blake2b_hex,
+    hmac_sha256_hex,
+    constant_time_compare,
+    random_hex_sec,
+    generate_uuid4_str,
+    generate_uuid7_str,
+    mask_hash,
+    # 6. Filesystem & Paths
+    write_text_file,
+    read_text_file,
+    append_text_file,
+    file_exists,
+    file_size_bytes,
+    path_join,
+    path_basename,
+    path_dirname,
+    path_extension,
+    remove_file,
+    # 7. System & Diagnostics
+    cpu_cores_count,
+    platform_os_name,
+    platform_machine,
+    system_hostname,
+    set_env_var,
+    get_env_var,
+    process_pid,
+    force_gc,
+    haven_methods,
+)
+
+to test_category_1_math_and_stats():
+    say "[1/7] Verifying Math & Statistical Methods..."
+    ensure clamp(15, 0, 10) == 10 otherwise "clamp upper failed"
+    ensure clamp(-5, 0, 10) == 0 otherwise "clamp lower failed"
+    ensure lerp(10, 20, 0.5) == 15.0 otherwise "lerp failed"
+    ensure sign(-42) == -1 otherwise "sign negative failed"
+    ensure sign(42) == 1 otherwise "sign positive failed"
+    ensure hypot_val(3, 4) == 5.0 otherwise "hypot failed"
+    ensure pow_mod(2, 10, 1000) == 24 otherwise "pow_mod failed"
+    ensure gcd_val(54, 24) == 6 otherwise "gcd failed"
+    ensure lcm_val(4, 6) == 12 otherwise "lcm failed"
+    ensure factorial_val(5) == 120 otherwise "factorial failed"
+    ensure comb_val(5, 2) == 10 otherwise "comb failed"
+    ensure perm_val(5, 2) == 20 otherwise "perm failed"
+    ensure is_prime(17) is True otherwise "is_prime failed"
+    ensure is_prime(18) is False otherwise "is_prime failed on composite"
+    ensure prime_factors(60) == [2, 2, 3, 5] otherwise "prime_factors failed"
+    ensure next_prime(14) == 17 otherwise "next_prime failed"
+    ensure fibonacci(7) == 13 otherwise "fibonacci failed"
+    ensure deg_to_rad(180) == 3.141592653589793 otherwise "deg_to_rad failed"
+    ensure rad_to_deg(3.141592653589793) == 180.0 otherwise "rad_to_deg failed"
+
+    # Statistics
+    set data to [10, 20, 30, 40, 50]
+    ensure mean_val(data) == 30.0 otherwise "mean_val failed"
+    ensure median_val(data) == 30.0 otherwise "median_val failed"
+    ensure percentile_val(data, 50) == 30.0 otherwise "percentile_val failed"
+    ensure norm_min_max([0, 50, 100]) == [0.0, 0.5, 1.0] otherwise "norm_min_max failed"
+    say "[PASS] Category 1: Math & Statistics verified."
+
+
+to test_category_2_strings_and_text():
+    say "[2/7] Verifying String, Text & NLP Methods..."
+    ensure slugify("Haven Programming Language 2026!") == "haven-programming-language-2026" otherwise "slugify failed"
+    ensure camel_case("open digital continuity") == "openDigitalContinuity" otherwise "camel_case failed"
+    ensure snake_case("OpenDigitalContinuity") == "open_digital_continuity" otherwise "snake_case failed"
+    ensure kebab_case("OpenDigitalContinuity") == "open-digital-continuity" otherwise "kebab_case failed"
+    ensure pascal_case("open digital continuity") == "OpenDigitalContinuity" otherwise "pascal_case failed"
+    ensure sponge_case("hello") == "hElLo" otherwise "sponge_case failed"
+    ensure strip_html("<p>Hello <b>World</b></p>") == "Hello World" otherwise "strip_html failed"
+    ensure remove_accents("Hélène Café") == "Helene Cafe" otherwise "remove_accents failed"
+    ensure collapse_whitespace("  hello   world  \t ") == "hello world" otherwise "collapse_whitespace failed"
+    ensure truncate_words("The quick brown fox jumps over", 3) == "The quick brown..." otherwise "truncate_words failed"
+    ensure truncate_chars("Continuity", 7) == "Cont..." otherwise "truncate_chars failed"
+    ensure is_palindrome("A man, a plan, a canal: Panama") is True otherwise "is_palindrome failed"
+    ensure is_anagram("listen", "silent") is True otherwise "is_anagram failed"
+    ensure count_vowels("Haven Language") == 6 otherwise "count_vowels failed"
+    ensure count_consonants("Haven") == 3 otherwise "count_consonants failed"
+    ensure levenshtein_distance("kitten", "sitting") == 3 otherwise "levenshtein_distance failed"
+    ensure hamming_distance("karolin", "kathrin") == 3 otherwise "hamming_distance failed"
+
+    # Encoding & Obfuscation
+    set b64 to to_base64("Haven Sovereign")
+    ensure from_base64(b64) == "Haven Sovereign" otherwise "base64 roundtrip failed"
+    ensure mask_sensitive("1234567812345678", 4) == "************5678" otherwise "mask_sensitive failed"
+    ensure rot13("Haven") == "Unira" otherwise "rot13 failed"
+    ensure reverse_str("Haven") == "nevaH" otherwise "reverse_str failed"
+    say "[PASS] Category 2: String & Text Methods verified."
+
+
+to test_category_3_collections():
+    say "[3/7] Verifying Collections & Functional Methods..."
+    ensure chunk_list([1, 2, 3, 4, 5], 2) == [[1, 2], [3, 4], [5]] otherwise "chunk_list failed"
+    ensure window_list([1, 2, 3, 4], 2) == [[1, 2], [2, 3], [3, 4]] otherwise "window_list failed"
+    ensure flatten_list([1, [2, [3, 4]], 5]) == [1, 2, 3, 4, 5] otherwise "flatten_list failed"
+    ensure unique_list([1, 2, 2, 3, 1, 4]) == [1, 2, 3, 4] otherwise "unique_list failed"
+    ensure frequencies_map(["a", "b", "a", "c", "a"]) == {"a": 3, "b": 1, "c": 1} otherwise "frequencies_map failed"
+    ensure group_by_key(["apple", "banana", "apricot"], lambda s: s[0]) == {"a": ["apple", "apricot"], "b": ["banana"]} otherwise "group_by_key failed"
+    
+    set evens, odds to partition_list([1, 2, 3, 4, 5], lambda x: x % 2 == 0)
+    ensure evens == [2, 4] and odds == [1, 3, 5] otherwise "partition_list failed"
+    ensure intersperse_val([1, 2, 3], 0) == [1, 0, 2, 0, 3] otherwise "intersperse_val failed"
+    ensure compact_list([0, 1, False, 2, "", 3, None]) == [1, 2, 3] otherwise "compact_list failed"
+    ensure find_first([10, 25, 30], lambda x: x > 20) == 25 otherwise "find_first failed"
+    ensure find_last([10, 25, 30], lambda x: x > 20) == 30 otherwise "find_last failed"
+    ensure find_index(["a", "b", "c"], lambda x: x == "b") == 1 otherwise "find_index failed"
+    ensure take_while_fn([1, 2, 3, 10, 4], lambda x: x < 5) == [1, 2, 3] otherwise "take_while_fn failed"
+    ensure drop_while_fn([1, 2, 3, 10, 4], lambda x: x < 5) == [10, 4] otherwise "drop_while_fn failed"
+    ensure cartesian_product([1, 2], ["a", "b"]) == [(1, "a"), (1, "b"), (2, "a"), (2, "b")] otherwise "cartesian_product failed"
+    ensure sorted(intersect_sets([1, 2, 3], [2, 3, 4])) == [2, 3] otherwise "intersect_sets failed"
+    ensure sorted(union_sets([1, 2], [2, 3])) == [1, 2, 3] otherwise "union_sets failed"
+    ensure sorted(difference_sets([1, 2, 3], [2])) == [1, 3] otherwise "difference_sets failed"
+    ensure map_values_dict({"a": 1, "b": 2}, lambda x: x * 10) == {"a": 10, "b": 20} otherwise "map_values_dict failed"
+    ensure merge_dicts({"a": 1}, {"b": 2}, {"a": 99}) == {"a": 99, "b": 2} otherwise "merge_dicts failed"
+    say "[PASS] Category 3: Collections & Functional Methods verified."
+
+
+to test_category_4_chrono():
+    say "[4/7] Verifying Chrono & Temporal Continuity Methods..."
+    set u to now_utc()
+    ensure u.year >= 2026 otherwise "now_utc year invalid"
+    ensure len(now_iso()) >= 19 otherwise "now_iso length invalid"
+    ensure now_ms() > 1700000000000 otherwise "now_ms invalid"
+    ensure now_micros() > 1700000000000000 otherwise "now_micros invalid"
+
+    set tomorrow to add_days(u, 1)
+    ensure diff_seconds(tomorrow, u) == 86400.0 otherwise "diff_seconds failed"
+    ensure is_leap_year(2024) is True otherwise "is_leap_year failed on leap year"
+    ensure is_leap_year(2025) is False otherwise "is_leap_year failed on non-leap year"
+    ensure days_in_month(2024, 2) == 29 otherwise "days_in_month failed for Feb 2024"
+    ensure days_in_month(2025, 2) == 28 otherwise "days_in_month failed for Feb 2025"
+
+    set sod to start_of_day(u)
+    ensure sod.hour == 0 and sod.minute == 0 and sod.second == 0 otherwise "start_of_day failed"
+    set eod to end_of_day(u)
+    ensure eod.hour == 23 and eod.minute == 59 and eod.second == 59 otherwise "end_of_day failed"
+
+    ensure humanize_duration(3665) == "1h 1m" otherwise "humanize_duration failed"
+    ensure humanize_duration(45) == "45s" otherwise "humanize_duration seconds failed"
+    say "[PASS] Category 4: Chrono & Temporal Methods verified."
+
+
+to test_category_5_crypto():
+    say "[5/7] Verifying Cryptography, Hashing & Security Methods..."
+    ensure len(sha256_hex("haven")) == 64 otherwise "sha256_hex length failed"
+    ensure len(sha512_hex("haven")) == 128 otherwise "sha512_hex length failed"
+    ensure len(sha3_256_hex("haven")) == 64 otherwise "sha3_256_hex length failed"
+    ensure len(blake2b_hex("haven")) == 128 otherwise "blake2b_hex length failed"
+    ensure len(hmac_sha256_hex("secret", "message")) == 64 otherwise "hmac_sha256_hex failed"
+    ensure constant_time_compare("abc", "abc") is True otherwise "constant_time_compare failed"
+    ensure constant_time_compare("abc", "xyz") is False otherwise "constant_time_compare mismatch failed"
+
+    set r_hex to random_hex_sec(16)
+    ensure len(r_hex) == 32 otherwise "random_hex_sec length failed"
+
+    set u4 to generate_uuid4_str()
+    ensure len(u4) == 36 otherwise "UUIDv4 length failed"
+    set u7 to generate_uuid7_str()
+    ensure len(u7) == 36 otherwise "UUIDv7 length failed"
+
+    set masked to mask_hash("haven", prefix_chars=6)
+    ensure masked.startswith("0a331a...") or "..." in masked otherwise "mask_hash failed"
+    say "[PASS] Category 5: Cryptography & Security Methods verified."
+
+
+to test_category_6_filesystem():
+    say "[6/7] Verifying Filesystem & IO Methods..."
+    set test_file to "tmp_haven_methods_test.txt"
+    write_text_file(test_file, "Haven Sovereign Computing")
+    ensure file_exists(test_file) is True otherwise "file_exists failed"
+    ensure file_size_bytes(test_file) == 25 otherwise "file_size_bytes failed"
+    ensure read_text_file(test_file) == "Haven Sovereign Computing" otherwise "read_text_file failed"
+
+    append_text_file(test_file, " 2026")
+    ensure read_text_file(test_file) == "Haven Sovereign Computing 2026" otherwise "append_text_file failed"
+
+    ensure path_basename(test_file) == "tmp_haven_methods_test.txt" otherwise "path_basename failed"
+    ensure path_extension(test_file) == ".txt" otherwise "path_extension failed"
+    ensure path_join("data", "ledger.json").replace("\\", "/") == "data/ledger.json" otherwise "path_join failed"
+
+    remove_file(test_file)
+    ensure file_exists(test_file) is False otherwise "remove_file failed"
+    say "[PASS] Category 6: Filesystem & IO Methods verified."
+
+
+to test_category_7_system():
+    say "[7/7] Verifying System, Diagnostics & Catalog Methods..."
+    ensure cpu_cores_count() >= 1 otherwise "cpu_cores_count failed"
+    ensure platform_os_name() in ["Windows", "Linux", "Darwin"] otherwise "platform_os_name failed"
+    ensure len(platform_machine()) > 0 otherwise "platform_machine failed"
+    ensure len(system_hostname()) > 0 otherwise "system_hostname failed"
+
+    set_env_var("HAVEN_TEST_ENV", "ODCS_ACTIVE")
+    ensure get_env_var("HAVEN_TEST_ENV") == "ODCS_ACTIVE" otherwise "env var set/get failed"
+    ensure process_pid() > 0 otherwise "process_pid failed"
+    ensure force_gc() >= 0 otherwise "force_gc failed"
+
+    # Verify Methods Catalog count exceeds 100+
+    ensure haven_methods.count() >= 100 otherwise "Total Haven methods count less than 100"
+    say "Total Registered Haven Standard Methods in Catalog:", haven_methods.count()
+    say "[PASS] Category 7: System & Methods Catalog verified."
+
+
+if __name__ == "__main__":
+    say "========================================================="
+    say "  Haven Language 100+ Methods Comprehensive Test Suite"
+    say "  Architecture & Specification by Anirudha Puthraya"
+    say "========================================================="
+    test_category_1_math_and_stats()
+    test_category_2_strings_and_text()
+    test_category_3_collections()
+    test_category_4_chrono()
+    test_category_5_crypto()
+    test_category_6_filesystem()
+    test_category_7_system()
+    say "========================================================="
+    say " ALL 100+ HAVEN METHODS TEST SUITE PASSED (100% GREEN)!"
+    say "========================================================="

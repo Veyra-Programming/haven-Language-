@@ -23,3 +23,4 @@ class BackgroundTaskPool:
     def shutdown(self, wait: bool = False):
         self._is_shutdown = True
         self._executor.shutdown(wait=wait)
+

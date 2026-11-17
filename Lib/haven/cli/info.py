@@ -49,6 +49,11 @@ def print_info() -> int:
   ✓ Cryptographic Continuity    : `checkpoint` / `preserve record as alias into ledger`
   ✓ Mathematical Verification   : `verify asset with expected_proof`
   ✓ Sovereign State Algorithms  : `ContinuityAlgorithm`, `StateContinuityAlgorithm`, `ODCSApp`
+  ✓ Universal Living Intent     : `IntentContract`, `execute_intent`, `LivingReceipt` (ULIF)
+  ✓ Dimensional Unit Safety     : Physical & data algebra (`meters`, `seconds`, `megabytes`)
+  ✓ Autonomous Living Agent Mesh: `AgentEpisodicLedger`, `LivingSwarm` consensus (ALAM)
+  ✓ Global Natural Dialects     : Multilingual execution (Spanish, Hindi, French, German, Japanese)
+  ✓ Standard Methods Catalog    : 199 verified methods (Math, NLP, Collections, Chrono, ZK, FS)
 
 {bold('Haven Module Search Paths:')}""")
     clean_paths = []

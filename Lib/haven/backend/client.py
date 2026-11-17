@@ -145,3 +145,4 @@ class TestClient:
     def patch(self, path: str, json: Optional[Any] = None, data: Optional[Union[str, bytes]] = None, headers: Optional[Dict[str, str]] = None) -> TestResponse:
         body = json if json is not None else data
         return self.request("PATCH", path, headers=headers, body=body)
+

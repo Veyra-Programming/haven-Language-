@@ -1,0 +1,100 @@
+# ==============================================================================
+# Haven Language • ODCS Hosting Package Manager Verification Suite
+# Domain: odcshosting.in (https://api.odcshosting.in)
+# Standard: Open Digital Continuity Standard (ODCS-2.0)
+# Architecture & Specification: Anirudha Puthraya
+# ==============================================================================
+
+import haven
+import os
+import shutil
+import urllib.request
+import json
+import threading
+
+from haven.pkg import (
+    DEFAULT_REGISTRY_URL,
+    get_registry_url,
+    search_packages,
+    get_package_info,
+    publish_package_to_odcshosting,
+    install_package_from_odcshosting,
+    run_odcshosting_server,
+)
+
+to test_odcshosting_client():
+    say "[1/3] Verifying odcshosting client resolution and search..."
+
+    set reg to get_registry_url()
+    ensure "odcshosting" in reg otherwise "Default registry should point to odcshosting"
+
+    # Search packages on odcshosting
+    set search_res to search_packages("grid")
+    ensure len(search_res) > 0 otherwise "Search on odcshosting returned no results"
+    ensure search_res[0]["domain"] == "odcshosting.in" otherwise "Package domain should be odcshosting.in"
+
+    # Package info lookup
+    set info to get_package_info("smart_grid_edge")
+    ensure info["name"] == "smart_grid_edge" otherwise "Package info name mismatch"
+    ensure info["domain"] == "odcshosting.in" otherwise "Package info domain mismatch"
+
+    say "[PASS] odcshosting client resolution and queries verified."
+
+
+to test_odcshosting_installation_and_lock():
+    say "[2/3] Verifying package installation and haven.lock generation..."
+
+    set test_dir to "tmp_test_packages"
+    set success to install_package_from_odcshosting("odcs_mesh_crypto", target_dir=test_dir)
+    ensure success is True otherwise "Package install failed"
+
+    # Verify installation directory created
+    ensure os.path.exists(os.path.join(test_dir, "odcs_mesh_crypto", "package.json")) is True otherwise "package.json missing"
+    ensure os.path.exists("haven.lock") is True otherwise "haven.lock was not generated"
+
+    # Clean up test directories
+    if os.path.exists(test_dir):
+        shutil.rmtree(test_dir)
+    if os.path.exists("haven.lock"):
+        os.remove("haven.lock")
+
+    say "[PASS] Package installation and lockfile verification verified."
+
+
+to test_odcshosting_server_live():
+    say "[3/3] Verifying live ODCS Hosting Registry Server on port 8999..."
+
+    set test_repo to "data/tmp_server_repo"
+    set server to run_odcshosting_server(port=8999, storage_dir=test_repo)
+
+    set t to threading.Thread(target=server.serve_forever, daemon=True)
+    t.start()
+
+    # Query /v1/health from live server
+    set req to urllib.request.Request("http://127.0.0.1:8999/v1/health")
+    with urllib.request.urlopen(req, timeout=5) as resp:
+        set payload to json.loads(resp.read().decode("utf-8"))
+        ensure payload["status"] == "ONLINE" otherwise "Server status not ONLINE"
+        ensure payload["domain"] == "odcshosting.in" otherwise "Server domain not odcshosting.in"
+        ensure payload["standard"] == "ODCS-2.0" otherwise "Server standard not ODCS-2.0"
+
+    server.shutdown()
+    server.server_close()
+
+    if os.path.exists(test_repo):
+        shutil.rmtree(test_repo)
+
+    say "[PASS] Live ODCS Hosting Server verified (Health & Metadata)."
+
+
+if __name__ == "__main__":
+    say "========================================================="
+    say "  Haven Package Manager for odcshosting.in Test Suite"
+    say "  Architecture & Specification by Anirudha Puthraya"
+    say "========================================================="
+    test_odcshosting_client()
+    test_odcshosting_installation_and_lock()
+    test_odcshosting_server_live()
+    say "========================================================="
+    say " ALL ODCSHOSTING PACKAGE MANAGER TESTS PASSED (100%)!"
+    say "========================================================="

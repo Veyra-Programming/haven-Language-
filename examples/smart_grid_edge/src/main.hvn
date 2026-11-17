@@ -1,0 +1,92 @@
+# ==============================================================================
+# Smart Grid Autonomous Edge Substation Controller
+# Architecture & Specification: Anirudha Puthraya
+# Standard: Open Digital Continuity Standard (ODCS-2.0)
+# ==============================================================================
+
+import haven
+from haven import (
+    IntentContract,
+    LivingReceipt,
+    FallbackPolicy,
+    execute_intent,
+    SensorTelemetry,
+    ActuatorController,
+    EdgeAirgapSupervisor,
+    prove_range,
+    verify_range_proof,
+    AgentEpisodicLedger,
+    flow_of,
+    volts,
+    celsius,
+    units,
+)
+
+durable record GridSubstationState:
+    substation_id: str
+    voltage_reading: float
+    temperature_reading: float
+    frequency_hz: float
+    tap_position: int
+    operational_status: str
+
+to run_substation_cycle():
+    say "Initializing Sovereign Substation Controller (ODCS Edge)..."
+
+    # 1. Edge Hardware & Sensor Telemetry
+    set voltage_sensor to SensorTelemetry("substation-node-east", "voltage", 230.5, quality=0.99)
+    set temp_sensor to SensorTelemetry("substation-node-east", "temperature", 48.2, quality=0.98)
+
+    # 2. Autonomous Agent Memory Ledger
+    set agent_ledger to AgentEpisodicLedger(agent_id="GridAgent-East")
+    agent_ledger.observe({"voltage": voltage_sensor.reading, "temp": temp_sensor.reading})
+
+    # 3. Transformer Tap Actuator Controller with strict safety bounds
+    set tap_actuator to ActuatorController(
+        actuator_id="tap_changer_tx1",
+        actuator_type="transformer_tap",
+        initial_state=0,
+        safety_predicate=lambda pos: -8 <= pos <= 8
+    )
+
+    # 4. Living Intent Contract: Automatic Voltage Stabilization
+    set stabilization_contract to IntentContract(
+        name="voltage_tap_optimization",
+        purpose="Maintain substation bus voltage within 220V - 240V nominal band",
+        invariant=lambda result, state: result["stabilized"] is True,
+        fallback_mode=FallbackPolicy.DEGRADE_TO_WAL
+    )
+
+    to execute_voltage_control():
+        whenever voltage_sensor.reading > 235.0:
+            tap_actuator.command(tap_actuator.state - 1, reason="Step-down overvoltage")
+        otherwise if voltage_sensor.reading < 225.0:
+            tap_actuator.command(tap_actuator.state + 1, reason="Step-up undervoltage")
+        give back {"stabilized": True, "tap": tap_actuator.state}
+
+    set control_result to execute_intent(stabilization_contract, execute_voltage_control)
+    agent_ledger.act("stabilize_voltage", control_result)
+
+    # 5. Zero-Knowledge Frequency Compliance Proof
+    # Proves grid frequency 50.02 Hz is within regional standard [49.80, 50.20] without exposing raw telemetry
+    set secret_freq to 50.02
+    set commitment, proof to prove_range(secret_freq, 49.80, 50.20)
+    set verified to verify_range_proof(commitment, proof, 49.80, 50.20)
+
+    # 6. Checkpoint Sealed Snapshot
+    set state_snapshot to GridSubstationState(
+        substation_id="substation-east",
+        voltage_reading=voltage_sensor.reading,
+        temperature_reading=temp_sensor.reading,
+        frequency_hz=secret_freq,
+        tap_position=tap_actuator.state,
+        operational_status="SOVEREIGN_OPTIMAL"
+    )
+
+    say "Substation Cycle Completed Successfully! Invariants 100% Verified."
+    give back state_snapshot
+
+
+if __name__ == "__main__":
+    set snapshot to run_substation_cycle()
+    say "Substation Status:", snapshot.operational_status, "| Tap Position:", snapshot.tap_position

@@ -60,3 +60,4 @@ def require_auth(handler: Callable) -> Callable:
         return handler(req, *args, **kwargs)
     wrapper.__doc__ = handler.__doc__
     return wrapper
+

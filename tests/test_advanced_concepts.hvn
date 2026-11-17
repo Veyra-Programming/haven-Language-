@@ -1,0 +1,209 @@
+# ==============================================================================
+# Haven Language • Advanced Next-Generation Concepts Verification Suite
+# Standard: Open Digital Continuity Standard (ODCS-2.0)
+# Specification & Architecture: Anirudha Puthraya
+# ==============================================================================
+
+import haven
+from haven import (
+    PedersenCommitment,
+    ZKRangeProof,
+    commit_value,
+    prove_range,
+    verify_range_proof,
+    QuantumResistantVault,
+    Flow,
+    flow_of,
+    EventStream,
+    ThoughtNode,
+    ThoughtGraph,
+    SensorTelemetry,
+    ActuatorController,
+    EdgeAirgapSupervisor,
+    ActuatorSafetyViolation,
+    units,
+    celsius,
+    volts,
+)
+
+# ------------------------------------------------------------------------------
+# 1. Test Zero-Knowledge Range Proofs & Quantum-Resistant Vault
+# ------------------------------------------------------------------------------
+to test_zk_and_quantum_vault():
+    say "[1/4] Verifying Zero-Knowledge Proofs & Post-Quantum Vault..."
+
+    # A. Prove a secret financial balance (e.g. $75,000) satisfies solvency threshold
+    set secret_balance to 75000.0
+    set min_solvency to 50000.0
+    set max_solvency to 100000.0
+
+    set commitment, proof to prove_range(secret_balance, min_solvency, max_solvency)
+    ensure commitment.commitment_hex != "" otherwise "Pedersen commitment generation failed"
+    ensure proof.min_val == min_solvency otherwise "ZK proof min_val mismatch"
+    ensure proof.max_val == max_solvency otherwise "ZK proof max_val mismatch"
+
+    # Verifier validates solvency WITHOUT ever knowing secret_balance!
+    set is_solvent to verify_range_proof(commitment, proof, min_solvency, max_solvency)
+    ensure is_solvent is True otherwise "ZK Range Proof verification failed"
+
+    # Verify that an out-of-range balance raises ValueError
+    set trapped_range_error to False
+    try:
+        prove_range(25000.0, 50000.0, 100000.0)
+    recover as err:
+        set trapped_range_error to True
+    ensure trapped_range_error is True otherwise "Failed to reject invalid ZK range"
+
+    # B. Quantum-Resistant Lattice Key derivation
+    set pq_vault to QuantumResistantVault(vault_id="node-sg-lattice-01")
+    set token to pq_vault.encapsulate_secret("sovereign_identity_key")
+    ensure token["algorithm"] == "Haven-Lattice-KyberSim-1024" otherwise "PQ algorithm name mismatch"
+    ensure len(token["shared_secret_hash"]) == 64 otherwise "PQ shared secret hash invalid"
+
+    say "[PASS] Zero-Knowledge Range Proofs & Quantum-Resistant Vault verified."
+
+
+# ------------------------------------------------------------------------------
+# 2. Test Reactive Living Stream & Flow Engine
+# ------------------------------------------------------------------------------
+to test_reactive_flow_stream():
+    say "[2/4] Verifying Reactive Living Stream & Event Flow (HavenFlow)..."
+
+    # A. Transform stream via pipe operator and functional operations
+    set source_data to [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    set stream to (
+        flow_of(source_data)
+        |> (lambda f: f.filter(lambda x: x % 2 == 0))
+        |> (lambda f: f.map(lambda x: x * 10))
+    )
+
+    set collected to stream.collect()
+    ensure collected == [20, 40, 60, 80, 100] otherwise "Reactive flow transform failed"
+
+    # B. Tumbling Window grouping
+    set windowed to flow_of([10, 20, 30, 40, 50, 60]).window(2).collect()
+    ensure windowed == [[10, 20], [30, 40], [50, 60]] otherwise "Flow window grouping failed"
+
+    # C. Stream reduce aggregation
+    set sum_val to flow_of([1, 2, 3, 4, 5]).reduce(lambda acc, x: acc + x, 0)
+    ensure sum_val == 15 otherwise "Flow reduce sum mismatch"
+
+    # D. Publish-Subscribe EventStream
+    set event_bus to EventStream(name="sensor_bus")
+    set received_events to []
+    event_bus.subscribe(lambda evt: received_events.append(evt))
+
+    event_bus.publish({"event": "GRID_STABILIZED", "voltage": 230})
+    event_bus.publish({"event": "FREQUENCY_SYNC", "hz": 50.0})
+
+    ensure len(received_events) == 2 otherwise "EventStream publish/subscribe failed"
+
+    say "[PASS] Reactive Living Stream & Event Flow verified."
+
+
+# ------------------------------------------------------------------------------
+# 3. Test Autonomous Neural Reasoning & Thought Graphs
+# ------------------------------------------------------------------------------
+to test_neural_thought_graphs():
+    say "[3/4] Verifying Autonomous Neural Reasoning & Thought Graphs..."
+
+    set graph to ThoughtGraph(objective="Resolve Substation High Thermal Load")
+    set root to graph.add_root("Hypothesis: Coolant pump pressure dropped", confidence=0.95)
+
+    # Branch two hypothesis paths
+    set branch_a to graph.branch(root.node_id, "Path A: Actuate secondary coolant valve", confidence=0.90)
+    set branch_b to graph.branch(root.node_id, "Path B: Emergency shutdown of all transformers", confidence=0.30)
+
+    set step_a2 to graph.branch(branch_a.node_id, "Action: Monitor thermal telemetry for 30 seconds", confidence=0.92)
+
+    # Mark Path B as invalid (too destructive)
+    graph.validate(branch_b.node_id, False)
+
+    # Prune invalid branches
+    set pruned to graph.prune_invalid_branches()
+    ensure pruned == 1 otherwise "Failed to prune invalid reasoning branch"
+    ensure branch_b.node_id not in graph.nodes otherwise "Pruned node still present in graph"
+
+    # Find highest confidence path
+    set best_path to graph.get_best_reasoning_path()
+    ensure len(best_path) == 3 otherwise "Best reasoning path length mismatch"
+    ensure best_path[0].node_id == root.node_id otherwise "Path root mismatch"
+    ensure best_path[-1].node_id == step_a2.node_id otherwise "Path leaf mismatch"
+
+    # Merkle digest of thought trace
+    set trace_digest to graph.compute_merkle_digest()
+    ensure len(trace_digest) == 64 otherwise "Thought graph Merkle digest invalid"
+
+    say "[PASS] Autonomous Neural Reasoning & Thought Graphs verified."
+
+
+# ------------------------------------------------------------------------------
+# 4. Test Edge Hardware & IoT Telemetry Standard
+# ------------------------------------------------------------------------------
+to test_iot_telemetry_and_actuators():
+    say "[4/4] Verifying Edge Hardware & IoT Telemetry Standard..."
+
+    # A. Sensor Telemetry with bounds checking
+    set sensor to SensorTelemetry(
+        device_id="sensor-boiler-north",
+        sensor_type="temperature",
+        reading=78.5,
+        quality=0.99
+    )
+    ensure sensor.is_within_bounds(20.0, 100.0) is True otherwise "Sensor reading should be within bounds"
+    ensure sensor.is_within_bounds(80.0, 100.0) is False otherwise "Sensor reading should exceed lower bound"
+
+    # Verify sensor immutability
+    set trapped_sensor_mutation to False
+    try:
+        sensor.reading = 999.0
+    recover as err:
+        set trapped_sensor_mutation to True
+    ensure trapped_sensor_mutation is True otherwise "SensorTelemetry failed to enforce immutability"
+
+    # B. Actuator Safety Bounds Enforcement
+    # Allow valve aperture only between 0% and 100%
+    set valve to ActuatorController(
+        actuator_id="actuator-valve-42",
+        actuator_type="servo_valve",
+        initial_state=25,
+        safety_predicate=lambda s: 0 <= s <= 100
+    )
+
+    valve.command(50, reason="Increase cooling fluid flow")
+    ensure valve.state == 50 otherwise "Actuator state transition failed"
+
+    # Verify that illegal state (>100%) raises ActuatorSafetyViolation
+    set trapped_actuator_violation to False
+    try:
+        valve.command(150, reason="Dangerous overflow command")
+    recover as err:
+        set trapped_actuator_violation to True
+    ensure trapped_actuator_violation is True otherwise "Actuator failed to trap safety bound violation"
+
+    # C. Edge Airgap Supervisor & Brownout Protection
+    set supervisor to EdgeAirgapSupervisor(node_id="edge-gateway-substation-9")
+    ensure supervisor.mode == "NORMAL" otherwise "Supervisor initial mode not NORMAL"
+
+    supervisor.trigger_brownout_protection()
+    ensure supervisor.mode == "AIRGAP_SURVIVAL" otherwise "Supervisor failed to switch to AIRGAP_SURVIVAL"
+    ensure supervisor.brownout_events == 1 otherwise "Brownout event count mismatch"
+
+    supervisor.restore_nominal_power()
+    ensure supervisor.mode == "NORMAL" otherwise "Supervisor failed to restore NORMAL mode"
+
+    say "[PASS] Edge Hardware & IoT Telemetry Standard verified."
+
+
+if __name__ == "__main__":
+    say "========================================================="
+    say "  Haven Advanced Next-Gen Concepts Verification Suite"
+    say "  Architecture & Specification by Anirudha Puthraya"
+    say "========================================================="
+    test_zk_and_quantum_vault()
+    test_reactive_flow_stream()
+    test_neural_thought_graphs()
+    test_iot_telemetry_and_actuators()
+    say "========================================================="
+    say " ALL HAVEN ADVANCED CONCEPTS PASSED WITH 100% SUCCESS!"
+    say "========================================================="

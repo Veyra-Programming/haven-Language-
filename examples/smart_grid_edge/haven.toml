@@ -1,0 +1,27 @@
+# ==============================================================================
+# Haven Language Application Manifest - Smart Grid Autonomous Edge Controller
+# Standard: Open Digital Continuity Standard (ODCS-2.0)
+# ==============================================================================
+
+[project]
+name = "smart-grid-edge"
+version = "1.0.0"
+authors = ["Anirudha Puthraya"]
+description = "Autonomous sovereign electrical substation controller with living intent & ZK solvency"
+entry = "src/main.hvn"
+haven_version = ">=1.0.0"
+
+[continuity]
+enabled = true
+ledger_path = "data/grid_ledger.json"
+journal_wal = true
+rfc8785_canonical = true
+sync_mode = "MULTI_MASTER_CRDT"
+heartbeat_interval_ms = 1000
+gateway_url = "https://api.odcs.in"
+telemetry_probe = true
+zero_intent_loss = true
+instant_receipt_minting = true
+
+[dependencies]
+haven_ai = ">=1.0.0"

@@ -148,7 +148,106 @@ from .backend import (
     mount_ofcs_vault,
 )
 
-__version__ = "1.0.0"
+# Universal Living Intent Fabric (ULIF)
+from .intent import (
+    FallbackPolicy,
+    InvariantViolationError,
+    LivingReceipt,
+    IntentContract,
+    LivingIntentRegistry,
+    mint_living_receipt,
+    execute_intent,
+    living_intent,
+)
+
+# Universal Dimensional Safety Engine (UDE)
+from .units import (
+    Dimension,
+    Unit,
+    UnitQuantity,
+    DimensionalSafetyError,
+    meter,
+    kilometer,
+    second,
+    millisecond,
+    hour,
+    kilogram,
+    gram,
+    byte,
+    megabyte,
+    gigabyte,
+    meters_per_second,
+    km_per_hour,
+    megabytes_per_second,
+    meters,
+    kilometers,
+    seconds,
+    milliseconds,
+    hours,
+    kilograms,
+    grams,
+    megabytes,
+    gigabytes,
+    celsius,
+    volts,
+    units,
+)
+
+# Autonomous Living Agent Mesh (ALAM)
+from .agents import (
+    AgentMemoryEntry,
+    AgentEpisodicLedger,
+    LivingSwarm,
+)
+
+# Universal Global Natural Dialects Engine (UGND)
+from .i18n import translate_dialects
+
+# Zero-Knowledge & Post-Quantum Continuity (ZK-ODCS)
+from .zk import (
+    PedersenCommitment,
+    ZKRangeProof,
+    ZKVerificationError,
+    commit_value,
+    prove_range,
+    verify_range_proof,
+    QuantumResistantVault,
+)
+
+# Reactive Living Stream & Event Flow Engine (HavenFlow)
+from .flow import (
+    Flow,
+    flow_of,
+    flow_map,
+    flow_filter,
+    flow_window,
+    flow_collect,
+    EventStream,
+)
+
+# Autonomous Neural Reasoning & Thought Graphs (HavenNeural)
+from .neural import (
+    ThoughtNode,
+    ThoughtGraph,
+)
+
+# Edge Hardware & IoT Telemetry Standard (HavenIoT)
+from .iot import (
+    SensorTelemetry,
+    ActuatorController,
+    EdgeAirgapSupervisor,
+    ActuatorSafetyViolation,
+)
+
+# Haven 100+ Standard Methods Library
+from .methods import *
+from .methods import methods as haven_methods
+
+
+
+
+__version__ = "2.1.1 GA"
+__status__ = "General Availability (GA)"
 __author__ = "Anirudha Puthraya"
 __standard__ = "Open Digital Continuity Standard (ODCS) & Open Financial Continuity Standard (OFCS)"
 
@@ -158,7 +257,7 @@ import types
 try:
     sys.implementation = types.SimpleNamespace(
         name='haven',
-        cache_tag='haven-100',
+        cache_tag='haven-211',
         version=sys.version_info,
         hexversion=sys.hexversion,
         supports_isolated_interpreters=True
@@ -301,4 +400,73 @@ __all__ = [
     "require_auth",
     "BackgroundTaskPool",
     "mount_ofcs_vault",
+    # Universal Living Intent Fabric (ULIF)
+    "FallbackPolicy",
+    "InvariantViolationError",
+    "LivingReceipt",
+    "IntentContract",
+    "LivingIntentRegistry",
+    "mint_living_receipt",
+    "execute_intent",
+    "living_intent",
+    # Universal Dimensional Safety Engine (UDE)
+    "Dimension",
+    "Unit",
+    "UnitQuantity",
+    "DimensionalSafetyError",
+    "meter",
+    "kilometer",
+    "second",
+    "millisecond",
+    "hour",
+    "kilogram",
+    "gram",
+    "byte",
+    "megabyte",
+    "gigabyte",
+    "meters_per_second",
+    "km_per_hour",
+    "megabytes_per_second",
+    "meters",
+    "kilometers",
+    "seconds",
+    "milliseconds",
+    "hours",
+    "kilograms",
+    "grams",
+    "megabytes",
+    "gigabytes",
+    "celsius",
+    "volts",
+    "units",
+    # Autonomous Living Agent Mesh (ALAM)
+    "AgentMemoryEntry",
+    "AgentEpisodicLedger",
+    "LivingSwarm",
+    # Universal Global Natural Dialects Engine (UGND)
+    "translate_dialects",
+    # Zero-Knowledge & Post-Quantum Continuity (ZK-ODCS)
+    "PedersenCommitment",
+    "ZKRangeProof",
+    "ZKVerificationError",
+    "commit_value",
+    "prove_range",
+    "verify_range_proof",
+    "QuantumResistantVault",
+    # Reactive Living Stream & Event Flow (HavenFlow)
+    "Flow",
+    "flow_of",
+    "flow_map",
+    "flow_filter",
+    "flow_window",
+    "flow_collect",
+    "EventStream",
+    # Autonomous Neural Reasoning & Thought Graphs (HavenNeural)
+    "ThoughtNode",
+    "ThoughtGraph",
+    # Edge Hardware & IoT Telemetry Standard (HavenIoT)
+    "SensorTelemetry",
+    "ActuatorController",
+    "EdgeAirgapSupervisor",
+    "ActuatorSafetyViolation",
 ]

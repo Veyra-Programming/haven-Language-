@@ -1,0 +1,208 @@
+# ==============================================================================
+# Haven Language • Global General-Purpose Concepts Verification Suite
+# Standard: Open Digital Continuity Standard (ODCS-2.0)
+# Specification & Architecture: Anirudha Puthraya
+# ==============================================================================
+
+import haven
+from haven import (
+    IntentContract,
+    LivingReceipt,
+    FallbackPolicy,
+    InvariantViolationError,
+    LivingIntentRegistry,
+    execute_intent,
+    living_intent,
+    units,
+    meters,
+    kilometers,
+    seconds,
+    hours,
+    megabytes,
+    gigabytes,
+    UnitQuantity,
+    DimensionalSafetyError,
+    AgentEpisodicLedger,
+    LivingSwarm,
+    ContinuityImmutabilityError,
+)
+
+# ------------------------------------------------------------------------------
+# 1. Test Universal Living Intent Fabric (ULIF)
+# ------------------------------------------------------------------------------
+to test_living_intent_fabric():
+    say "[1/4] Verifying Universal Living Intent Fabric (ULIF)..."
+
+    # A. Direct Optimal Execution with Invariant Check
+    set contract to IntentContract(
+        name="edge_sensor_calibration",
+        purpose="Calibrate IoT thermal sensor with bounded threshold",
+        invariant=lambda result, state: result["reading"] < 100.0,
+        fallback_mode=FallbackPolicy.DEGRADE_TO_WAL
+    )
+
+    to sample_sensor():
+        give back {"reading": 42.5, "unit": "celsius"}
+
+    set result to execute_intent(contract, sample_sensor)
+    ensure result["reading"] == 42.5 otherwise "Living intent direct result mismatch"
+
+    # Verify that a LivingReceipt was minted
+    set receipts to LivingIntentRegistry.all_receipts()
+    ensure len(receipts) > 0 otherwise "LivingReceipt not minted"
+    set latest_receipt to receipts[-1]
+    ensure latest_receipt.status == "fulfilled" otherwise "Receipt status not fulfilled"
+    ensure latest_receipt.verify_integrity() is True otherwise "LivingReceipt signature verification failed"
+
+    # Verify receipt immutability
+    set trapped_receipt_mutation to False
+    try:
+        latest_receipt.status = "tampered"
+    recover as err:
+        set trapped_receipt_mutation to True
+    ensure trapped_receipt_mutation is True otherwise "LivingReceipt failed to enforce hardware-sealed immutability"
+
+    # B. Autonomic Self-Healing on Simulated Network Failure
+    set offline_contract to IntentContract(
+        name="remote_payment_push",
+        purpose="Transmit payment to remote bank node",
+        fallback_mode=FallbackPolicy.DEGRADE_TO_WAL
+    )
+
+    to failing_remote_call():
+        raise ConnectionResetError("Satellite connection lost in transit")
+
+    set fallback_res to execute_intent(offline_contract, failing_remote_call)
+    ensure fallback_res["status"] == "preserved_in_wal" otherwise "Failed to degrade to WAL on disruption"
+    ensure fallback_res["receipt"].verify_integrity() is True otherwise "Fallback receipt signature invalid"
+
+    say "[PASS] Universal Living Intent Fabric verified (Optimal & Autonomic Healing)."
+
+
+# ------------------------------------------------------------------------------
+# 2. Test Universal Dimensional Safety Engine (UDE)
+# ------------------------------------------------------------------------------
+to test_dimensional_safety_engine():
+    say "[2/4] Verifying Universal Dimensional Safety Engine (UDE)..."
+
+    # A. Length arithmetic and unit conversions
+    set dist1 to kilometers(5)       # 5 km
+    set dist2 to meters(500)         # 500 m
+    set total_dist to dist1 + dist2  # 5.5 km
+    ensure total_dist.magnitude == 5.5 otherwise "Unit addition failed"
+    ensure total_dist.unit.symbol == "km" otherwise "Unit symbol mismatch"
+
+    set in_meters to total_dist.to(units.meter)
+    ensure in_meters.magnitude == 5500.0 otherwise "Unit conversion failed"
+
+    # B. Derived dimensions: Speed = Distance / Time
+    set travel_distance to meters(1000)
+    set travel_time to seconds(50)
+    set speed to travel_distance / travel_time
+    ensure speed.magnitude == 20.0 otherwise "Speed calculation magnitude failed"
+    ensure speed.unit.symbol == "m/s" otherwise "Speed unit symbol failed"
+
+    # C. Data & Bandwidth
+    set file_size to megabytes(512)
+    set storage to gigabytes(2)
+    set ratio to storage / file_size # Dimensionless ratio
+    ensure ratio == 4.0 otherwise "Data dimension ratio failed"
+
+    # D. Invariant: Prevent Incompatible Dimensional Operations
+    set trapped_dim_error to False
+    try:
+        set illegal to meters(100) + seconds(10)
+    recover as err:
+        set trapped_dim_error to True
+    ensure trapped_dim_error is True otherwise "Failed to trap incompatible dimensional arithmetic"
+
+    say "[PASS] Universal Dimensional Safety Engine verified (Derivation & Invariants)."
+
+
+# ------------------------------------------------------------------------------
+# 3. Test Autonomous Living Agent Mesh (ALAM)
+# ------------------------------------------------------------------------------
+to test_agent_mesh_and_memory():
+    say "[3/4] Verifying Autonomous Living Agent Mesh (ALAM)..."
+
+    set ledger to AgentEpisodicLedger(agent_id="Agent-Zero-01")
+
+    # Record agent cognition lifecycle
+    ledger.observe({"event": "power_grid_frequency_fluctuation", "frequency_hz": 49.8})
+    ledger.think("Frequency is below nominal 50Hz threshold. Evaluating load shed.")
+    ledger.act("throttle_non_critical_substations", {"tier": 2, "shed_mw": 150})
+    ledger.reflect("Grid frequency stabilized back to 50.01Hz.")
+
+    ensure len(ledger.entries) == 4 otherwise "Agent memory entry count mismatch"
+    ensure ledger.verify_integrity() is True otherwise "Agent episodic ledger integrity failed"
+
+    set root_hash to ledger.get_merkle_root()
+    ensure len(root_hash) == 64 otherwise "Agent memory Merkle root hash invalid"
+
+    # Multi-Agent Swarm Consensus Voting
+    set swarm to LivingSwarm(swarm_id="swarm-grid-defense", required_quorum=0.6)
+    swarm.join("Agent-Alpha")
+    swarm.join("Agent-Beta")
+    swarm.join("Agent-Gamma")
+
+    set prop_id to swarm.propose_action("Agent-Alpha", "engage_backup_turbines", {"substation": "North"})
+    ensure swarm.is_approved(prop_id) is False otherwise "Proposal approved before quorum"
+
+    # Second vote (2/3 = 66% >= 60% quorum)
+    swarm.vote("Agent-Beta", prop_id, True)
+    ensure swarm.is_approved(prop_id) is True otherwise "Proposal not approved after reaching quorum"
+
+    say "[PASS] Autonomous Living Agent Mesh verified (Memory & Swarm Consensus)."
+
+
+# ------------------------------------------------------------------------------
+# 4. Test Universal Global Natural Dialects (UGND)
+# ------------------------------------------------------------------------------
+to test_global_natural_dialects():
+    say "[4/4] Verifying Universal Global Natural Dialects (UGND)..."
+
+    # Spanish Dialect Syntax
+    establecer test_es a 100
+    repetir 3 veces:
+        establecer test_es a test_es + 10
+    ensure test_es == 130 otherwise "Spanish dialect execution mismatch"
+
+    # Hindi / Hinglish Dialect Syntax
+    rakho test_hi barabar 50
+    dohrao 2 baar:
+        rakho test_hi barabar test_hi * 2
+    ensure test_hi == 200 otherwise "Hindi dialect execution mismatch"
+
+    # French Dialect Syntax
+    definir test_fr a 15
+    repeter 4 fois:
+        definir test_fr a test_fr + 5
+    ensure test_fr == 35 otherwise "French dialect execution mismatch"
+
+    # German Dialect Syntax
+    setze test_de auf 80
+    wiederhole 2 mal:
+        setze test_de auf test_de - 10
+    ensure test_de == 60 otherwise "German dialect execution mismatch"
+
+    # Japanese Dialect Syntax
+    settei test_ja ni 7
+    kurikaeshi 3 kai:
+        settei test_ja ni test_ja + 1
+    ensure test_ja == 10 otherwise "Japanese dialect execution mismatch"
+
+    say "[PASS] Universal Global Natural Dialects verified (ES, HI, FR, DE, JA)."
+
+
+if __name__ == "__main__":
+    say "========================================================="
+    say "  Haven Global General-Purpose Concepts Test Suite"
+    say "  Architecture & Specification by Anirudha Puthraya"
+    say "========================================================="
+    test_living_intent_fabric()
+    test_dimensional_safety_engine()
+    test_agent_mesh_and_memory()
+    test_global_natural_dialects()
+    say "========================================================="
+    say " ALL HAVEN GLOBAL GENERAL-PURPOSE CONCEPTS PASSED (100%)"
+    say "========================================================="

@@ -1,0 +1,128 @@
+# ==============================================================================
+# Haven & Star Unified Single-Directory Verification Suite
+# Standard: Open Digital Continuity Standard (ODCS) & Star Universal Language
+# Initial Packages: 'hvn' (Haven) & 'str' (Star) Coexistence
+# Architecture & Specification: Anirudha Puthraya
+# ==============================================================================
+
+use hvn
+use str
+
+import os
+import sys
+
+to test_hvn_initial_package():
+    say "[1/4] Verifying 'hvn' initial package capabilities..."
+
+    # 1. Living Intent Fabric & Contracts
+    set contract to hvn.IntentContract(
+        name="SingleDirGateway",
+        purpose="Validate unified single directory execution",
+        invariant=lambda res, state: res.get("status") == "CONTINUOUS"
+    )
+    set result to hvn.execute_intent(contract, lambda: {"status": "CONTINUOUS", "dir": "unified"})
+    ensure result.get("status") == "CONTINUOUS" otherwise "hvn.IntentContract execution failed"
+
+    # 2. Universal Dimensional Safety Engine
+    set distance to hvn.units.meters(250)
+    set time_interval to hvn.units.seconds(25)
+    set speed to distance / time_interval
+    ensure speed.value == 10.0 otherwise "hvn.units dimensional calculation mismatch"
+
+    # 3. Standard System Methods
+    set clamped to hvn.clamp(142, 0, 100)
+    ensure clamped == 100 otherwise "hvn.clamp mismatch"
+
+    set iso_time to hvn.now_iso()
+    ensure "T" in iso_time otherwise "hvn.now_iso should return valid ISO 8601 timestamp"
+
+    set h_digest to hvn.sha256("ODCS_SINGLE_DIR_TEST")
+    ensure len(h_digest) == 64 otherwise "hvn.sha256 digest length mismatch"
+
+    say "[PASS] 'hvn' initial package verified successfully."
+
+
+to test_str_initial_package_ui_and_mobile():
+    say "[2/4] Verifying 'str' declarative UI widgets and mobile bridges..."
+
+    # 1. Flutter Declarative UI Tree
+    set app_tree to str.Scaffold(
+        appBar=str.AppBar(
+            title=str.Text("Haven & Star Workspace"),
+            backgroundColor=str.Colors.indigo,
+            elevation=4.0
+        ),
+        body=str.Center(
+            child=str.Column(
+                mainAxisAlignment=str.MainAxisAlignment.center,
+                children=[
+                    str.Text("Single Unified Directory Architecture", style=str.TextStyle(fontSize=22.0, fontWeight=str.FontWeight.bold)),
+                    str.SizedBox(height=12.0),
+                    str.ElevatedButton(
+                        child=str.Text("Sync Continuity"),
+                        onPressed=lambda: "Synchronized"
+                    )
+                ]
+            )
+        )
+    )
+    ensure app_tree is not nothing otherwise "str.Scaffold creation failed"
+    ensure app_tree.appBar.backgroundColor == str.Colors.indigo otherwise "str.Colors mismatch"
+
+    # 2. Conditional UI Widget
+    set when_widget to str.When(True, str.Text("Active"), str.Text("Inactive"))
+    ensure when_widget._props.get("condition") is True otherwise "str.When condition evaluation failed"
+
+    # 3. Android WallpaperManager Bridge
+    set wp_success to str.AndroidWallpaperService.setWallpaper("Neo Tokyo Parallax 4K", 1)
+    ensure wp_success is True otherwise "str.AndroidWallpaperService.setWallpaper failed"
+    set curr_wp to str.AndroidWallpaperService.getHomeScreenWallpaper()
+    ensure curr_wp == "Neo Tokyo Parallax 4K" otherwise "str.AndroidWallpaperService get mismatch"
+
+    # 4. Android Haptic Feedback Bridge
+    set haptic_ok to str.AndroidHapticService.vibrate(35)
+    ensure haptic_ok is True otherwise "str.AndroidHapticService.vibrate failed"
+
+    say "[PASS] 'str' declarative UI and native mobile bridges verified successfully."
+
+
+to test_str_callable_and_builtin_string_coexistence():
+    say "[3/4] Verifying callable 'str' string conversion and standard type compatibility..."
+
+    # 1. Callable str conversion
+    set num_str to str(12345)
+    ensure num_str == "12345" otherwise "Callable str(12345) conversion failed"
+    ensure len(num_str) == 5 otherwise "Converted string length mismatch"
+
+    # 2. String operations and methods
+    set joined to str.join(" · ", ["Haven", "ODCS", "Star"])
+    ensure joined == "Haven · ODCS · Star" otherwise "str.join method failed"
+
+    # 3. Type checking
+    ensure isinstance("continuity", str) is True otherwise "isinstance string check failed"
+    ensure isinstance(num_str, str) is True otherwise "isinstance converted check failed"
+
+    say "[PASS] Callable 'str' and built-in string conversion coexist cleanly."
+
+
+to test_single_dir_root_launchers():
+    say "[4/4] Verifying root CLI batch launchers (hvn.bat, str.bat, star.bat)..."
+
+    set root_dir to os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    set hvn_bat to os.path.join(root_dir, "hvn.bat")
+    set str_bat to os.path.join(root_dir, "str.bat")
+    set star_bat to os.path.join(root_dir, "star.bat")
+
+    ensure os.path.isfile(hvn_bat) is True otherwise "hvn.bat missing in root directory"
+    ensure os.path.isfile(str_bat) is True otherwise "str.bat missing in root directory"
+    ensure os.path.isfile(star_bat) is True otherwise "star.bat missing in root directory"
+
+    say "[PASS] All unified root launchers present in single directory."
+
+if __name__ == "__main__":
+    test_hvn_initial_package()
+    test_str_initial_package_ui_and_mobile()
+    test_str_callable_and_builtin_string_coexistence()
+    test_single_dir_root_launchers()
+    say "[SUCCESS] All tests in test_hvn_and_str_single_dir passed 100%!"
+

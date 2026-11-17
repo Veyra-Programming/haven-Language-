@@ -1,5 +1,5 @@
 ; ==============================================================================
-; Haven Programming Language v1.0.0 (ODCS Native Edition) - NSIS Installer
+; Haven Programming Language v2.1.1 GA (ODCS Native Edition) - NSIS Installer
 ; Standards Architect: Anirudha Puthraya
 ; Target Platform: Windows x64
 ; ==============================================================================
@@ -12,17 +12,17 @@
 ; ------------------------------------------------------------------------------
 ; General Definitions
 ; ------------------------------------------------------------------------------
-Name "Haven 1.0.0"
+Name "Haven 2.1.1 GA"
 !define PRODUCT_NAME "Haven Programming Language"
-!define PRODUCT_VERSION "1.0.0"
+!define PRODUCT_VERSION "2.1.1 GA"
 !define PRODUCT_PUBLISHER "Anirudha Puthraya"
-!define PRODUCT_WEB_SITE "https://github.com/haven-lang"
+!define PRODUCT_WEB_SITE "https://api.odcs.in"
 !define PRODUCT_DIR_REGKEY "Software\HavenLanguage\Haven"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\Haven"
 !define PRODUCT_UNINST_ROOT_KEY HKCU
 
 ; Output Installer
-OutFile "..\..\dist\Haven-1.0.0-win64-Setup.exe"
+OutFile "..\..\dist\Haven-2.1.1-GA-win64-Setup.exe"
 
 ; Default Installation Directory (Per-User, No UAC prompt required)
 InstallDir "$LOCALAPPDATA\Programs\Haven"
@@ -45,8 +45,8 @@ SetCompressor /SOLID lzma
 !define MUI_ABORTWARNING
 
 ; Welcome Page
-!define MUI_WELCOMEPAGE_TITLE "Welcome to Haven 1.0.0 Setup"
-!define MUI_WELCOMEPAGE_TEXT "Haven is a high-performance, developer-friendly programming language natively designed for the Open Digital Continuity Standard (ODCS) by Anirudha Puthraya.$\r$\n$\r$\nThis wizard will install Haven 1.0.0, the complete Standard Library, native Tcl/Tk 9.0 GUI runtime, and Haven IDE (IDLE) onto your computer.$\r$\n$\r$\nClick Next to continue."
+!define MUI_WELCOMEPAGE_TITLE "Welcome to Haven 2.1.1 GA Setup"
+!define MUI_WELCOMEPAGE_TEXT "Haven is a high-performance, developer-friendly programming language natively designed for the Open Digital Continuity Standard (ODCS) and Open Financial Continuity Standard (OFCS) by Anirudha Puthraya.$\r$\n$\r$\nThis wizard will install Haven 2.1.1 GA, the complete Standard Library, native Tcl/Tk 9.0 GUI runtime, and Haven IDE (IDLE) onto your computer.$\r$\n$\r$\nClick Next to continue."
 !insertmacro MUI_PAGE_WELCOME
 
 ; License Page (ODCS & Haven License)
@@ -66,8 +66,8 @@ SetCompressor /SOLID lzma
 !define MUI_FINISHPAGE_RUN "$INSTDIR\havenw.exe"
 !define MUI_FINISHPAGE_RUN_PARAMETERS "-m idlelib"
 !define MUI_FINISHPAGE_RUN_TEXT "Launch Haven IDE (ODCS Edition) now"
-!define MUI_FINISHPAGE_LINK "Open Digital Continuity Standard (ODCS) Specification"
-!define MUI_FINISHPAGE_LINK_LOCATION "https://devguide.python.org/"
+!define MUI_FINISHPAGE_LINK "Haven Official Standards Portal & Documentation"
+!define MUI_FINISHPAGE_LINK_LOCATION "https://api.odcs.in"
 !insertmacro MUI_PAGE_FINISH
 
 ; Uninstaller Pages
@@ -126,7 +126,7 @@ Section "Haven Core Runtime (Required)" SecCore
     WriteUninstaller "$INSTDIR\Uninstall.exe"
 
     ; Register in Installed Programs
-    WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "Haven 1.0.0 (ODCS Native Edition)"
+    WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "Haven 2.1.1 GA (ODCS Native Edition)"
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" '"$INSTDIR\Uninstall.exe"'
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "QuietUninstallString" '"$INSTDIR\Uninstall.exe" /S'
     WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\haven.ico"

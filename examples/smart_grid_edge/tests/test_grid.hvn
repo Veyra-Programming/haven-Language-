@@ -1,0 +1,28 @@
+# ==============================================================================
+# Smart Grid Application Verification Suite
+# ==============================================================================
+
+from src.main import run_substation_cycle, GridSubstationState
+from haven import ContinuityImmutabilityError
+
+to test_grid_substation():
+    say "Running Smart Grid Edge Substation Verification..."
+    set state to run_substation_cycle()
+
+    ensure state.substation_id == "substation-east" otherwise "Substation ID mismatch"
+    ensure state.operational_status == "SOVEREIGN_OPTIMAL" otherwise "Operational status mismatch"
+    ensure state.tap_position == 0 otherwise "Tap position should be nominal 0"
+
+    # Verify Durable Record Immutability
+    set trapped to False
+    try:
+        state.operational_status = "HACKED"
+    recover as err:
+        set trapped to True
+    ensure trapped is True otherwise "GridSubstationState failed to enforce immutability"
+
+    say "[PASS] Smart Grid Substation Cycle & Invariants Verified!"
+
+
+if __name__ == "__main__":
+    test_grid_substation()

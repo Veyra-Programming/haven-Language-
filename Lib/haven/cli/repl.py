@@ -20,7 +20,7 @@ import odcs
 
 BANNER = f"""
 {bold(cyan('╔═══════════════════════════════════════════════════════════════╗'))}
-{bold(cyan('║                    HAVEN LANGUAGE v1.0.0                      ║'))}
+{bold(cyan('║                   HAVEN LANGUAGE v2.1.1 GA                    ║'))}
 {bold(cyan('║     Open Digital Continuity Standard (ODCS Edition)           ║'))}
 {bold(cyan('║        Specification & Architecture by Anirudha Puthraya      ║'))}
 {bold(cyan('╚═══════════════════════════════════════════════════════════════╝'))}

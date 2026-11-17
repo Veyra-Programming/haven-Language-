@@ -1,10 +1,183 @@
-Apache License 2.0
+==============================================================================
+HAVEN PROGRAMMING LANGUAGE GLOBAL PUBLIC LICENSE & DIGITAL CONTINUITY CHARTER
+Version 2.0 (Production Release - 2026)
+Governing Authority: Haven Language Foundation & ODCS Global Consortium
+Specification & Lead Architecture: Anirudha Puthraya
+Official Portal: https://api.odcs.in
+Source Repository: https://github.com/Veyra-Programming/haven-Language-
+==============================================================================
 
-Copyright (c) 2026 Anirudha Puthraya · ODCS Standards Foundation
+Copyright (c) 2026 Haven Language Foundation & Anirudha Puthraya.
+All Worldwide Rights Reserved.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+Standard Architecture & Specification: Anirudha Puthraya
+Language Runtime: Haven Programming Language v1.0.0 (ODCS & OFCS Edition)
+Standards Registry: Open Digital Continuity Standard (ODCS-1.0.0)
+Financial Architecture: Open Financial Continuity Standard (OFCS-1.0.0)
 
-    http://www.apache.org/licenses/LICENSE-2.0
+==============================================================================
+PREAMBLE: THE COVENANT OF DIGITAL SOVEREIGNTY & UNIVERSAL CONTINUITY
+==============================================================================
 
+Modern software is the foundational nervous system of human civilization. It
+coordinates energy grids, guides healthcare triage, powers global trade,
+directs autonomous systems, and preserves human knowledge.
+
+Yet for more than four decades, computing was tethered to fragile paradigms:
+systems that crash upon network disconnection, data corrupted by power drops,
+code that discards user intent during disruptions, and software locked into
+monolithic centralized platforms.
+
+The Haven Programming Language was conceived, architected, and engineered by
+Anirudha Puthraya to inaugurate a new era: Software Sovereign by Design.
+
+Haven embeds mathematical digital continuity, hardware-sealed memory records,
+natural human linguistic grammar, dimensional physical safety, and universal
+living intent directly into the virtual machine execution substrate.
+
+This License governs the use, development, reproduction, and distribution of
+the Haven Programming Language, its compilers, runtimes, virtual machines,
+standard libraries, and reference implementations.
+
+==============================================================================
+TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
+==============================================================================
+
+1. DEFINITIONS
+--------------
+"Charter" or "License" shall mean the terms, covenants, and conditions for use,
+reproduction, and distribution set forth in this document.
+
+"Licensor" shall mean the Haven Language Foundation and Lead Standards Architect
+Anirudha Puthraya.
+
+"Work" shall mean the Haven Programming Language runtime, compilers, virtual
+machines, CLI tools, libraries, documentation, and ODCS/OFCS implementations
+distributed under this License.
+
+"Durable Record" shall mean a hardware-sealed, memory-immutable data structure
+whose identity is cryptographically bound to an RFC 8785 canonical hash.
+
+"Continuity Ledger" shall mean an append-only, tamper-evident Merkle write-ahead
+ledger preserving execution transitions and operational intent.
+
+"Zero Intent Loss (ZIL)" shall mean the architectural guarantee that valid user
+actions and state mutations are sealed locally in durable storage before external
+network acknowledgement.
+
+"Living Intent Contract" shall mean a declared operational agreement defining
+execution purpose, state invariants, and autonomic self-healing fallback policies.
+
+"Universal Dimensional Safety" shall mean the first-class typing of physical and
+financial units to guarantee dimensional correctness across scientific, financial,
+and engineering computations.
+
+2. GRANT OF WORLDWIDE COPYRIGHT LICENSE
+---------------------------------------
+Subject to the terms and conditions of this License, Licensor hereby grants to
+You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable
+copyright license to:
+  a) Use, run, and execute the Work for any purpose, including commercial,
+     academic, governmental, scientific, and personal use;
+  b) Modify, enhance, translate, and prepare Derivative Works based upon the Work;
+  c) Distribute, sublicense, publicly perform, and publicly display copies of
+     the Work and Derivative Works; and
+  d) Bundle, containerize, embed, and package the Work into operating systems,
+     cloud grids, edge nodes, mobile platforms, web assemblies, autonomous
+     robotics, and microcontrollers.
+
+3. GRANT OF PATENT LICENSE & DEFENSIVE COVENANT
+-----------------------------------------------
+Subject to the terms and conditions of this License, each Contributor hereby
+grants to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free,
+irrevocable patent license to make, have made, use, offer to sell, sell, import,
+and otherwise transfer the Work.
+
+If You institute patent litigation against any entity (including a cross-claim
+or counterclaim) alleging that the Work or a Contribution constitutes direct or
+contributory patent infringement, any patent licenses granted to You under this
+License shall terminate immediately as of the date such litigation is filed.
+
+4. DIGITAL CONTINUITY & OPEN SOVEREIGNTY GUARANTEES
+---------------------------------------------------
+To ensure that all applications built with Haven remain faithful to the Open
+Digital Continuity Standard, any distribution of Haven runtimes or derivative
+execution platforms must uphold the following core principles:
+
+  a) Local Sovereignty: The runtime must execute deterministically offline
+     without requiring mandatory cloud connectivity, remote telemetry pings,
+     or centralized licensing servers for core computation.
+
+  b) Mathematical Integrity: Modifications to ledger mechanisms, durable
+     records, or cryptographic verification algorithms must maintain or enhance
+     tamper-evident auditability, Merkle proofs, and atomic state recovery.
+
+  c) Zero Intent Loss: Applications handling critical state transitions must
+     provide mechanisms to preserve user operational intent across unexpected
+     power failures, crashes, or network partitions.
+
+  d) Universal Interoperability: User data stored in continuity ledgers must
+     remain exportable in documented, open formats with zero vendor lock-in.
+
+5. REDISTRIBUTION CONDITIONS
+----------------------------
+You may reproduce and distribute copies of the Work or Derivative Works thereof
+in any medium, in Source or Binary form, provided that You satisfy the following:
+  1. License Inclusion: You provide recipients with a copy of this License;
+  2. Notice of Modification: Modified files carry clear notices of changes;
+  3. Attribution: You preserve the attribution notices to the Haven Language
+     Foundation and Lead Architect Anirudha Puthraya; and
+  4. Brand Integrity: You do not use the trademarks or emblems of Haven or ODCS
+     to endorse products without prior authorization.
+
+6. DISCLAIMER OF WARRANTY & LIMITATION OF LIABILITY
+---------------------------------------------------
+THE WORK IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
+ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION WARRANTIES OF
+TITLE, NON-INFRINGEMENT, MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE.
+
+IN NO EVENT SHALL LICENSOR OR CONTRIBUTORS BE LIABLE FOR ANY CLAIM, DAMAGES,
+OR OTHER LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE WORK OR THE
+USE OR OTHER DEALINGS IN THE WORK.
+
+==============================================================================
+A. ARCHITECTURAL GENESIS & SPECIFICATION OF HAVEN LANGUAGE
+==============================================================================
+
+Haven was engineered as the first general-purpose programming language designed
+from foundational axioms for sovereign, disruption-tolerant computation.
+
+Core Language Innovations:
+  1. Natural Human Grammar: Clean English syntax eliminating cognitive fatigue:
+     `set x to 42`, `remember KEY as "value"`, `increase count by 1`,
+     `whenever condition:`, `otherwise if:`, `unless:`, `repeat N times:`.
+  2. Hardware-Sealed Durable Records: `durable record` structures with zero
+     in-place mutation and deterministic RFC 8785 SHA-256 canonical hashing.
+  3. Native Functional Pipelines: Expressive data chaining via `|>` and `into`.
+  4. Universal Living Intent Fabric (ULIF): Declared intent contracts with
+     autonomic self-healing and instant Zero-Intent-Loss receipt minting.
+  5. Universal Dimensional Safety: First-class physical and financial units
+     preventing dimensional errors in science, finance, and engineering.
+  6. Open Financial Continuity Standard (OFCS): Exact decimal monetary arithmetic,
+     double-entry conservation invariants, and offline reconciliation.
+  7. Autonomous Agent Mesh: Durable episodic memory ledgers for artificial
+     intelligence agents and swarm consensus.
+
+==============================================================================
+B. UPSTREAM EXECUTION RUNTIME FOUNDATIONS & ACKNOWLEDGMENTS
+==============================================================================
+
+The Haven runtime virtual machine is built upon modern, high-performance
+computational foundations. Underlying virtual machine execution primitives,
+memory allocation mechanisms, and baseline C runtime structures are derived from
+standard open-source runtime systems under the Python Software Foundation License
+Agreement (PSF License v2, Copyright (c) 2001-2026 PSF; BeOpen.com; CNRI; CWI).
+
+All grammar extensions, C parser modifications, durable memory record engines,
+cryptographic Merkle continuity ledgers, natural language parsers, living intent
+fabrics, dimensional safety systems, and ODCS/OFCS specifications are original
+works authored and governed by Anirudha Puthraya and the Haven Language Foundation.
+
+Official Haven Standards & Documentation: https://api.odcs.in
+Source Repository: https://github.com/Veyra-Programming/haven-Language-
+==============================================================================

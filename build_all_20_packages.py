@@ -413,7 +413,7 @@ builddate = 1730386800
 packager = Anirudha Puthraya <anirudha@haven-lang.org>
 size = 24500000
 arch = x86_64
-license = Apache
+license = ODCS-OSL-2.0
 depend = python>=3.10
 """
     ti = tarfile.TarInfo(".PKGINFO")
@@ -452,7 +452,7 @@ builddate = 1730386800
 packager = Anirudha Puthraya
 size = 22000000
 arch = x86_64
-license = Apache-2.0
+license = ODCS-OSL-2.0-2.0
 depend = python3
 """
     ti = tarfile.TarInfo(".PKGINFO")

@@ -6,19 +6,15 @@ Copyright (c) 2026 Haven Language Foundation & Anirudha Puthraya.
 """
 
 import re
+from .i18n import translate_dialects
 
 
 def preprocess_haven(source_code: str) -> str:
     """
-    Transforms Star Language syntax and Haven natural extensions into standard Haven bytecode AST.
-    Supported Star Ergonomics:
-      - 'use <module>'               -> 'import <module>'
-      - 'variable <name> = <val>'    -> 'set <name> to <val>'
-      - 'constant <NAME> = <val>'    -> 'remember <NAME> as <val>'
-      - 'end' (block terminator)     -> 'pass'
-      - '() -> <expr>'               -> 'lambda: <expr>'
-      - '(x, y) -> <expr>'           -> 'lambda x, y: <expr>'
+    Transforms Star Language syntax, Global Natural Dialects, and Haven natural extensions into standard Haven bytecode AST.
     """
+    # First apply Universal Global Natural Dialects translation
+    source_code = translate_dialects(source_code)
     lines = source_code.splitlines()
     processed_lines = []
 

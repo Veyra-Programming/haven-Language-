@@ -302,3 +302,4 @@ def generate_interactive_docs_html(app_name: str, spec_url: str = "/openapi.json
     </script>
 </body>
 </html>"""
+

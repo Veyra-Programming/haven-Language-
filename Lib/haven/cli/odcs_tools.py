@@ -341,9 +341,9 @@ def _cmd_live(args: list) -> int:
 
                 summary = tele.status_summary()
                 status_payload = {
-                    "standard": "ODCS-1.0.0",
+                    "standard": "ODCS-2.0.0",
                     "author": "Anirudha Puthraya",
-                    "runtime": "Haven Programming Language v1.0.0",
+                    "runtime": "Haven Programming Language v2.1.1 GA",
                     "telemetry": summary,
                     "ledger": {
                         "name": ledger.name,
