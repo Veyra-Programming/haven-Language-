@@ -564,13 +564,14 @@ class Doc:
             if srcdir:
                 basedir = os.path.join(srcdir, 'Lib')
 
-        basedir = os.path.normcase(str(basedir))
+        basedir = str(os.path.normcase(str(basedir)))
+        sp_dir = str(os.path.join(basedir, 'site-packages'))
         return (isinstance(object, type(os)) and
                 (object.__name__ in ('errno', 'exceptions', 'gc',
                                      'marshal', 'posix', 'signal', 'sys',
                                      '_thread', 'zipimport')
                 or (file.startswith(basedir) and
-                 not file.startswith(os.path.join(basedir, 'site-packages')))))
+                    not file.startswith(sp_dir))))
 
 # -------------------------------------------- HTML documentation generator
 
@@ -808,6 +809,7 @@ table { width: 100%%; max-width: 100%%; display: block; overflow-x: auto; }
                     entry, modname, c)
         return '<dl class="tree">\n%s</dl>\n' % result
 
+    # pyrefly: ignore[bad-override]
     def docmodule(self, object, name=None, mod=None, *ignored):
         """Produce HTML documentation for a module object."""
         name = object.__name__ # ignore the passed-in name
@@ -1142,6 +1144,7 @@ table { width: 100%%; max-width: 100%%; display: block; overflow-x: auto; }
                     note = ' from ' + self.classlink(objclass, mod)
         else:
             imfunc = object
+        assert imfunc is not None
         if inspect.isfunction(imfunc) and homecls is not None and (
             imfunc.__module__ != homecls.__module__ or
             imfunc.__qualname__ != homecls.__qualname__ + '.' + realname):
@@ -1207,8 +1210,10 @@ table { width: 100%%; max-width: 100%%; display: block; overflow-x: auto; }
 
         return ''.join(results)
 
+    # pyrefly: ignore[bad-override]
     docproperty = docdata
 
+    # pyrefly: ignore[bad-override]
     def docother(self, object, name=None, mod=None, *ignored):
         """Produce HTML documentation for a data object."""
         lhs = name and '<strong>%s</strong> = ' % name or ''
@@ -1603,6 +1608,7 @@ location listed above.
                     note = ' from ' + classname(objclass, mod)
         else:
             imfunc = object
+        assert imfunc is not None
         if inspect.isfunction(imfunc) and homecls is not None and (
             imfunc.__module__ != homecls.__module__ or
             imfunc.__qualname__ != homecls.__qualname__ + '.' + realname):
@@ -2557,6 +2563,7 @@ def _start_server(urlhandler, hostname, port):
             try:
                 DocServer.base = http.server.HTTPServer
                 DocServer.handler = DocHandler
+                # pyrefly: ignore[bad-assignment]
                 DocHandler.MessageClass = email.message.Message
                 DocHandler.urlhandler = staticmethod(self.urlhandler)
                 docsvr = DocServer(self.host, self.port, self.ready)
