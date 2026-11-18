@@ -24,7 +24,7 @@ def run_tests(target_path: str = ".", pattern: str = None, verbose: bool = False
             # Exclude build, cache, Lib internal tests, and git dirs
             dirs[:] = [d for d in dirs if d not in (".git", "__pycache__", "PCbuild", "dist", "externals", "Doc", "Misc", "Modules", "Objects", "Parser", "PC", "Programs", "Python") and not (target_path in (".", "./", ".\\") and d == "Lib")]
             for f in files:
-                if (f.startswith("test_") or f.endswith("_test.hvn") or f.endswith("_test.py")) and (f.endswith(".hvn") or f.endswith(".py")):
+                if (f.startswith("test_") or "_test." in f) and f.endswith((".hvn", ".haven", ".ani", ".ani++", ".py")):
                     test_files.append(os.path.abspath(os.path.join(root, f)))
     else:
         print(f"{bold(red('Error:'))} Path not found: '{target_path}'", file=sys.stderr)

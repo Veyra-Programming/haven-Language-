@@ -1,8 +1,8 @@
 {
   "name": "heaven-programming-language",
-  "displayName": "Heaven (Haven) Programming Language",
-  "description": "Official Visual Studio Code extension for Heaven & Haven: natural-English syntax highlighting, AST diagnostics, hover tooltips, snippets, and ODCS continuity gateway integration.",
-  "version": "2.2.0",
+  "displayName": "Ani++ / Heaven (Haven) Programming Language",
+  "description": "Official Visual Studio Code extension for Ani++ & Haven: 4D Chrono-Quantum Causality Engine, Entangled Memory, natural-English syntax highlighting, AST diagnostics, hover tooltips, snippets, and ODCS continuity gateway integration.",
+  "version": "3.0.0",
   "publisher": "star-lang",
   "repository": {
     "type": "git",
@@ -18,8 +18,12 @@
     "Linters"
   ],
   "keywords": [
+    "ani++",
+    "ani",
     "heaven",
     "haven",
+    "omniengine",
+    "chrono",
     "natural-english",
     "odcs",
     "digital-continuity",
@@ -41,21 +45,29 @@
   "activationEvents": [
     "onLanguage:heaven",
     "onLanguage:haven",
+    "onLanguage:ani",
     "workspaceContains:**/*.hvn",
     "workspaceContains:**/*.heaven",
-    "workspaceContains:**/*.haven"
+    "workspaceContains:**/*.haven",
+    "workspaceContains:**/*.ani",
+    "workspaceContains:**/*.ani++"
   ],
   "contributes": {
     "languages": [
       {
         "id": "heaven",
         "aliases": [
+          "Ani++",
+          "ani++",
+          "ani",
           "Heaven",
           "heaven",
           "Haven",
           "haven"
         ],
         "extensions": [
+          ".ani",
+          ".ani++",
           ".hvn",
           ".heaven",
           ".haven"

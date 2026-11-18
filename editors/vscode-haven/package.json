@@ -1,8 +1,8 @@
 {
   "name": "haven-language",
-  "displayName": "Haven Programming Language",
-  "description": "Official Visual Studio Code extension for Haven Language: natural-English syntax highlighting, Haven Fox mascot branding, autocompletion, hover signatures, and ODCS digital continuity integration.",
-  "version": "2.2.0",
+  "displayName": "Ani++ / Haven Programming Language",
+  "description": "Official Visual Studio Code extension for Ani++ & Haven: 4D Chrono-Quantum Causality Engine, Entangled Memory, natural-English syntax highlighting, autocompletion, hover signatures, and ODCS digital continuity integration.",
+  "version": "3.0.0",
   "publisher": "star-lang",
   "repository": {
     "type": "git",
@@ -18,9 +18,13 @@
     "Linters"
   ],
   "keywords": [
+    "ani++",
+    "ani",
     "haven",
     "heaven",
     "fox",
+    "omniengine",
+    "chrono",
     "natural-english",
     "odcs",
     "ofcs",
@@ -43,20 +47,28 @@
   "activationEvents": [
     "onLanguage:haven",
     "onLanguage:heaven",
+    "onLanguage:ani",
     "workspaceContains:**/*.hvn",
-    "workspaceContains:**/*.haven"
+    "workspaceContains:**/*.haven",
+    "workspaceContains:**/*.ani",
+    "workspaceContains:**/*.ani++"
   ],
   "contributes": {
     "languages": [
       {
         "id": "haven",
         "aliases": [
+          "Ani++",
+          "ani++",
+          "ani",
           "Haven",
           "haven",
           "Heaven",
           "heaven"
         ],
         "extensions": [
+          ".ani",
+          ".ani++",
           ".hvn",
           ".haven"
         ],

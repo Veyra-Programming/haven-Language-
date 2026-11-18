@@ -103,7 +103,7 @@ def run_script(file_path: str, script_args: list, measure_time: bool = False, ve
     if not os.path.exists(file_path):
         # Try checking with extensions (.hvn, .haven, .hvc)
         found = None
-        for ext in (".hvn", ".haven", ".hvc", ".py"):
+        for ext in (".hvn", ".haven", ".hvc", ".ani", ".ani++", ".py"):
             candidate = file_path + ext
             if os.path.exists(candidate):
                 found = candidate

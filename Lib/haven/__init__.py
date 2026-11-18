@@ -19,6 +19,7 @@ from .immutability import (
     canonical_json_bytes,
     sha256_digest
 )
+sha256 = sha256_digest
 from odcs.core import ContinuityIntegrityError
 from .algorithm import (
     ContinuityAlgorithm,
@@ -239,6 +240,37 @@ from .iot import (
     ActuatorSafetyViolation,
 )
 
+# Ani++ OmniEngine Architecture (Chrono-Quantum Causality & Entangled Reality)
+from .engine import (
+    OmniEngine,
+    AniEngine,
+    _GLOBAL_OMNI_ENGINE,
+    ChronoEngine,
+    CausalityNode,
+    RealityState,
+    EntangledVariable,
+    SynthesizedVariable,
+    DurableVariable,
+    entangled,
+    synthesized,
+    durable_var,
+    AutonomousHealer,
+    HealingReceipt,
+    HealingStrategy,
+    heal,
+    CognitiveNode,
+    CognitiveReactor,
+    deterministic_embedding,
+    cosine_similarity,
+    euclidean_distance,
+    dot_product,
+    vector_magnitude,
+    semantic_search,
+)
+
+AniApp = HavenApp
+AniServer = HavenServer
+
 # Haven 100+ Standard Methods Library
 from .methods import *
 from .methods import methods as haven_methods
@@ -246,9 +278,10 @@ from .methods import methods as haven_methods
 
 
 
-__version__ = "2.1.1 GA"
+__version__ = "3.0.0 (Ani++ / Haven)"
 __status__ = "General Availability (GA)"
 __author__ = "Anirudha Puthraya"
+__brand__ = "Ani++ / Haven"
 __standard__ = "Open Digital Continuity Standard (ODCS) & Open Financial Continuity Standard (OFCS)"
 
 # Establish Haven System Identity
@@ -256,8 +289,8 @@ import sys
 import types
 try:
     sys.implementation = types.SimpleNamespace(
-        name='haven',
-        cache_tag='haven-211',
+        name='ani++',
+        cache_tag='ani-300',
         version=sys.version_info,
         hexversion=sys.hexversion,
         supports_isolated_interpreters=True
@@ -291,6 +324,7 @@ __all__ = [
     "ContinuityIntegrityError",
     "canonical_json_bytes",
     "sha256_digest",
+    "sha256",
     "checkpoint",
     "verify_continuity",
     "pipe_fn",
@@ -469,4 +503,31 @@ __all__ = [
     "ActuatorController",
     "EdgeAirgapSupervisor",
     "ActuatorSafetyViolation",
+    # Ani++ OmniEngine Architecture
+    "OmniEngine",
+    "AniEngine",
+    "_GLOBAL_OMNI_ENGINE",
+    "AniApp",
+    "AniServer",
+    "ChronoEngine",
+    "CausalityNode",
+    "RealityState",
+    "EntangledVariable",
+    "SynthesizedVariable",
+    "DurableVariable",
+    "entangled",
+    "synthesized",
+    "durable_var",
+    "AutonomousHealer",
+    "HealingReceipt",
+    "HealingStrategy",
+    "heal",
+    "CognitiveNode",
+    "CognitiveReactor",
+    "deterministic_embedding",
+    "cosine_similarity",
+    "euclidean_distance",
+    "dot_product",
+    "vector_magnitude",
+    "semantic_search",
 ]

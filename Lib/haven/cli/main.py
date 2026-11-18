@@ -13,51 +13,53 @@ import odcs
 
 
 BANNER = f"""
-{bold(cyan('╔═══════════════════════════════════════════════════════════════╗'))}
-{bold(cyan('║                   HAVEN LANGUAGE v2.1.1 GA                    ║'))}
-{bold(cyan('║     Open Digital Continuity Standard (ODCS Edition)           ║'))}
-{bold(cyan('║        Specification & Architecture by Anirudha Puthraya      ║'))}
-{bold(cyan('╚═══════════════════════════════════════════════════════════════╝'))}
+{bold(magenta('╔═══════════════════════════════════════════════════════════════╗'))}
+{bold(cyan('║             ANI++ / HAVEN OMNIENGINE v3.0 GA                  ║'))}
+{bold(cyan('║     Quantum-Causality JIT & Digital Continuity Platform       ║'))}
+{bold(yellow('║        Specification & Architecture by Anirudha Puthraya      ║'))}
+{bold(magenta('╚═══════════════════════════════════════════════════════════════╝'))}
 """
 
 
 def print_help() -> None:
     print(BANNER)
     print(f"""{bold('Usage:')}
+  ani <command> [arguments...]
   haven <command> [arguments...]
-  haven <script.hvn> [arguments...]
+  ani <script.ani|.hvn> [arguments...]
 
 {bold('Core Commands:')}
-  {green('run')} <file.hvn> [args...]       Execute a Haven program (.hvn, .haven) with arguments
-  {green('eval')}, {green('-c')} <code>               Evaluate Haven code strings with native runtime
-  {green('build')} <file.hvn>              Compile Haven source to tamper-proof bytecode (.hvc)
-  {green('new')} <name> [options]           Scaffold a new ODCS App, Continuity Algorithm, or Haven project
+  {green('run')} <file.ani|.hvn> [args...]   Execute an Ani++ or Haven program with arguments
+  {green('eval')}, {green('-c')} <code>               Evaluate code strings with native OmniEngine runtime
+  {green('build')} <file.ani|.hvn>          Compile source to tamper-proof bytecode (.hvc)
+  {green('omni')}, {green('engine')}                 Inspect OmniEngine 4D DAG, Entangled Memory & Healer stats
+  {green('timeline')}                       Visual representation of the 4D Chrono-Causality DAG
+  {green('heal')}                           Inspect autonomous healing incidents and cryptographic receipts
+  {green('new')} <name> [options]           Scaffold a new Ani++ / Haven project or ODCS App
   {green('pkg')} <init|show>                Manage project manifest (haven.toml)
-  {green('test')} [path] [options]          Run Haven and ODCS test suites with live reporting
-  {green('check')} <file.hvn>               Static syntax and ODCS integrity verification
-  {green('fmt')} <file.hvn>                 Format and normalize Haven source code
+  {green('test')} [path] [options]          Run Ani++ and Haven test suites with live reporting
+  {green('check')} <file.ani|.hvn>          Static syntax and ODCS integrity verification
+  {green('fmt')} <file.ani|.hvn>            Format and normalize source code
   {green('doctor')}                         Run toolchain diagnosis & edge network health check
   {green('api')} <subcommand>               Institutional Edge API Gateway CLI (https://api.odcs.in)
-  {green('repl')}                           Launch interactive Haven REPL with live ledger tools
-  {green('articles')} [list|read|open]      Read architectural essays & articles by the Admin (Anirudha Puthraya)
+  {green('repl')}                           Launch interactive Ani++ / Haven REPL with live ledger tools
+  {green('articles')} [list|read|open]      Read architectural essays & articles by Anirudha Puthraya
   {green('odcs')} <subcommand> [args...]    ODCS audit, replay, inspection, and verification tools
-  {green('info')}                           Display Haven runtime, ODCS spec, and environment info
-  {green('idle')}                           Launch the Haven Graphical IDE / Shell
-  {green('version')}, {green('-V')}, {green('--version')}    Print Haven language version information
+  {green('info')}                           Display Ani++ / Haven runtime, OmniEngine, and ODCS info
+  {green('idle')}                           Launch the Ani++ / Haven Graphical IDE / Shell
+  {green('version')}, {green('-V')}, {green('--version')}    Print language version and dual-identity info
 
-{bold('Options for `haven new`:')}
-  {yellow('--template')}, {yellow('-t')}   Template to use: {bold('odcs-app')} (default), {bold('odcs-algorithm')}, {bold('basic')}
+{bold('Options for `new`:')}
+  {yellow('--template')}, {yellow('-t')}   Template: {bold('odcs-app')} (default), {bold('odcs-algorithm')}, {bold('ani-engine')}, {bold('basic')}
   {yellow('--author')}         Author name (default: Anirudha Puthraya)
   {yellow('--desc')}           Project description
 
 {bold('Examples:')}
+  ani run my_service.ani
   haven run my_script.hvn
-  haven new MyBankingSystem --template odcs-app
-  haven new ConsensusEngine --template odcs-algorithm
-  haven test tests/
-  haven check src/main.hvn
-  haven odcs audit data/journal.json
-  haven repl
+  ani omni
+  ani test tests/
+  ani repl
 """)
 
 
@@ -95,8 +97,8 @@ def main(args: list = None) -> int:
         from .runner import run_code
         return run_code(" ".join(code_args))
 
-    # If the first argument is a script file path (.hvn, .haven)
-    if first_arg.endswith((".hvn", ".haven", ".py")) or (os.path.exists(first_arg) and not os.path.isdir(first_arg)):
+    # If the first argument is a script file path (.hvn, .haven, .ani, .ani++)
+    if first_arg.endswith((".hvn", ".haven", ".ani", ".ani++", ".py")) or (os.path.exists(first_arg) and not os.path.isdir(first_arg)):
         from .runner import run_script
         return run_script(first_arg, args[1:])
 
@@ -214,6 +216,55 @@ def main(args: list = None) -> int:
     elif cmd in ("pkg", "package", "manifest"):
         from .pkg import handle_pkg_command
         return handle_pkg_command(subargs)
+
+    elif cmd in ("omni", "engine"):
+        from haven.engine import _GLOBAL_OMNI_ENGINE
+        info = _GLOBAL_OMNI_ENGINE.info()
+        print(f"\n{bold(cyan('====================================================='))}")
+        print(f"{bold(magenta('        ANI++ / HAVEN OMNIENGINE STATUS              '))}")
+        print(f"{bold(cyan('====================================================='))}")
+        print(f"  {bold('Engine Name:')}       {green(info['engine'])}")
+        print(f"  {bold('Engine Version:')}    {yellow(info['version'])}")
+        print(f"  {bold('Uptime:')}            {info['uptime_seconds']:.2f}s")
+        print(f"  {bold('4D DAG Nodes:')}      {cyan(str(info['timeline_nodes']))}")
+        print(f"  {bold('Active Branches:')}   {info['timeline_branches']}")
+        print(f"  {bold('Healed Incidents:')}  {green(str(info['healed_events']))}")
+        print(f"  {bold('Cognitive Nodes:')}   {magenta(str(info['cognitive_nodes']))}")
+        print(bold(cyan('=====================================================')) + '\n')
+        return 0
+
+    elif cmd == "timeline":
+        from haven.engine import _GLOBAL_OMNI_ENGINE
+        nodes = _GLOBAL_OMNI_ENGINE.chrono.get_timeline_graph()
+        print(f"\n{bold(cyan('====================================================='))}")
+        print(f"{bold(magenta('       4D CHRONO-CAUSALITY TIMELINE DAG              '))}")
+        print(f"{bold(cyan('====================================================='))}")
+        for n in nodes:
+            branch_str = f"[{magenta(n['branch'])}]"
+            action_str = bold(yellow(n['action']))
+            node_id_str = cyan(n['node_id'])
+            parent_str = dim(f"<- {n['parent_id']}") if n['parent_id'] else dim("(GENESIS)")
+            hash_str = dim(n['causality_hash'][:16] + "...")
+            print(f"  • {node_id_str} {branch_str} {action_str} {parent_str} [{hash_str}]")
+        print(bold(cyan('=====================================================')) + '\n')
+        return 0
+
+    elif cmd == "heal":
+        from haven.engine import _GLOBAL_OMNI_ENGINE
+        history = _GLOBAL_OMNI_ENGINE.healer.healing_history
+        print(f"\n{bold(cyan('====================================================='))}")
+        print(f"{bold(magenta('      AUTONOMOUS LIVING INTENT HEALING LOGS          '))}")
+        print(f"{bold(cyan('====================================================='))}")
+        if not history:
+            print(f"  {green('No system panics or healing incidents recorded. All invariants nominal.')}")
+        else:
+            for r in history:
+                d = r.to_dict()
+                print(f"  • [{red(d['error_type'])}] in '{bold(d['operation'])}'")
+                print(f"    Strategy: {green(d['strategy'])} | Sealed: {dim(d['seal_hash'][:20])}...")
+                print(f"    Healed Result: {cyan(d['healed_value'])}")
+        print(bold(cyan('=====================================================')) + '\n')
+        return 0
 
     elif cmd == "idle":
         import idlelib.pyshell

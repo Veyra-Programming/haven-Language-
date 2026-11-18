@@ -21,7 +21,8 @@ except ImportError:
     pass
 
 # Convenience aliases
-sha256 = getattr(haven, "sha256_hex", getattr(haven, "sha256_digest", None))
+sha256 = getattr(haven, "sha256", getattr(haven, "sha256_digest", None))
+globals()["sha256"] = sha256
 
 # Expose key first-class submodules
 try:

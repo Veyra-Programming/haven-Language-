@@ -1,0 +1,181 @@
+# ==============================================================================
+# Ani++ / Haven Language • OmniEngine & World-First Concepts Verification Suite
+# Standard: Open Digital Continuity Standard (ODCS-3.0)
+# Creator & Specification Architecture: Anirudha Puthraya
+# ==============================================================================
+
+use ani
+use haven
+
+say "================================================================="
+say "  ANI++ / HAVEN OMNIENGINE • WORLD-FIRST CONCEPTS TEST SUITE     "
+say "  Specification & Architecture by Anirudha Puthraya              "
+say "================================================================="
+
+# ------------------------------------------------------------------------------
+# TEST 1: 4D Temporal Causality DAG & Timeline Rewind (ChronoEngine)
+# ------------------------------------------------------------------------------
+say "[1/5] Verifying 4D Chrono-Causality DAG & Timeline Rewind..."
+
+variable chrono = ChronoEngine("Test_Chrono")
+chrono.set("balance", 1000)
+chrono.set("active_nodes", 4)
+chrono.set("balance", 2500)
+
+ensure chrono.get("balance") == 2500 otherwise "Chrono initial state mismatch"
+ensure chrono.get("active_nodes") == 4 otherwise "Chrono nodes state mismatch"
+
+# Rewind 1 step back in time
+chrono.rewind(steps=1)
+ensure chrono.get("balance") == 1000 otherwise "Chrono rewind step 1 failed"
+ensure chrono.get("active_nodes") == 4 otherwise "Chrono rewind invariant failed"
+
+# Timeline Multiverse Forking
+chrono.fork("alternate_reality_beta")
+chrono.set("quantum_drift", 0.0042)
+chrono.set("balance", 999999)
+
+ensure chrono.get("balance") == 999999 otherwise "Fork branch state failed"
+
+# Switch back to main timeline branch
+chrono.switch_branch("main")
+ensure chrono.get("balance") == 1000 otherwise "Main branch isolation failed"
+
+# Quantum Speculative Execution (Zero Leak on Failure)
+def failing_speculation():
+    chrono.set("corrupted_state", -1)
+    1 / 0  # Trigger panic
+
+success, err = chrono.speculate(failing_speculation, rollback_on_fail=True)
+ensure success == False otherwise "Speculative failure should return False"
+ensure chrono.get("corrupted_state") == None otherwise "Speculative failure leaked mutated state!"
+
+# Quantum Speculative Execution (Commit on Success)
+def successful_speculation():
+    chrono.set("speculative_asset", "GOLD_CREDIT")
+    give back 42
+
+success, res = chrono.speculate(successful_speculation)
+ensure success == True otherwise "Speculative success failed"
+ensure res == 42 otherwise "Speculative return value mismatch"
+ensure chrono.get("speculative_asset") == "GOLD_CREDIT" otherwise "Speculative commit failed"
+
+# Cryptographic Causality DAG verification
+ensure chrono.verify_causality_integrity() == True otherwise "Chrono 4D DAG hash broken"
+say "[PASS] 4D Temporal ChronoEngine: Rewind, Multiverse Fork, and Speculative Quantum Execution Verified!"
+
+# ------------------------------------------------------------------------------
+# TEST 2: Polymorphic Entangled Memory Fabric (EMF)
+# ------------------------------------------------------------------------------
+say "[2/5] Verifying Polymorphic Entangled Memory Fabric..."
+
+# A. Entangled Variable (Peer Auto-Sync)
+variable peer_speed = entangled("fleet_speed", 85.5, node_id="vehicle-01")
+variable sync_triggered = False
+
+def on_remote_event(name, val, ver):
+    global sync_triggered
+    sync_triggered = True
+
+peer_speed.on_sync(on_remote_event)
+peer_speed.value = 110.0
+
+ensure peer_speed.value == 110.0 otherwise "Entangled value mutation failed"
+ensure sync_triggered == True otherwise "Entangled sync subscriber notification failed"
+
+# B. Synthesized Variable (Reactive Cognitive Evaluation)
+variable server_load = 40.0
+variable ping_ms = 12.0
+variable health_eval = synthesized("node_health", lambda: "HEALTHY" if server_load < 80.0 and ping_ms < 50.0 else "DEGRADED")
+
+ensure health_eval.value == "HEALTHY" otherwise "Synthesized initial evaluation failed"
+
+server_load = 95.0
+ensure health_eval.value == "DEGRADED" otherwise "Synthesized reactive dynamic evaluation failed"
+
+# C. Durable Variable (Zero-Crash-Loss Merkle Persistence)
+variable persistent_counter = durable_var("tx_sequence_id", 1001)
+persistent_counter.value = 1002
+ensure persistent_counter.value == 1002 otherwise "DurableVariable value mismatch"
+
+say "[PASS] Polymorphic Entangled Memory: Entangled, Synthesized, and Durable Variables Verified!"
+
+# ------------------------------------------------------------------------------
+# TEST 3: Autonomous Living Intent Reactor (Zero-Crash Invariant Defense)
+# ------------------------------------------------------------------------------
+say "[3/5] Verifying Autonomous Self-Healing Reactor..."
+
+variable healer = AutonomousHealer("Grid_Self_Healer")
+healer.cache_wal("calculate_risk", {"risk_score": 0.05, "status": "NOMINAL"})
+
+def critical_panicking_call():
+    1 / 0  # Fatal division by zero
+
+# Execute panicking call with CACHED_WAL_FALLBACK strategy
+val, receipt = healer.heal_and_execute(
+    operation_name="calculate_risk",
+    primary_fn=critical_panicking_call,
+    strategy=HealingStrategy.CACHED_WAL_FALLBACK
+)
+
+ensure val["risk_score"] == 0.05 otherwise "Self-healing WAL recovery failed"
+ensure receipt != None otherwise "Healing receipt was not minted!"
+ensure receipt.error_type == "ZeroDivisionError" otherwise "Healing receipt error type incorrect"
+ensure receipt.strategy == HealingStrategy.CACHED_WAL_FALLBACK otherwise "Healing strategy mismatch"
+ensure receipt.seal_hash.startswith("sha256:") otherwise "Healing receipt seal missing sha256 prefix"
+
+say "[PASS] Autonomous Self-Healing: Fatal Panic Intercepted, WAL Healed, Receipt Minted!"
+
+# ------------------------------------------------------------------------------
+# TEST 4: Native Cognitive Synthesis Reactor
+# ------------------------------------------------------------------------------
+say "[4/5] Verifying AI-Symbiotic Cognitive Synthesis Reactor..."
+
+variable reactor = CognitiveReactor("KnowledgeMesh")
+reactor.insert("doc_arch", "Ani++ and Haven implement sovereign zero-drift digital continuity")
+reactor.insert("doc_crypto", "Cryptographic Merkle tree DAG provides unbroken tamper-evident verification chains")
+reactor.insert("doc_backend", "HavenApp provides high performance OpenAPI 3.0 REST microservices")
+
+variable search_results = reactor.search("cryptographic proof and merkle hash chain", top_k=2)
+ensure len(search_results) == 2 otherwise "Cognitive search result count mismatch"
+ensure search_results[0][0] == "doc_crypto" otherwise "Cognitive search top relevance ranking failed"
+
+variable thinking_out = reactor.think("digital continuity architecture")
+ensure thinking_out["confidence"] > 0.0 otherwise "Cognitive synthesis confidence calculation failed"
+
+# Semantic Search convenience helper
+variable dataset = [
+    {"id": "doc1", "text": "High speed reversible temporal quantum engine"},
+    {"id": "doc2", "text": "Turnkey double entry banking and financial vault"},
+    {"id": "doc3", "text": "Decentralized gossip peer to peer CRDT mesh"}
+]
+variable matched_docs = semantic_search("reversible time travel timeline rewind", dataset, text_key="text", top_k=1)
+ensure matched_docs[0]["id"] == "doc1" otherwise "Semantic search nearest neighbor mismatch"
+
+say "[PASS] Cognitive Synthesis Reactor: Native Embeddings, Vector Math, and Thought Search Verified!"
+
+# ------------------------------------------------------------------------------
+# TEST 5: Master OmniEngine Unified Orchestrator & Dual Brand Identity
+# ------------------------------------------------------------------------------
+say "[5/5] Verifying Master OmniEngine Orchestrator & Ani++ Dual Identity..."
+
+variable engine = OmniEngine("Ani++_Enterprise_Core")
+variable snap = engine.snapshot("genesis_checkpoint", node_count=16, network="SOVEREIGN_MESH")
+ensure snap.branch == "main" otherwise "OmniEngine snapshot branch mismatch"
+
+variable healed_num = engine.heal("div_safe", lambda: 100 / 0, fallback=999)
+ensure healed_num == 999 otherwise "OmniEngine heal helper failed"
+
+variable info_map = engine.info()
+ensure info_map["version"] == "3.0.0-HYPER" otherwise "Engine version mismatch"
+ensure info_map["timeline_nodes"] >= 1 otherwise "Missing timeline nodes in engine info"
+
+# Verify AniApp and AniServer aliases
+variable test_app = AniApp("AniCommerceEngine", port=9991)
+ensure test_app.name == "AniCommerceEngine" otherwise "AniApp instantiation failed"
+
+say "[PASS] Master OmniEngine & Ani++ Dual Brand Identity 100% Operational!"
+
+say "================================================================="
+say " ALL ANI++ / HAVEN OMNIENGINE TESTS PASSED (100% GREEN)          "
+say "================================================================="
