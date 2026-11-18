@@ -58,14 +58,46 @@ class Widget:
 # 1. Structural Widgets
 # ==========================================
 
+class MediaQueryData:
+    """Device screen metrics and viewport constraint specifications."""
+    def __init__(
+        self,
+        width: float = 390.0,
+        height: float = 844.0,
+        devicePixelRatio: float = 3.0,
+        disableHorizontalScroll: bool = True,
+        preventZoom: bool = True
+    ):
+        self.width = float(width)
+        self.height = float(height)
+        self.devicePixelRatio = float(devicePixelRatio)
+        self.disableHorizontalScroll = disableHorizontalScroll
+        self.preventZoom = preventZoom
+
+    def __repr__(self) -> str:
+        return f"MediaQueryData(width={self.width}, height={self.height}, preventZoom={self.preventZoom})"
+
+
+class MediaQuery(Widget):
+    """Provides screen layout boundaries preventing zoom and side shifts."""
+    _current = MediaQueryData()
+
+    @classmethod
+    def of(cls) -> MediaQueryData:
+        return cls._current
+
+
 class Scaffold(Widget):
     def __init__(self, appBar=None, body=None, backgroundColor=None,
                  floatingActionButton=None, bottomNavigationBar=None,
-                 elevation=None, drawer=None, **kwargs):
+                 elevation=None, drawer=None, disableHorizontalScroll=True,
+                 preventZoom=True, **kwargs):
         super().__init__(appBar=appBar, body=body, backgroundColor=backgroundColor,
                          floatingActionButton=floatingActionButton,
                          bottomNavigationBar=bottomNavigationBar,
-                         elevation=elevation, drawer=drawer, **kwargs)
+                         elevation=elevation, drawer=drawer,
+                         disableHorizontalScroll=disableHorizontalScroll,
+                         preventZoom=preventZoom, **kwargs)
 
 
 class AppBar(Widget):

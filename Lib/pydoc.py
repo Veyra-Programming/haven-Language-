@@ -131,10 +131,13 @@ def pathdirs():
 def _getdoc(object):
     # Docstrings written in the source are dedented by the compiler; the
     # indentation of generated docstrings is meaningful.
-    return inspect.getdoc(object,
-                          fallback_to_class_doc=False,
-                          inherit_class_doc=False,
-                          dedent=False)
+    try:
+        return getattr(inspect, 'getdoc')(object,
+                                          fallback_to_class_doc=False,
+                                          inherit_class_doc=False,
+                                          dedent=False)
+    except (TypeError, AttributeError):
+        return inspect.getdoc(object)
 
 def getdoc(object):
     """Get the doc string or comments for an object."""
@@ -152,13 +155,16 @@ def splitdoc(doc):
 
 def _getargspec(object):
     try:
-        signature = inspect.signature(object, annotation_format=Format.STRING)
+        kw = {}
+        if hasattr(Format, 'STRING'):
+            kw['annotation_format'] = getattr(Format, 'STRING')
+        signature = getattr(inspect, 'signature')(object, **kw)
         if signature:
             name = getattr(object, '__name__', '')
             # <lambda> function are always single-line and should not be formatted
             max_width = (80 - len(name)) if name != '<lambda>' else None
             return signature.format(max_width=max_width, quote_annotation_strings=False)
-    except (ValueError, TypeError):
+    except (ValueError, TypeError, AttributeError):
         argspec = getattr(object, '__text_signature__', None)
         if argspec:
             if argspec[:2] == '($':
@@ -378,7 +384,7 @@ def synopsis(filename, cache={}):
             spec = importlib.util.spec_from_file_location('__temp__', filename,
                                                           loader=loader)
             try:
-                module = importlib._bootstrap._load(spec)
+                module = getattr(importlib._bootstrap, '_load')(spec)
             except:
                 return None
             del sys.modules['__temp__']
@@ -420,7 +426,7 @@ def importfile(path):
     # XXX We probably don't need to pass in the loader here.
     spec = importlib.util.spec_from_file_location(name, path, loader=loader)
     try:
-        return importlib._bootstrap._load(spec)
+        return getattr(importlib._bootstrap, '_load')(spec)
     except BaseException as err:
         raise ErrorDuringImport(path, err)
 
@@ -568,8 +574,8 @@ class HTMLRepr(Repr):
     def escape(self, text):
         return replace(text, '&', '&amp;', '<', '&lt;', '>', '&gt;')
 
-    def repr(self, object):
-        return Repr.repr(self, object)
+    def repr(self, x):
+        return Repr.repr(self, x)
 
     def repr1(self, x, level):
         if hasattr(type(x), '__name__'):
@@ -615,7 +621,19 @@ class HTMLDoc(Doc):
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Haven: %s</title>
+<style>
+*, *:before, *:after { box-sizing: border-box; }
+html { overflow-x: hidden; width: 100%%; max-width: 100vw; -webkit-text-size-adjust: 100%%; text-size-adjust: 100%%; }
+body { margin: 0; padding: 0 1em 1em; width: 100%%; max-width: 100vw; overflow-x: hidden; touch-action: pan-y; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; color: #333; }
+pre, code, .docstring { max-width: 100%%; white-space: pre-wrap; word-break: break-word; overflow-wrap: anywhere; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%%; max-width: 100%%; display: block; overflow-x: auto; }
+@media (max-width: 768px) {
+    body { padding: 0 0.5em 0.5em; }
+    dl > dd { margin-left: 0.6em; }
+}
+</style>
 </head><body>
 %s
 </body></html>''' % (title, contents)
@@ -671,7 +689,7 @@ class HTMLDoc(Doc):
     def classlink(self, object, modname):
         """Make a link for a class."""
         name, module = object.__name__, sys.modules.get(object.__module__)
-        if hasattr(module, name) and getattr(module, name) is object:
+        if module is not None and hasattr(module, name) and getattr(module, name) is object:
             return '<a href="%s.html#%s">%s</a>' % (
                 module.__name__, name, classname(object, modname))
         return classname(object, modname)
@@ -680,7 +698,7 @@ class HTMLDoc(Doc):
         """Make a link for the enclosing class or module."""
         link = None
         name, module = object.__name__, sys.modules.get(object.__module__)
-        if hasattr(module, name) and getattr(module, name) is object:
+        if module is not None and hasattr(module, name) and getattr(module, name) is object:
             if '.' in object.__qualname__:
                 name = object.__qualname__.rpartition('.')[0]
                 if object.__module__ != modname:
@@ -762,6 +780,7 @@ class HTMLDoc(Doc):
     def formattree(self, tree, modname, parent=None):
         """Produce HTML for a class tree as given by inspect.getclasstree()."""
         result = ''
+        c = parent
         for entry in tree:
             if isinstance(entry, tuple):
                 c, bases = entry
@@ -871,7 +890,7 @@ class HTMLDoc(Doc):
         if classes:
             classlist = [value for (key, value) in classes]
             contents = [
-                self.formattree(inspect.getclasstree(classlist, 1), name)]
+                self.formattree(inspect.getclasstree(classlist, True), name)]
             for key, value in classes:
                 contents.append(self.document(value, key, name, fdict, cdict))
             result = result + self.bigsection(
@@ -1272,6 +1291,7 @@ class TextDoc(Doc):
     def formattree(self, tree, modname, parent=None, prefix=''):
         """Render in text a class tree as returned by inspect.getclasstree()."""
         result = ''
+        c = parent
         for entry in tree:
             if isinstance(entry, tuple):
                 c, bases = entry
@@ -1352,7 +1372,7 @@ location listed above.
         if classes:
             classlist = [value for key, value in classes]
             contents = [self.formattree(
-                inspect.getclasstree(classlist, 1), name)]
+                inspect.getclasstree(classlist, True), name)]
             for key, value in classes:
                 contents.append(self.document(value, key, name))
             result = result + self.section('CLASSES', '\n'.join(contents))
@@ -1760,7 +1780,7 @@ def render_doc(thing, title='Haven Library Documentation: %s', forceload=0,
     object, name = resolve(thing, forceload)
     if isinstance(object, str) and not inspect.ismodule(object):
         return object.strip()
-    desc = describe(object)
+    desc = str(describe(object))
     module = inspect.getmodule(object)
     if name and '.' in name:
         desc += ' in ' + name[:name.rfind('.')]
@@ -1775,10 +1795,10 @@ def render_doc(thing, title='Haven Library Documentation: %s', forceload=0,
         # If the passed object is a piece of data or an instance,
         # document its available methods instead of its value.
         if hasattr(object, '__origin__'):
-            object = object.__origin__
+            object = getattr(object, '__origin__')
         else:
             object = type(object)
-            desc += ' object'
+            desc = str(desc) + ' object'
     return title % desc + '\n\n' + renderer.document(object, name)
 
 def doc(thing, title='Haven Library Documentation: %s', forceload=0,
@@ -1961,13 +1981,14 @@ class Helper:
         '[': 'LISTS SUBSCRIPTS SLICINGS',
         ']': 'LISTS SUBSCRIPTS SLICINGS'
     }
-    for topic, symbols_ in _symbols_inverse.items():
-        for symbol in symbols_:
-            topics = symbols.get(symbol, topic)
-            if topic not in topics:
-                topics = topics + ' ' + topic
-            symbols[symbol] = topics
-    del topic, symbols_, symbol, topics
+    _t_inv = _sym_list = _sym = _t_val = None
+    for _t_inv, _sym_list in _symbols_inverse.items():
+        for _sym in _sym_list:
+            _t_val = symbols.get(_sym, _t_inv)
+            if _t_inv not in _t_val:
+                _t_val = _t_val + ' ' + _t_inv
+            symbols[_sym] = _t_val
+    del _t_inv, _sym_list, _sym, _t_val
 
     topics = {
         # Haven ODCS & OFCS Topics
@@ -2346,34 +2367,37 @@ class ModuleScanner:
             if self.quit:
                 break
 
+            desc = ''
+            path = None
             if key is None:
                 callback(None, modname, '')
             else:
                 try:
-                    spec = importer.find_spec(modname)
-                except SyntaxError:
-                    # raised by tests for bad coding cookies or BOM
+                    spec = importer.find_spec(modname, None)
+                except (SyntaxError, ValueError, AttributeError):
                     continue
-                loader = spec.loader
-                if hasattr(loader, 'get_source'):
+                loader = spec.loader if spec is not None else None
+                if loader is not None and hasattr(loader, 'get_source'):
                     try:
-                        source = loader.get_source(modname)
+                        source = getattr(loader, 'get_source')(modname)
                     except Exception:
                         if onerror:
                             onerror(modname)
                         continue
                     desc = source_synopsis(io.StringIO(source)) or ''
                     if hasattr(loader, 'get_filename'):
-                        path = loader.get_filename(modname)
+                        path = getattr(loader, 'get_filename')(modname)
                     else:
                         path = None
-                else:
+                elif spec is not None:
                     try:
-                        module = importlib._bootstrap._load(spec)
-                    except ImportError:
+                        module = getattr(importlib._bootstrap, '_load')(spec)
+                    except (ImportError, AttributeError):
                         if onerror:
                             onerror(modname)
                         continue
+                    desc = module.__doc__.splitlines()[0] if module.__doc__ else ''
+                    path = getattr(module, '__file__', None)
                     desc = module.__doc__.splitlines()[0] if module.__doc__ else ''
                     path = getattr(module,'__file__',None)
                 name = modname + ' - ' + desc
@@ -2459,6 +2483,7 @@ def _start_server(urlhandler, hostname, port):
     import threading
 
     class DocHandler(http.server.BaseHTTPRequestHandler):
+        urlhandler = staticmethod(lambda path, ct: '')
 
         def do_GET(self):
             """Process a request from an HTML browser.
@@ -2473,14 +2498,17 @@ def _start_server(urlhandler, hostname, port):
             self.send_response(200)
             self.send_header('Content-Type', '%s; charset=UTF-8' % content_type)
             self.end_headers()
-            self.wfile.write(self.urlhandler(
-                self.path, content_type).encode('utf-8', 'backslashreplace'))
+            if callable(self.urlhandler):
+                self.wfile.write(self.urlhandler(
+                    self.path, content_type).encode('utf-8', 'backslashreplace'))
 
-        def log_message(self, *args):
+        def log_message(self, format, *args):
             # Don't log messages.
             pass
 
     class DocServer(http.server.HTTPServer):
+        base = http.server.HTTPServer
+        handler = http.server.BaseHTTPRequestHandler
 
         def __init__(self, host, port, callback):
             self.host = host
@@ -2533,7 +2561,8 @@ def _start_server(urlhandler, hostname, port):
 
         def stop(self):
             """Stop the server and this thread nicely"""
-            self.docserver.quit = True
+            if self.docserver is not None:
+                self.docserver.quit = True
             self.join()
             # explicitly break a reference cycle: DocServer.callback
             # has indirectly a reference to ServerThread.
@@ -2572,8 +2601,8 @@ def _url_handler(url, content_type="text/html"):
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pydoc: %s</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Ani++ / Haven: %s</title>
 %s</head><body>
 %s
 <main>
@@ -2585,7 +2614,9 @@ def _url_handler(url, content_type="text/html"):
     html = _HTMLDoc()
 
     def html_navbar():
-        version = html.escape("%s [%s, %s]" % (platform.haven_version() if hasattr(platform, 'haven_version') else platform.python_version(),
+        hvn_ver_fn = getattr(platform, 'haven_version', None)
+        hvn_ver = hvn_ver_fn() if callable(hvn_ver_fn) else platform.python_version()
+        version = html.escape("%s [%s, %s]" % (hvn_ver,
                                                platform.python_build()[0],
                                                platform.python_compiler()))
         return """
@@ -2705,7 +2736,7 @@ def _url_handler(url, content_type="text/html"):
         return ('%s %s' % (title, topic),
                 ''.join((heading, contents, xrefs)))
 
-    def html_getobj(url):
+    def html_getobj(url) -> tuple:
         obj = locate(url, forceload=1)
         if obj is None and url != 'None':
             raise ValueError('could not find object')
@@ -2786,7 +2817,7 @@ def browse(port=0, *, open_browser=True, hostname='localhost'):
         return
     if serverthread.serving:
         server_help_msg = 'Server commands: [b]rowser, [q]uit'
-        if open_browser:
+        if open_browser and serverthread.url:
             webbrowser.open(serverthread.url)
         try:
             print('Server ready at', serverthread.url)
@@ -2796,7 +2827,7 @@ def browse(port=0, *, open_browser=True, hostname='localhost'):
                 cmd = cmd.lower()
                 if cmd == 'q':
                     break
-                elif cmd == 'b':
+                elif cmd == 'b' and serverthread.url:
                     webbrowser.open(serverthread.url)
                 else:
                     print(server_help_msg)
@@ -2882,7 +2913,7 @@ def cli():
                 hostname = val
 
         if start_server:
-            browse(port, hostname=hostname, open_browser=open_browser)
+            browse(int(port), hostname=hostname, open_browser=open_browser)
             return
 
         if not args: raise BadUsage

@@ -16,6 +16,8 @@ from . import vm
 
 from .ui import (
     Widget,
+    MediaQuery,
+    MediaQueryData,
     Scaffold,
     AppBar,
     BottomNavigationBar,
