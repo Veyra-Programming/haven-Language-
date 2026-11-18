@@ -470,9 +470,10 @@ def safeimport(path, forceload=0, cache={}):
 
 class Doc:
 
-    PYTHONDOCS = os.environ.get("PYTHONDOCS",
-                                "https://docs.python.org/%d.%d/library"
-                                % sys.version_info[:2])
+    PYTHONDOCS = os.environ.get("HAVENDOCS",
+                                os.environ.get("PYTHONDOCS",
+                                               "https://docs.havenlang.org/%d.%d/library"
+                                               % sys.version_info[:2]))
     STDLIB_DIR = sysconfig.get_path('stdlib')
 
     def document(self, object, name=None, *args):
@@ -1833,12 +1834,12 @@ def _introdoc():
         mode (press again to exit).
         '''
     return textwrap.dedent(f'''\
-        Welcome to Haven 2.0 (ODCS Native Edition) Documentation System!
+        Welcome to Ani++ / Haven 3.0 GA (OmniEngine & Sovereign Continuity Substrate) Documentation!
         Open Digital Continuity Standard (ODCS) & Open Financial Continuity Standard (OFCS)
         Architecture & Standard by Anirudha Puthraya.
 
         Enter the name of any module, keyword, or topic to get help on writing
-        Haven programs and using Haven modules.  To get a list of available
+        Ani++ and Haven programs and using native modules.  To get a list of available
         modules, keywords, symbols, or topics, enter "modules", "keywords",
         "symbols", or "topics".
         {pyrepl_keys}
@@ -2094,7 +2095,7 @@ class Helper:
             self.intro()
             self.interact()
             self.output.write('''
-You are now leaving help and returning to the Haven interpreter.
+You are now leaving help and returning to the Ani++ / Haven interpreter.
 If you want to ask for help on a particular object directly from the
 interpreter, you can type "help(object)".  Executing "help('string')"
 has the same effect as typing a particular string at the help> prompt.
