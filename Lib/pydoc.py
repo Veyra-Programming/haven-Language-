@@ -548,12 +548,17 @@ class Doc:
         except TypeError:
             file = '(built-in)'
 
+        if isinstance(file, bytes):
+            file = os.fsdecode(file)
+        else:
+            file = str(file)
+
         if sysconfig.is_python_build():
             srcdir = sysconfig.get_config_var('srcdir')
             if srcdir:
                 basedir = os.path.join(srcdir, 'Lib')
 
-        basedir = os.path.normcase(basedir)
+        basedir = os.path.normcase(str(basedir))
         return (isinstance(object, type(os)) and
                 (object.__name__ in ('errno', 'exceptions', 'gc',
                                      'marshal', 'posix', 'signal', 'sys',
