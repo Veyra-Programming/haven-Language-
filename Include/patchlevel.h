@@ -1,14 +1,14 @@
 #ifndef HAVEN_PATCHLEVEL_H
 #define HAVEN_PATCHLEVEL_H
 
-#define HAVEN_VERSION_MAJOR     1
-#define HAVEN_VERSION_MINOR     0
-#define HAVEN_VERSION_MICRO     0
+#define HAVEN_VERSION_MAJOR     2
+#define HAVEN_VERSION_MINOR     1
+#define HAVEN_VERSION_MICRO     1
 #define HAVEN_VERSION_LEVEL     "final"
 #define HAVEN_VERSION_SERIAL    0
 
-#define HAVEN_VERSION           "1.0.0"
-#define HAVEN_BANNER            "Haven 1.0.0 (ODCS Native Production Core) [Windows/MSVC]"
+#define HAVEN_VERSION           "2.1.1 GA"
+#define HAVEN_BANNER            "Haven 2.1.1 GA (ODCS Native Production Core) [Windows/MSVC]"
 #define HAVEN_COPYRIGHT         "Copyright (c) 2026 Anirudha Puthraya. All Rights Reserved."
 
 /* Values for PY_RELEASE_LEVEL */

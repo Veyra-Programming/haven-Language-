@@ -39,7 +39,7 @@ SRC_DIR = os.path.dirname(os.path.dirname(TOOLS_BUILD_DIR))
 IGNORED_FILENAME = os.path.join(TOOLS_BUILD_DIR, 'check_capi_macros_ignored.txt')
 
 DEFINE_REGEX = re.compile(r'\s*#\s*(?P<directive>define|undef)\s+(?P<macro>.*)')
-PYTHON_PREFIX = re.compile(r'(Py|PY|_Py|_PY)')
+PYTHON_PREFIX = re.compile(r'(Py|PY|_Py|_PY|HAVEN|Haven|_HAVEN|_Haven)')
 NAME_REGEX = re.compile(r'([A-Za-z_][A-Za-z0-9_]*)\b')
 
 CAUSES_BY_DIRECTIVE = {

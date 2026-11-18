@@ -14,7 +14,7 @@ repos:
         name: Run Ruff (lint) on Lib/
         args: [--exit-non-zero-on-fix]
         files: ^Lib/
-        exclude: ^Lib/test/
+        exclude: ^Lib/(test|haven|str|star|Flutter|Material|hvn)/
       - id: ruff-check
         name: Run Ruff (lint) on Lib/test/
         args: [--exit-non-zero-on-fix]

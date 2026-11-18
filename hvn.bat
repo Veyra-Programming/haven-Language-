@@ -9,4 +9,12 @@
 @set "HAVENPATH=%~dp0Lib;%~dp0"
 @set "PYTHONHOME="
 @set "PYTHONPATH="
-@"%~dp0PCbuild\amd64\haven.exe" "%~dp0haven.py" %*
+
+@if exist "%~dp0haven.exe" (
+    "%~dp0haven.exe" "%~dp0haven.py" %*
+) else if exist "%~dp0PCbuild\amd64\haven.exe" (
+    "%~dp0PCbuild\amd64\haven.exe" "%~dp0haven.py" %*
+) else (
+    echo [ERROR] Haven 2.1.1 GA binary not found.
+    exit /b 1
+)

@@ -1,14 +1,17 @@
 """
-Haven Programming Language (ODCS Native Edition) Site Customization
+Haven Programming Language (ODCS Native Edition v2.1.1 GA) Site Customization
 Standard Architecture by Anirudha Puthraya
 """
 import builtins
 import sys
 from importlib.abc import MetaPathFinder
 
+# Enforce Haven & ODCS runtime identity
+sys.version = "Haven 2.1.1 GA (ODCS Native Production Core) [Windows/MSVC]"
+
 try:
     import _sitebuiltins
-    _sitebuiltins._Helper.__repr__ = lambda self: "Type help() for Haven interactive help, or help(object) for help about object."
+    _sitebuiltins._Helper.__repr__ = lambda self: "Type help() for Haven interactive help, or help(object) for ODCS and language object help."
     builtins.help = _sitebuiltins._Helper()
     builtins.nothing = None
 except Exception:

@@ -34,7 +34,7 @@ namespace HavenInstaller
 
         public InstallerForm()
         {
-            this.Text = "Haven Programming Language v1.0.0 Setup";
+            this.Text = "Haven Programming Language v2.1.1 GA Setup";
             this.Size = new Size(580, 480);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -48,7 +48,7 @@ namespace HavenInstaller
             this.Controls.Add(headerPanel);
 
             titleLabel = new Label();
-            titleLabel.Text = "Haven Programming Language 1.0.0";
+            titleLabel.Text = "Haven Programming Language 2.1.1 GA";
             titleLabel.Font = new Font("Segoe UI", 14, FontStyle.Bold);
             titleLabel.ForeColor = Color.FromArgb(56, 189, 248); // Cyan
             titleLabel.Location = new Point(20, 15);
@@ -113,7 +113,7 @@ namespace HavenInstaller
             this.Controls.Add(chkDesktop);
 
             chkStartMenu = new CheckBox();
-            chkStartMenu.Text = "Create Start Menu shortcuts for Haven 1.0.0 & IDLE";
+            chkStartMenu.Text = "Create Start Menu shortcuts for Haven 2.1.1 GA & IDLE";
             chkStartMenu.Checked = true;
             chkStartMenu.Font = new Font("Segoe UI", 9);
             chkStartMenu.Location = new Point(25, 225);
@@ -248,14 +248,14 @@ namespace HavenInstaller
                 if (chkStartMenu.Checked)
                 {
                     UpdateStatus("Creating Start Menu shortcuts...", 90);
-                    string startMenu = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "Haven 1.0.0");
+                    string startMenu = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "Haven 2.1.1 GA");
                     Directory.CreateDirectory(startMenu);
                     string havenExe = Path.Combine(targetDir, "haven.exe");
                     string havenw = Path.Combine(targetDir, "havenw.exe");
                     string icon = Path.Combine(targetDir, "haven.ico");
                     string uninstBat = Path.Combine(targetDir, "uninstall.bat");
 
-                    CreateShortcut(Path.Combine(startMenu, "Haven 1.0.0 (Command Line).lnk"), havenExe, "", icon, "Haven 1.0.0 Command Line");
+                    CreateShortcut(Path.Combine(startMenu, "Haven 2.1.1 GA (Command Line).lnk"), havenExe, "", icon, "Haven 2.1.1 GA Command Line");
                     CreateShortcut(Path.Combine(startMenu, "Haven IDE (IDLE).lnk"), havenw, "-m idlelib", icon, "Haven IDE (ODCS Edition)");
                     CreateShortcut(Path.Combine(startMenu, "Uninstall Haven.lnk"), uninstBat, "", "", "Uninstall Haven");
                 }
