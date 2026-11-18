@@ -76,6 +76,7 @@ from annotationlib import Format
 from collections import deque
 from reprlib import Repr
 from traceback import format_exception_only
+from typing import Any
 
 try:
     from _pyrepl.pager import (get_pager, pipe_pager,
@@ -498,13 +499,18 @@ class Doc:
         if inspect.isdatadescriptor(object): return self.docdata(*args)
         return self.docother(*args)
 
-    def fail(self, object, name=None, *args):
+    def fail(self, object, name=None, *args, **kwargs) -> Any:
         """Raise an exception for unimplemented types."""
         message = "don't know how to document object%s of type %s" % (
             name and ' ' + repr(name), type(object).__name__)
         raise TypeError(message)
 
-    docmodule = docclass = docroutine = docother = docproperty = docdata = fail
+    docmodule: Any = fail
+    docclass: Any = fail
+    docroutine: Any = fail
+    docother: Any = fail
+    docproperty: Any = fail
+    docdata: Any = fail
 
     def getdocloc(self, object, basedir=None):
         """Return the location of module docs or None"""
@@ -1834,6 +1840,7 @@ def doc(thing, title='Haven Library Documentation: %s', forceload=0,
 def writedoc(thing, forceload=0):
     """Write HTML documentation to a file in the current directory."""
     object, name = resolve(thing, forceload)
+    name = name if isinstance(name, str) else 'doc'
     page = html.page(describe(object), html.document(object, name))
     with open(name + '.html', 'w', encoding='utf-8',
               errors='backslashreplace') as file:
