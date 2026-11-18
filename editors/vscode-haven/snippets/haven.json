@@ -496,5 +496,53 @@
       "let ${4:proposal} be ${1:pbft}.propose(${5:{\"tx\": \"TRANSFER\"}})"
     ],
     "description": "Practical Byzantine Fault Tolerant state engine tolerating up to (N-1)/3 malicious nodes."
+  },
+  "Rail Fence Cipher": {
+    "prefix": "railfence",
+    "body": [
+      "let ${1:encrypted} be rail_fence_encrypt(${2:text}, rails=${3:3})",
+      "let ${4:decrypted} be rail_fence_decrypt(${1:encrypted}, rails=${3:3})"
+    ],
+    "description": "Classic Rail Fence (zig-zag) transposition encryption and decryption."
+  },
+  "Haven Continuum Cipher (CQE-512)": {
+    "prefix": "continuum",
+    "body": [
+      "let ${1:envelope} be continuum_seal(${2:payload}, key=\"${3:secret_key}\", epoch=${4:int(time.time())})",
+      "let ${5:decrypted} be continuum_unseal(${1:envelope}, key=\"${3:secret_key}\")"
+    ],
+    "description": "World-First 4D Temporal Chrono-Quantum Entangled Poly-Transposition & Lattice Diffusion Cipher."
+  },
+  "Vigenere Cipher": {
+    "prefix": "vigenere",
+    "body": [
+      "let ${1:ciphertext} be vigenere_encrypt(${2:text}, key=\"${3:KEYWORD}\")",
+      "let ${4:plaintext} be vigenere_decrypt(${1:ciphertext}, key=\"${3:KEYWORD}\")"
+    ],
+    "description": "Polyalphabetic Vigenère stream cipher encryption and decryption."
+  },
+  "Feistel Block Cipher": {
+    "prefix": "feistel",
+    "body": [
+      "let ${1:cipher_bytes} be feistel_encrypt(${2:text}, key=\"${3:SECRET_KEY}\", rounds=${4:16})",
+      "let ${5:plaintext} be feistel_decrypt(${1:cipher_bytes}, key=\"${3:SECRET_KEY}\", rounds=${4:16})"
+    ],
+    "description": "16-round symmetric Feistel block cipher with PKCS7 padding."
+  },
+  "Diffie-Hellman Key Agreement": {
+    "prefix": "diffie",
+    "body": [
+      "let ${1:alice} be DiffieHellman()",
+      "let ${2:shared_key} be ${1:alice}.compute_shared_secret(${3:peer_public_key})"
+    ],
+    "description": "Industrial Diffie-Hellman discrete logarithm key agreement."
+  },
+  "Shamir Secret Sharing": {
+    "prefix": "shamir",
+    "body": [
+      "let ${1:shares} be ShamirSecretSharing.split(${2:secret_integer}, threshold_k=${3:3}, total_n=${4:5})",
+      "let ${5:recovered} be ShamirSecretSharing.reconstruct(${1:shares}[:${3:3}])"
+    ],
+    "description": "Shamir (k, n) threshold secret sharing polynomial scheme."
   }
 }

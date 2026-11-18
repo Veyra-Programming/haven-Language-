@@ -43,6 +43,42 @@ from haven.cyber import (
     ByzantineConsensus,
     SandboxedProcess,
 )
+from haven.crypto import (
+    RailFenceCipher,
+    ColumnarTranspositionCipher,
+    CaesarCipher,
+    VigenereCipher,
+    AtbashCipher,
+    AffineCipher,
+    PlayfairCipher,
+    PolybiusSquare,
+    FeistelCipher,
+    DiffieHellman,
+    ShamirSecretSharing,
+    HavenContinuumCipher,
+    rail_fence_encrypt,
+    rail_fence_decrypt,
+    caesar_encrypt,
+    caesar_decrypt,
+    vigenere_encrypt,
+    vigenere_decrypt,
+    atbash_cipher,
+    affine_encrypt,
+    affine_decrypt,
+    playfair_encrypt,
+    playfair_decrypt,
+    polybius_encrypt,
+    polybius_decrypt,
+    columnar_encrypt,
+    columnar_decrypt,
+    feistel_encrypt,
+    feistel_decrypt,
+    continuum_seal,
+    continuum_unseal,
+    encrypt as cipher_encrypt,
+    decrypt as cipher_decrypt,
+)
+import haven.crypto as crypto
 
 __version__ = "3.0.0 (Ani++ / Haven Dual Edition)"
 __author__ = "Anirudha Puthraya"

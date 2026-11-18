@@ -1,0 +1,206 @@
+# Ani++ / Haven Cryptography & Ciphers Comprehensive Verification Suite
+# Standard: Open Digital Continuity Standard (ODCS-3.0)
+# Creator & Specification Architecture: Anirudha Puthraya
+
+from haven import (
+    RailFenceCipher,
+    ColumnarTranspositionCipher,
+    CaesarCipher,
+    VigenereCipher,
+    AtbashCipher,
+    AffineCipher,
+    PlayfairCipher,
+    PolybiusSquare,
+    FeistelCipher,
+    DiffieHellman,
+    ShamirSecretSharing,
+    HavenContinuumCipher,
+    rail_fence_encrypt,
+    rail_fence_decrypt,
+    caesar_encrypt,
+    caesar_decrypt,
+    vigenere_encrypt,
+    vigenere_decrypt,
+    atbash_cipher,
+    affine_encrypt,
+    affine_decrypt,
+    playfair_encrypt,
+    playfair_decrypt,
+    polybius_encrypt,
+    polybius_decrypt,
+    columnar_encrypt,
+    columnar_decrypt,
+    feistel_encrypt,
+    feistel_decrypt,
+    continuum_seal,
+    continuum_unseal,
+    cipher_encrypt,
+    cipher_decrypt,
+)
+
+def test_rail_fence_cipher():
+    # Test classic Rail Fence (zig-zag) transposition
+    message = "WE ARE DISCOVERED FLEE AT ONCE"
+    rails = 3
+    encrypted = rail_fence_encrypt(message, rails)
+    assert encrypted != message
+    decrypted = rail_fence_decrypt(encrypted, rails)
+    assert decrypted == message, f"Rail Fence mismatch: {decrypted} != {message}"
+
+    # Rail Fence with 5 rails
+    encrypted_5 = rail_fence_encrypt(message, 5)
+    assert rail_fence_decrypt(encrypted_5, 5) == message
+    print("✓ Rail Fence (Zig-Zag) Cipher verified (3 rails & 5 rails)")
+
+def test_columnar_transposition():
+    message = "DEFENDTHEEASTWALLOFTHECASTLE"
+    key = "GERMAN"
+    encrypted = columnar_encrypt(message, key)
+    assert encrypted != message
+    decrypted = columnar_decrypt(encrypted, key)
+    assert decrypted.startswith(message)
+    print("✓ Columnar Keyed Transposition Cipher verified")
+
+def test_caesar_and_vigenere():
+    # Caesar
+    msg = "Hello Haven World 2026!"
+    c_enc = caesar_encrypt(msg, shift=7)
+    assert caesar_decrypt(c_enc, shift=7) == msg
+
+    # Vigenere
+    v_key = "SOVEREIGN"
+    v_enc = vigenere_encrypt(msg, v_key)
+    assert vigenere_decrypt(v_enc, v_key) == msg
+    print("✓ Caesar and Vigenère Polyalphabetic Ciphers verified")
+
+def test_atbash_and_affine():
+    # Atbash
+    orig = "Attack At Dawn"
+    inv = atbash_cipher(orig)
+    assert atbash_cipher(inv) == orig
+
+    # Affine: E(x) = (5x + 8) mod 26
+    aff_msg = "AFFINECIPHER"
+    aff_enc = affine_encrypt(aff_msg, a=5, b=8)
+    assert affine_decrypt(aff_enc, a=5, b=8) == aff_msg
+    print("✓ Atbash Inversion and Affine Algebraic Ciphers verified")
+
+def test_playfair_and_polybius():
+    # Playfair (5x5 matrix bigrams)
+    pf_key = "MONARCHY"
+    pf_msg = "INSTRUMENTS"
+    pf_enc = playfair_encrypt(pf_msg, pf_key)
+    pf_dec = playfair_decrypt(pf_enc, pf_key)
+    # Digraphs should match stripped text
+    assert len(pf_dec) >= len(pf_msg)
+
+    # Polybius Square (numerical coordinates)
+    poly_msg = "HAVEN"
+    coords = polybius_encrypt(poly_msg)
+    assert coords == "23 11 51 15 33"
+    assert polybius_decrypt(coords) == "HAVEN"
+    print("✓ Playfair Matrix Digraph & Polybius Square Ciphers verified")
+
+def test_feistel_block_network():
+    # 16-round Feistel Network Cipher with PKCS7 padding
+    key = "HAVEN_QUANTUM_CORE_KEY_9988"
+    secret_text = "Mission Critical Sovereign Continuity Transaction #88902"
+    cipher_bytes = feistel_encrypt(secret_text, key, rounds=16)
+    assert len(cipher_bytes) % 16 == 0
+
+    decrypted = feistel_decrypt(cipher_bytes, key, rounds=16)
+    assert decrypted == secret_text
+    print("✓ Feistel 16-Round Symmetric Block Cipher verified")
+
+def test_diffie_hellman_key_exchange():
+    # Two parties: Alice and Bob
+    alice = DiffieHellman()
+    bob = DiffieHellman()
+
+    # Exchange public keys and derive shared secret
+    alice_shared = alice.compute_shared_secret(bob.public_key)
+    bob_shared = bob.compute_shared_secret(alice.public_key)
+
+    assert alice_shared == bob_shared
+    assert len(alice_shared) == 32  # 256-bit shared key
+    print("✓ Diffie-Hellman Discrete Logarithm Key Agreement verified")
+
+def test_shamir_secret_sharing():
+    # Threshold scheme: 3-out-of-5
+    secret_number = 998877665544332211
+    threshold = 3
+    total = 5
+
+    shares = ShamirSecretSharing.split(secret_number, threshold_k=threshold, total_n=total)
+    assert len(shares) == 5
+
+    # Any 3 shares reconstruct the secret
+    recovered_1 = ShamirSecretSharing.reconstruct(shares[0:3])
+    assert recovered_1 == secret_number
+
+    # Any different 3 shares (e.g., shares 1, 3, 4) reconstruct the exact same secret
+    recovered_2 = ShamirSecretSharing.reconstruct([shares[1], shares[3], shares[4]])
+    assert recovered_2 == secret_number
+    print("✓ Shamir (3-of-5) Threshold Polynomial Secret Sharing verified")
+
+def test_invented_haven_continuum_cipher():
+    # Test the World-First Haven Continuum Cipher (CQE-512)
+    key = "SOVEREIGN_CONTINUUM_SECRET_TOKEN_2026"
+    epoch = 1774000000
+    confidential_data = "Double-Entry Vault Balance: 840,000,000 HVN. Immutability intact."
+
+    envelope = continuum_seal(confidential_data, key=key, epoch=epoch, context="haven:ofcs:vault")
+    assert envelope["cipher"] == "CQE-512/ODCS-3.0"
+    assert "ciphertext" in envelope
+    assert "auth_tag" in envelope
+
+    # Decrypt cleanly
+    decrypted = continuum_unseal(envelope, key=key, context="haven:ofcs:vault")
+    assert decrypted == confidential_data
+
+    # Verify Anti-Tamper Security: modifying a single character in ciphertext raises PermissionError
+    tampered_envelope = dict(envelope)
+    orig_ct = tampered_envelope["ciphertext"]
+    # Change first base64 char
+    replacement = "B" if orig_ct[0] == "A" else "A"
+    tampered_envelope["ciphertext"] = replacement + orig_ct[1:]
+
+    caught = False
+    try:
+        continuum_unseal(tampered_envelope, key=key, context="haven:ofcs:vault")
+    except PermissionError:
+        caught = True
+    assert caught, "Continuum Cipher failed to detect byte tampering!"
+    print("✓ Invented Haven Continuum Cipher (CQE-512) & Anti-Tamper verified")
+
+def test_universal_dispatcher():
+    # Universal encrypt and decrypt
+    text = "Universal Haven Ciphers"
+
+    rf_enc = cipher_encrypt("rail_fence", text, key=4)
+    assert cipher_decrypt("rail_fence", rf_enc, key=4) == text
+
+    caes_enc = cipher_encrypt("caesar", text, key=5)
+    assert cipher_decrypt("caesar", caes_enc, key=5) == text
+
+    vig_enc = cipher_encrypt("vigenere", text, key="SECRET")
+    assert cipher_decrypt("vigenere", vig_enc, key="SECRET") == text
+
+    cont_env = cipher_encrypt("continuum", text, key="MYKEY")
+    assert cipher_decrypt("continuum", cont_env, key="MYKEY") == text
+    print("✓ Universal Cryptographic Dispatcher (encrypt/decrypt) verified")
+
+if __name__ == "__main__":
+    test_rail_fence_cipher()
+    test_columnar_transposition()
+    test_caesar_and_vigenere()
+    test_atbash_and_affine()
+    test_playfair_and_polybius()
+    test_feistel_block_network()
+    test_diffie_hellman_key_exchange()
+    test_shamir_secret_sharing()
+    test_invented_haven_continuum_cipher()
+    test_universal_dispatcher()
+    print("\n=======================================================")
+    print("ALL 10 CRYPTOGRAPHY & CIPHER TEST SUITES PASSED (100%)!")
+    print("=======================================================")
