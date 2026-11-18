@@ -28,5 +28,14 @@ except ImportError:
     else:
         raise
 
+# If imported as a module, re-export all symbols from Lib/ani package
+if __name__ != '__main__':
+    try:
+        import haven
+        for _attr in getattr(haven, "__all__", []):
+            globals()[_attr] = getattr(haven, _attr)
+    except Exception:
+        pass
+
 if __name__ == '__main__':
     sys.exit(main())

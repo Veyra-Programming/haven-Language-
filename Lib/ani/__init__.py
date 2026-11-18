@@ -28,6 +28,21 @@ from haven.engine import (
     cosine_similarity,
     deterministic_embedding,
 )
+from haven.scientific import (
+    Matrix,
+    Series,
+    DataFrame,
+)
+from haven.robotics import (
+    PIDController,
+    KalmanFilter,
+    CircularRingBuffer,
+)
+from haven.cyber import (
+    CyberVault,
+    ByzantineConsensus,
+    SandboxedProcess,
+)
 
 __version__ = "3.0.0 (Ani++ / Haven Dual Edition)"
 __author__ = "Anirudha Puthraya"

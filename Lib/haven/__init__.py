@@ -268,6 +268,23 @@ from .engine import (
     semantic_search,
 )
 
+# Industrial All-Field Superpowers: Scientific, Robotics & Cyber Defense
+from .scientific import (
+    Matrix,
+    Series,
+    DataFrame,
+)
+from .robotics import (
+    PIDController,
+    KalmanFilter,
+    CircularRingBuffer,
+)
+from .cyber import (
+    CyberVault,
+    ByzantineConsensus,
+    SandboxedProcess,
+)
+
 AniApp = HavenApp
 AniServer = HavenServer
 
@@ -530,4 +547,16 @@ __all__ = [
     "dot_product",
     "vector_magnitude",
     "semantic_search",
+    # Industrial All-Field Superpowers: Scientific Computing
+    "Matrix",
+    "Series",
+    "DataFrame",
+    # Industrial All-Field Superpowers: Robotics & Cyber-Physical
+    "PIDController",
+    "KalmanFilter",
+    "CircularRingBuffer",
+    # Industrial All-Field Superpowers: Cyber Defense & Consensus
+    "CyberVault",
+    "ByzantineConsensus",
+    "SandboxedProcess",
 ]
