@@ -34,7 +34,7 @@ namespace HavenInstaller
 
         public InstallerForm()
         {
-            this.Text = "Haven Programming Language v2.1.1 GA Setup";
+            this.Text = "Ani++ / Haven Programming Language v3.0.0 GA Setup";
             this.Size = new Size(580, 480);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -48,7 +48,7 @@ namespace HavenInstaller
             this.Controls.Add(headerPanel);
 
             titleLabel = new Label();
-            titleLabel.Text = "Haven Programming Language 2.1.1 GA";
+            titleLabel.Text = "Ani++ / Haven Language 3.0.0 GA";
             titleLabel.Font = new Font("Segoe UI", 14, FontStyle.Bold);
             titleLabel.ForeColor = Color.FromArgb(56, 189, 248); // Cyan
             titleLabel.Location = new Point(20, 15);
@@ -56,7 +56,7 @@ namespace HavenInstaller
             headerPanel.Controls.Add(titleLabel);
 
             subTitleLabel = new Label();
-            subTitleLabel.Text = "ODCS Native Production Release • Created by Anirudha Puthraya";
+            subTitleLabel.Text = "OmniEngine & Sovereign Continuity Substrate • Created by Anirudha Puthraya";
             subTitleLabel.Font = new Font("Segoe UI", 9, FontStyle.Regular);
             subTitleLabel.ForeColor = Color.FromArgb(203, 213, 225);
             subTitleLabel.Location = new Point(22, 45);
@@ -113,7 +113,7 @@ namespace HavenInstaller
             this.Controls.Add(chkDesktop);
 
             chkStartMenu = new CheckBox();
-            chkStartMenu.Text = "Create Start Menu shortcuts for Haven 2.1.1 GA & IDLE";
+            chkStartMenu.Text = "Create Start Menu shortcuts for Ani++ / Haven 3.0.0 GA & IDLE";
             chkStartMenu.Checked = true;
             chkStartMenu.Font = new Font("Segoe UI", 9);
             chkStartMenu.Location = new Point(25, 225);
@@ -121,7 +121,7 @@ namespace HavenInstaller
             this.Controls.Add(chkStartMenu);
 
             chkFileAssoc = new CheckBox();
-            chkFileAssoc.Text = "Associate .hvn and .haven source files with Haven & Haven IDE";
+            chkFileAssoc.Text = "Associate .ani, .hvn, and .haven source files with Haven & Ani++";
             chkFileAssoc.Checked = true;
             chkFileAssoc.Font = new Font("Segoe UI", 9);
             chkFileAssoc.Location = new Point(25, 255);
@@ -361,7 +361,7 @@ namespace HavenInstaller
                 {
                     if (classes == null) return;
 
-                    foreach (string ext in new string[] { ".hvn", ".haven" })
+                    foreach (string ext in new string[] { ".ani", ".hvn", ".haven" })
                     {
                         using (RegistryKey k = classes.CreateSubKey(ext))
                         {

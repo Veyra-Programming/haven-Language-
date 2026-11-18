@@ -17,9 +17,9 @@ def package():
         os.path.join(os.path.dirname(__file__), "..", "..")
     )
     dist_root = os.path.join(repo_root, "dist")
-    haven_dir = os.path.join(dist_root, "Haven-2.1.1-GA-win64")
+    haven_dir = os.path.join(dist_root, "Haven-3.0.0-GA-win64")
 
-    print(f"[*] Packaging Haven v2.1.1 GA into: {haven_dir}")
+    print(f"[*] Packaging Ani++ / Haven v3.0.0 GA into: {haven_dir}")
     if os.path.exists(haven_dir):
         shutil.rmtree(haven_dir)
     os.makedirs(haven_dir, exist_ok=True)
@@ -50,6 +50,14 @@ def package():
             shutil.copy2(src, os.path.join(haven_dir, b))
         else:
             print(f"    [!] Note: {b} not in {amd64_bin}")
+
+    # Copy dual-identity executables ani.exe and aniw.exe
+    haven_exe = os.path.join(haven_dir, "haven.exe")
+    if os.path.exists(haven_exe):
+        shutil.copy2(haven_exe, os.path.join(haven_dir, "ani.exe"))
+    havenw_exe = os.path.join(haven_dir, "havenw.exe")
+    if os.path.exists(havenw_exe):
+        shutil.copy2(havenw_exe, os.path.join(haven_dir, "aniw.exe"))
 
     # Copy Tcl/Tk binary DLLs
     tcl_bin_dir = os.path.join(
@@ -130,14 +138,16 @@ def package():
     if os.path.exists(icon_src):
         shutil.copy2(icon_src, os.path.join(haven_dir, "haven.ico"))
 
-    # haven.py entry point
-    haven_py_src = os.path.join(repo_root, "haven.py")
-    if os.path.exists(haven_py_src):
-        shutil.copy2(haven_py_src, os.path.join(haven_dir, "haven.py"))
+    # haven.py and ani.py entry points
+    for py_entry in ["haven.py", "ani.py"]:
+        src = os.path.join(repo_root, py_entry)
+        if os.path.exists(src):
+            shutil.copy2(src, os.path.join(haven_dir, py_entry))
 
     # Root launchers
     for launcher in [
         "haven.bat",
+        "ani.bat",
         "hvn.bat",
         "str.bat",
         "star.bat",
@@ -154,7 +164,7 @@ def package():
     compileall.compile_dir(lib_dst, maxlevels=10, quiet=1)
 
     # 7. Create Portable ZIP distribution
-    zip_path = os.path.join(dist_root, "Haven-2.1.1-GA-win64.zip")
+    zip_path = os.path.join(dist_root, "Haven-3.0.0-GA-win64.zip")
     print(f"[+] Creating Portable ZIP Distribution: {zip_path}...")
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
         for root, dirs, files in os.walk(haven_dir):
@@ -163,21 +173,22 @@ def package():
                 rel_path = os.path.relpath(full_path, haven_dir)
                 zipf.write(full_path, rel_path)
 
-    # Also keep Haven-1.0.0-win64.zip compatible name if needed
-    shutil.copy2(zip_path, os.path.join(dist_root, "Haven-1.0.0-win64.zip"))
+    # Mirror to Haven-1.0.0-win64.zip and Haven-2.1.1-GA-win64.zip for backward compatibility
+    for comp_name in ["Haven-1.0.0-win64.zip", "Haven-2.1.1-GA-win64.zip"]:
+        shutil.copy2(zip_path, os.path.join(dist_root, comp_name))
 
     print(
         f"[✓] Standalone distribution successfully assembled at:\n    {haven_dir}"
     )
     print(f"[✓] Portable ZIP distribution created at:\n    {zip_path}")
 
-    # 8. Compile Native Windows Setup Executable (Haven-2.1.1-GA-Setup.exe)
+    # 8. Compile Native Windows Setup Executable (Haven-3.0.0-GA-Setup.exe)
     csc_path = r"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
     if not os.path.exists(csc_path):
         csc_path = r"C:\Windows\Microsoft.NET\Framework\v4.0.30319\csc.exe"
 
     installer_cs = os.path.join(repo_root, "Tools", "build", "Installer.cs")
-    setup_exe = os.path.join(dist_root, "Haven-2.1.1-GA-Setup.exe")
+    setup_exe = os.path.join(dist_root, "Haven-3.0.0-GA-Setup.exe")
 
     if os.path.exists(csc_path) and os.path.exists(installer_cs):
         print(
@@ -200,12 +211,14 @@ def package():
             print(
                 f"[✓] Native Windows Installer EXE successfully built at:\n    {setup_exe}"
             )
-            # Also create Haven-Setup.exe alias
-            shutil.copy2(setup_exe, os.path.join(dist_root, "Haven-Setup.exe"))
-            shutil.copy2(
-                setup_exe,
-                os.path.join(dist_root, "Haven-2.1.1-GA-win64-Setup.exe"),
-            )
+            # Create compatibility and dual-brand aliases
+            for alias in [
+                "Haven-Setup.exe",
+                "Haven-3.0.0-GA-win64-Setup.exe",
+                "Ani-Setup.exe",
+                "Haven-2.1.1-GA-win64-Setup.exe",
+            ]:
+                shutil.copy2(setup_exe, os.path.join(dist_root, alias))
         else:
             print(
                 f"[!] C# compilation returned code {res.returncode}:\n{res.stdout}\n{res.stderr}"
