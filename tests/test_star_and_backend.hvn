@@ -188,6 +188,41 @@ ensure background_completed == True otherwise "Background task failed to complet
 
 say "[PASS] Asynchronous Worker Pool: Background task dispatching verified."
 
+# ---------------------------------------------------------------------
+# TEST 7: Star OmniEngine (Signals, UI Timeline, Layout Healer & Physics)
+# ---------------------------------------------------------------------
+import star
+
+# 1. Verify Star Reactive Signal & Computed
+let sig be star.StarSignal(10, label="counter")
+let comp be star.StarComputed(lambda: sig.value * 2, label="double_counter")
+ensure comp.value == 20 otherwise "Initial computed signal must be 20"
+sig.set(25)
+comp.invalidate()
+ensure comp.value == 50 otherwise "Updated computed signal must be 50"
+
+# 2. Verify Star 4D Visual UI Timeline DAG & State Rewind
+let timeline be star.UITimelineDAG()
+timeline.record_frame({"view": "Home", "count": 1}, action="INIT")
+timeline.record_frame({"view": "Profile", "count": 2}, action="NAVIGATE")
+ensure len(timeline.frames) == 2 otherwise "Timeline must contain 2 frames"
+let rewound be timeline.rewind(1)
+ensure rewound.state["view"] == "Home" otherwise "Rewound UI state must be Home"
+
+# 3. Verify Star Autonomous Visual Layout Healer
+let healer be star.UIHealer()
+let healed, strat, rec be healer.heal_overflow("Column", content_size=920.0, available_size=800.0, axis="vertical")
+ensure healed == True otherwise "Overflow must be diagnosed and healed"
+ensure strat == "WRAP_IN_SCROLL_VIEW" otherwise "Expected WRAP_IN_SCROLL_VIEW healing strategy"
+ensure len(healer.healing_history) == 1 otherwise "Healer must log healing receipt"
+
+# 4. Verify Star Motion Physics Spring Simulation
+let spring be star.SpringSimulation(mass=1.0, stiffness=100.0, damping=10.0)
+let pos be spring.solve(0.1)
+ensure pos < 1.0 otherwise "Spring position must decay over time"
+
+say "[PASS] Star OmniEngine: Reactive Signals, 4D UI Timeline, Layout Healer & Spring Physics verified."
+
 say "========================================================="
 say " ALL STAR SYNTAX & ADVANCED BACKEND TESTS PASSED (100%)  "
 say "========================================================="

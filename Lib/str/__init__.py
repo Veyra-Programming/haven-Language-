@@ -13,6 +13,21 @@ import types
 from . import ui
 from . import mobile
 from . import vm
+from . import engine
+
+from .engine import (
+    StarOmniEngine,
+    StarSignal,
+    StarComputed,
+    UITimelineDAG,
+    UIFrameSnapshot,
+    UIHealer,
+    UIHealingReceipt,
+    SpringSimulation,
+    MotionChoreographer,
+    PlatformOmniBridge,
+    star_omni,
+)
 
 from .ui import (
     Widget,
@@ -182,12 +197,28 @@ StarPackage.GoogleBillingClient = GoogleBillingClient
 StarPackage.StarApp = StarApp
 StarPackage.StarVM = StarVM
 
+# Star OmniEngine Subsystem
+StarPackage.StarOmniEngine = StarOmniEngine
+StarPackage.StarSignal = StarSignal
+StarPackage.StarComputed = StarComputed
+StarPackage.UITimelineDAG = UITimelineDAG
+StarPackage.UIFrameSnapshot = UIFrameSnapshot
+StarPackage.UIHealer = UIHealer
+StarPackage.UIHealingReceipt = UIHealingReceipt
+StarPackage.SpringSimulation = SpringSimulation
+StarPackage.MotionChoreographer = MotionChoreographer
+StarPackage.PlatformOmniBridge = PlatformOmniBridge
+StarPackage.star_omni = star_omni
+StarPackage.engine = engine
+
 # Register in sys.modules
 sys.modules["str"] = StarPackage
 sys.modules["star"] = StarPackage
 sys.modules["str.ui"] = ui
 sys.modules["str.mobile"] = mobile
 sys.modules["str.vm"] = vm
+sys.modules["str.engine"] = engine
 sys.modules["star.ui"] = ui
 sys.modules["star.mobile"] = mobile
 sys.modules["star.vm"] = vm
+sys.modules["star.engine"] = engine

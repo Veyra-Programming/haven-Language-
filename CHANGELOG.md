@@ -8,6 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [3.0.2 GA] - 2026-11-19 (All-Rounder Superpowers: Quantum, Deep Learning, Audio/Signal & MicroApp)
 
+### 🌟 Star Language OmniEngine (`str.engine` / `star.engine`)
+- **4D Visual UI Timeline DAG (`UITimelineDAG`)**: Complete time-travel visual UI debugging, recording widget states and user interaction frames with instant rewinding (`rewind()`) and exploratory UI branching (`fork_branch()`).
+- **Fine-Grained Reactive Signals (`StarSignal` & `StarComputed`)**: Reactive dependency graph enabling pinpoint Flutter widget rebuilds without expensive full-tree re-renders.
+- **Autonomous Visual Layout Healer (`UIHealer`)**: Automatic diagnosis and self-healing of RenderFlex overflow breaches on constrained mobile screens, gracefully wrapping overflowing columns into `SingleChildScrollView` or `Wrap` with tamper-evident audit receipts.
+- **Motion Physics Choreographer (`MotionChoreographer` & `SpringSimulation`)**: Damped harmonic oscillator physics simulator for fluid spring transitions and normalized tweening curves.
+- **Universal Hardware Platform Bridge (`PlatformOmniBridge`)**: Unified hardware metrics and sensor bus across Android, iOS, Desktop, and Web.
+
 ### ⚛️ Quantum Computing Engine (`ani.quantum` / `haven.quantum`)
 - **Universal Quantum Circuit Simulator**: Pure, zero-dependency statevector evolution across up to 16 qubits.
 - **Quantum Gates**: Hadamard (`H`), Pauli-X, Y, Z, Phase (`S`), T (`T`), Arbitrary Euler Rotations (`RX`, `RY`, `RZ`), Controlled-NOT (`CNOT`/`CX`), Controlled-Z (`CZ`), `SWAP`, and Toffoli (`CCNOT`).
