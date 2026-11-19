@@ -323,6 +323,62 @@ from .crypto import (
 )
 import haven.crypto as crypto
 
+# Quantum Computing Engine
+from .quantum import (
+    QuantumCircuit,
+    QuantumState,
+    circuit as quantum_circuit,
+)
+import haven.quantum as quantum
+
+# Deep Learning & AI Engine
+from .ai import (
+    Value,
+    Neuron,
+    Layer,
+    MLP,
+    Adam,
+    mse_loss,
+    BpeTokenizer,
+    KMeans,
+)
+import haven.ai as ai
+
+# Real-Time Microservice & Network Engine
+from .net import (
+    MicroApp,
+    RateLimiter,
+    sse_event,
+)
+import haven.net as net
+
+# Signal Processing & Audio Synthesis Engine
+from .signal import (
+    dft,
+    idft,
+    fft,
+    spectrum_magnitude,
+    sine_wave,
+    square_wave,
+    sawtooth_wave,
+    triangle_wave,
+    lowpass_filter,
+    encode_wav,
+)
+import haven.signal as signal
+
+# Geospatial Intelligence Engine
+from .geo import (
+    haversine_distance,
+    initial_bearing,
+    destination_point,
+    geohash_encode,
+    geohash_decode,
+    point_in_polygon,
+    BoundingBox,
+)
+import haven.geo as geo
+
 AniApp = HavenApp
 AniServer = HavenServer
 
@@ -632,4 +688,45 @@ __all__ = [
     "continuum_unseal",
     "cipher_encrypt",
     "cipher_decrypt",
+    # Quantum Computing Engine
+    "quantum",
+    "QuantumCircuit",
+    "QuantumState",
+    "quantum_circuit",
+    # Deep Learning & AI Engine
+    "ai",
+    "Value",
+    "Neuron",
+    "Layer",
+    "MLP",
+    "Adam",
+    "mse_loss",
+    "BpeTokenizer",
+    "KMeans",
+    # Real-Time Microservice & Network Engine
+    "net",
+    "MicroApp",
+    "RateLimiter",
+    "sse_event",
+    # Signal Processing & Audio Synthesis Engine
+    "signal",
+    "dft",
+    "idft",
+    "fft",
+    "spectrum_magnitude",
+    "sine_wave",
+    "square_wave",
+    "sawtooth_wave",
+    "triangle_wave",
+    "lowpass_filter",
+    "encode_wav",
+    # Geospatial Intelligence Engine
+    "geo",
+    "haversine_distance",
+    "initial_bearing",
+    "destination_point",
+    "geohash_encode",
+    "geohash_decode",
+    "point_in_polygon",
+    "BoundingBox",
 ]

@@ -6,6 +6,44 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [3.0.2 GA] - 2026-11-19 (All-Rounder Superpowers: Quantum, Deep Learning, Audio/Signal & MicroApp)
+
+### ⚛️ Quantum Computing Engine (`ani.quantum` / `haven.quantum`)
+- **Universal Quantum Circuit Simulator**: Pure, zero-dependency statevector evolution across up to 16 qubits.
+- **Quantum Gates**: Hadamard (`H`), Pauli-X, Y, Z, Phase (`S`), T (`T`), Arbitrary Euler Rotations (`RX`, `RY`, `RZ`), Controlled-NOT (`CNOT`/`CX`), Controlled-Z (`CZ`), `SWAP`, and Toffoli (`CCNOT`).
+- **Entanglement & Measurement**: Bell state preparation ($|\Phi^+\rangle = (|00\rangle + |11\rangle)/\sqrt{2}$), GHZ state generator, reduced density matrix Bloch sphere coordinate derivation, non-separable entanglement verification, and multi-shot Monte-Carlo projective measurement sampling (`sample(shots=1024)`).
+
+### 🧠 Deep Learning, Autograd & AI Engine (`ani.ai` / `haven.ai`)
+- **Scalar Autograd DAG**: `Value` computation graph with reverse-mode automatic differentiation (`.backward()`, `.grad`, topological sort).
+- **Neural Network Primitives**: `Neuron`, `Layer`, `MLP` architectures with Xavier/He initialization, activation functions (`ReLU`, `Sigmoid`, `Tanh`), and `MSELoss`.
+- **Adam Optimizer**: Complete first and second moment vector optimization with bias correction.
+- **NLP & Subword Tokenizer**: Built-in Byte-Pair Encoding (`BpeTokenizer`) for text tokenization, vocabulary merging, and subword decoding.
+- **Unsupervised Learning**: Zero-dependency `KMeans` clustering with Euclidean distance centroids.
+
+### 🌐 Declarative Microservice & Streaming Engine (`ani.net` / `haven.net`)
+- **`MicroApp` Declarative Router**: High-speed REST routing with decorators (`@app.get`, `@app.post`, `@app.put`, `@app.delete`), dynamic path parameter regex parsing (`/users/{id}`), and CORS middleware.
+- **Server-Sent Events (SSE)**: Standard formatted streaming message generation (`sse_event`).
+- **Token-Bucket Rate Limiter**: Thread-safe rate limiter with capacity and dynamic token refill.
+- **Zero-Port `MicroTestClient`**: High-speed in-memory request simulation for unit tests without network port contention.
+
+### 🔊 Signal Processing & Audio Synthesis (`ani.signal` / `haven.signal`)
+- **Cooley-Tukey Radix-2 FFT**: $O(N \log N)$ Fast Fourier Transform, Discrete Fourier Transform (`dft`/`idft`), and frequency spectrum magnitude extraction.
+- **Audio Synthesis**: Pure-Python waveform generators (Sine, Square, Sawtooth, Triangle) and digital RC Low-Pass filters.
+- **16-bit PCM RIFF WAV Encoder**: Direct binary WAV file generation (`encode_wav`) without third-party audio packages.
+
+### 🗺️ Geospatial Intelligence Engine (`ani.geo` / `haven.geo`)
+- **Great-Circle Geodesy**: Haversine distance in kilometers, meters, and miles.
+- **Standard Base32 Geohashing**: `geohash_encode` and `geohash_decode` with variable precision.
+- **Geofencing**: Ray-casting point-in-polygon containment testing and `BoundingBox` spatial queries.
+- **Navigation Geometry**: Initial compass bearing calculation and destination waypoint derivation.
+
+### 💻 Interactive REPL & Developer Experience
+- **Interactive Demonstrations**: Added one-click live REPL commands: `:quantum`, `:ai`, `:crypto`, `:chrono`, `:scientific`, `:robotics`, `:cyber`, `:net`, `:geo`, and `:signal`.
+- **Glassmorphic Pydoc UI**: Elevated documentation styling with card shadows, cyan/purple glow accents, smooth rounded borders, and mobile touch clipping.
+- **Natural Haven Syntax Expansion**: Upgraded `use <module> as <alias>` and multi-variable unpacking (`variable a, b = ...`).
+
+---
+
 ## [3.0.1 GA Patch] - 2026-11-18 (Mobile Viewport Lock, Zero-Diagnostic Pydoc & Typing Resilience)
 
 ### 📱 Mobile UI & Responsive Viewport Enhancements

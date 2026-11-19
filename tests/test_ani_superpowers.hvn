@@ -1,0 +1,106 @@
+# =========================================================
+#   Ani++ & Haven All-Rounder Superpowers Test Suite
+#   Quantum, AI Autograd, Signal/Audio, Geo & Microservice
+#   Standard Architecture & Specification by Anirudha Puthraya
+# =========================================================
+
+use haven.quantum as quantum
+use haven.ai as ai
+use haven.net as net
+use haven.signal as signal
+use haven.geo as geo
+
+print("=========================================================")
+print("  Ani++ & Haven Superpowers Test Suite (v3.0.1 GA)       ")
+print("  Architecture & Specification by Anirudha Puthraya      ")
+print("=========================================================")
+
+# [1/5] Quantum Computing Engine Verification
+print("[1/5] Verifying Universal Quantum Simulator & Bell State...")
+variable qc = quantum.QuantumCircuit(2)
+qc.bell_state(0, 1)
+variable state = qc.run()
+variable probs = state.probabilities()
+
+ensure "00" in probs otherwise "Missing |00> state in Bell state"
+ensure "11" in probs otherwise "Missing |11> state in Bell state"
+ensure abs(probs["00"] - 0.5) < 0.01 otherwise "Probability of |00> must be ~0.5"
+ensure abs(probs["11"] - 0.5) < 0.01 otherwise "Probability of |11> must be ~0.5"
+ensure state.is_entangled(0, 1) otherwise "Bell state must be entangled"
+print("[PASS] Quantum Circuit: Superposition, CNOT & Entanglement verified.")
+
+# [2/5] AI Autograd & Deep Learning Engine Verification
+print("[2/5] Verifying Scalar Autograd Engine & BPE Tokenizer...")
+variable x = ai.Value(2.0)
+variable y = ai.Value(-3.0)
+variable b = ai.Value(10.0)
+variable z = (x * y + b).relu()
+z.backward()
+
+ensure z.data == 4.0 otherwise "Expected ReLU(2 * -3 + 10) = 4.0"
+ensure x.grad == -3.0 otherwise "Expected dz/dx = -3.0"
+ensure y.grad == 2.0 otherwise "Expected dz/dy = 2.0"
+
+variable tokenizer = ai.BpeTokenizer()
+tokenizer.train("haven language is sovereign ani plus plus language", max_merges=10)
+variable tokens = tokenizer.encode("haven language")
+ensure len(tokens) > 0 otherwise "Tokenizer must produce non-empty token sequence"
+print("[PASS] AI Autograd: Reverse-mode differentiation & BPE Tokenizer verified.")
+
+# [3/5] MicroApp REST & TestClient Verification
+print("[3/5] Verifying Declarative Microservice & TestClient...")
+variable app = net.MicroApp(title="Haven Test API")
+
+@app.get("/api/v1/ping")
+def ping_handler(req):
+    give back {"status": "alive", "engine": "ani++"}
+
+@app.get("/api/v1/items/{item_id}")
+def item_handler(req):
+    give back {"item_id": req.path_params.get("item_id"), "found": True}
+
+variable client = app.test_client()
+variable resp1 = client.get("/api/v1/ping")
+ensure resp1.status_code == 200 otherwise "Expected 200 OK for /ping"
+variable body1 = resp1.json()
+ensure body1["status"] == "alive" otherwise "Expected alive status in response"
+
+variable resp2 = client.get("/api/v1/items/42")
+ensure resp2.status_code == 200 otherwise "Expected 200 OK for /items/42"
+variable body2 = resp2.json()
+ensure body2["item_id"] == "42" otherwise "Expected item_id 42 from path param"
+print("[PASS] MicroApp: Declarative routing & In-Memory TestClient verified.")
+
+# [4/5] Signal Processing, FFT & Audio Synthesis Verification
+print("[4/5] Verifying Signal Processing, Cooley-Tukey FFT & Audio Synthesis...")
+variable samples = signal.sine_wave(freq=10.0, duration_s=0.1, sample_rate=100)
+ensure len(samples) == 10 otherwise "Expected 10 samples for 0.1s at 100Hz"
+
+variable spectrum = signal.fft(samples)
+variable mags = signal.spectrum_magnitude(spectrum)
+ensure len(mags) >= 10 otherwise "FFT spectrum length mismatch"
+
+variable wav_bytes = signal.encode_wav(samples, sample_rate=100)
+ensure wav_bytes.startswith(b"RIFF") otherwise "WAV header must begin with RIFF signature"
+ensure b"WAVE" in wav_bytes otherwise "WAV header must contain WAVE marker"
+print("[PASS] Signal Processing: Radix-2 FFT & 16-bit PCM WAV encoder verified.")
+
+# [5/5] Geospatial Intelligence Engine Verification
+print("[5/5] Verifying Geospatial Engine (Haversine, Geohash & Geofencing)...")
+# Mumbai to Delhi
+variable dist_km = geo.haversine_distance(19.0760, 72.8777, 28.7041, 77.1025)
+ensure 1100.0 < dist_km and dist_km < 1250.0 otherwise "Expected Mumbai-Delhi distance ~1150 km"
+
+variable ghash = geo.geohash_encode(12.9716, 77.5946, precision=6)
+variable decoded_lat, decoded_lon = geo.geohash_decode(ghash)
+ensure abs(decoded_lat - 12.9716) < 0.05 otherwise "Geohash decode latitude error"
+ensure abs(decoded_lon - 77.5946) < 0.05 otherwise "Geohash decode longitude error"
+
+variable polygon = [(0.0, 0.0), (0.0, 10.0), (10.0, 10.0), (10.0, 0.0)]
+ensure geo.point_in_polygon(5.0, 5.0, polygon) otherwise "Point (5, 5) must be inside polygon"
+ensure not geo.point_in_polygon(15.0, 15.0, polygon) otherwise "Point (15, 15) must be outside polygon"
+print("[PASS] Geospatial: Haversine distance, Geohashing & Geofencing verified.")
+
+print("=========================================================")
+print(" ALL ANI++ & HAVEN ALL-ROUNDER SUPERPOWERS PASSED (100%) ")
+print("=========================================================")

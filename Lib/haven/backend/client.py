@@ -12,6 +12,12 @@ from .response import Response
 from .router import Request
 
 
+class _JsonHelper(dict):
+    """Allows json payload to be accessed both as dict properties and as a callable function."""
+    def __call__(self):
+        return self
+
+
 class TestResponse:
     """Encapsulates test response details for assertions."""
     def __init__(self, response: Response):
@@ -25,7 +31,10 @@ class TestResponse:
 
     @property
     def json(self) -> Any:
-        return json.loads(self.text)
+        data = json.loads(self.text)
+        if isinstance(data, dict):
+            return _JsonHelper(data)
+        return data
 
     def __repr__(self) -> str:
         return f"<TestResponse [{self.status_code}]>"

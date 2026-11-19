@@ -19,19 +19,30 @@ import odcs
 
 
 BANNER = f"""
-{bold(cyan('╔═══════════════════════════════════════════════════════════════╗'))}
-{bold(cyan('║                   HAVEN LANGUAGE v2.1.1 GA                    ║'))}
-{bold(cyan('║     Open Digital Continuity Standard (ODCS Edition)           ║'))}
-{bold(cyan('║        Specification & Architecture by Anirudha Puthraya      ║'))}
-{bold(cyan('╚═══════════════════════════════════════════════════════════════╝'))}
-Type {bold(':help')} for interactive commands, {bold(':syntax')} for cheat sheet, or {bold(':quit')} to exit.
+{bold(cyan('╔═══════════════════════════════════════════════════════════════════╗'))}
+{bold(cyan('║                 ANI++ & HAVEN OMNIENGINE v3.0.1 GA                ║'))}
+{bold(cyan('║     Dual-Identity Quantum-Causality & All-Field Superpowers       ║'))}
+{bold(cyan('║           Open Digital Continuity Standard (ODCS / OFCS)          ║'))}
+{bold(cyan('║         Specification & Architecture by Anirudha Puthraya         ║'))}
+{bold(cyan('╚═══════════════════════════════════════════════════════════════════╝'))}
+Type {bold(':help')} for interactive tools, {bold(':quantum')} for circuit demo, or {bold(':quit')} to exit.
 """
 
 HELP_TEXT = f"""
-{bold(cyan('Haven REPL Interactive Commands:'))}
+{bold(cyan('Ani++ & Haven REPL Interactive Commands:'))}
   {green(':help')}             Display this help guide
   {green(':syntax')}           Display complete Haven natural syntax cheat sheet
-  {green(':model')} / {green(':layers')} Display the formal 4-Layer ODCS architecture stack
+  {green(':quantum')}          Execute Bell state quantum entanglement simulation
+  {green(':ai')}               Run Autograd neural backpropagation demo
+  {green(':crypto')}           Demonstrate Haven Continuum Cipher (CQE-512) & Rail Fence
+  {green(':chrono')}           4D timeline branching, state rewind & Merkle audit
+  {green(':scientific')}       Linear algebra matrix multiplication & inversion
+  {green(':robotics')}         Real-time industrial PID controller stabilization
+  {green(':cyber')}            Byzantine Fault Tolerant (PBFT) consensus round
+  {green(':net')}              REST Microservice in-memory router & TestClient
+  {green(':geo')}              Haversine distance & Base32 Geohashing
+  {green(':signal')}           Fast Fourier Transform (FFT) spectral magnitude
+  {green(':model')} / {green(':layers')} Display formal 4-Layer ODCS architecture stack
   {green(':tele')}             Probe real-time network environmental telemetry (RTT/Mode)
   {green(':crdt')}             Demonstrate multi-master conflict-free convergence
   {green(':mesh')}             Run 3-node P2P gossip mesh partition & recovery simulation
@@ -122,6 +133,101 @@ def start_repl() -> None:
                 continue
             elif cmd == ":syntax":
                 print(SYNTAX_CHEAT_SHEET)
+                continue
+            elif cmd == ":quantum":
+                from haven.quantum import QuantumCircuit
+                qc = QuantumCircuit(2).bell_state(0, 1)
+                state = qc.run()
+                print(f"{bold(cyan('[Quantum Engine]'))} 2-Qubit Bell State Prepared: {green(state.to_ket())}")
+                print(f"  Entanglement: {green('TRUE') if state.is_entangled(0, 1) else red('FALSE')}")
+                print(f"  Bloch Vector Q0: {state.bloch_vector(0)}")
+                print(f"  1024 Shots Measurement Sample: {state.sample(1024, seed=42)}")
+                continue
+            elif cmd == ":ai":
+                from haven.ai import Value, MLP, mse_loss
+                print(f"{bold(cyan('[AI Autograd Engine]'))} Initializing MLP(nin=2, [4], nout=1)...")
+                x = Value(1.5, label="x")
+                y = Value(-2.0, label="y")
+                z = (x * y + Value(3.0)).relu()
+                z.backward()
+                print(f"  Forward Pass z = ReLU(x*y + 3) -> {green(f'{z.data:.4f}')}")
+                print(f"  Reverse-mode Autograd Gradients: dz/dx = {x.grad:.4f}, dz/dy = {y.grad:.4f}")
+                continue
+            elif cmd == ":crypto":
+                from haven.crypto import HavenContinuumCipher, RailFenceCipher
+                print(f"{bold(cyan('[Crypto Engine]'))} Testing Haven Continuum Cipher (CQE-512) & Rail Fence...")
+                raw = "Sovereign Digital Continuity Ani++ / Haven"
+                rf = RailFenceCipher(rails=3)
+                rf_enc = rf.encrypt(raw)
+                print(f"  Rail Fence (3 rails): {green(rf_enc)}")
+                cc = HavenContinuumCipher()
+                envelope = cc.seal(raw, epoch_id="genesis-alpha")
+                verified = cc.unseal(envelope)
+                print(f"  Continuum Sealed Digest: {cyan(envelope.digest[:32])}...")
+                print(f"  Integrity Seal Verified: {green(verified == raw)} ('{verified}')")
+                continue
+            elif cmd in (":chrono", ":timeline"):
+                from haven.engine import ChronoEngine
+                ce = ChronoEngine("genesis")
+                ce.commit("genesis", "INIT", {"epoch": 1, "status": "active"})
+                ce.branch("genesis", "branch-quantum")
+                ce.commit("branch-quantum", "MUTATE", {"epoch": 2, "quantum_flux": 99.4})
+                print(f"{bold(cyan('[ChronoEngine]'))} Timeline DAG Root: {green(ce.root_id)}")
+                print(f"  Head State on 'branch-quantum': {ce.state_of('branch-quantum')}")
+                ce.rewind("branch-quantum", steps=1)
+                print(f"  State After 1-Step Timeline Rewind: {green(str(ce.state_of('branch-quantum')))}")
+                continue
+            elif cmd == ":scientific":
+                from haven.scientific import Matrix
+                m1 = Matrix([[1, 2], [3, 4]])
+                m2 = Matrix([[5, 6], [7, 8]])
+                prod = m1 @ m2
+                det = m1.determinant()
+                inv = m1.inverse()
+                print(f"{bold(cyan('[Scientific Engine]'))} Linear Algebra Matrix Multiplication (m1 @ m2):")
+                print(f"  Result: {green(str(prod.data))}")
+                print(f"  det(m1) = {det:.1f}, inv(m1) = {inv.data}")
+                continue
+            elif cmd == ":robotics":
+                from haven.robotics import PIDController
+                pid = PIDController(kp=1.5, ki=0.2, kd=0.05, setpoint=100.0)
+                out = pid.compute(current_value=85.0, dt=0.1)
+                print(f"{bold(cyan('[Robotics Telemetry]'))} Industrial PID Controller (Setpoint=100, Process=85, dt=0.1s):")
+                print(f"  Control Output Command: {green(f'{out:.3f}')}")
+                continue
+            elif cmd == ":cyber":
+                from haven.cyber import ByzantineConsensus
+                pbft = ByzantineConsensus(nodes=["node-0", "node-1", "node-2", "node-3"])
+                receipt = pbft.propose_and_commit("SET_RATE:0.045", primary_node="node-0")
+                print(f"{bold(cyan('[Cyber Defense Engine]'))} Byzantine PBFT Consensus Achieved:")
+                print(f"  Commit Proof Digest: {green(receipt.commit_proof[:32])}...")
+                print(f"  Audit Status: {receipt.status}")
+                continue
+            elif cmd == ":net":
+                from haven.net import MicroApp
+                app = MicroApp()
+                @app.get("/status")
+                def status(req): return {"status": "ok", "engine": "Ani++"}
+                client = app.test_client()
+                resp = client.get("/status")
+                print(f"{bold(cyan('[MicroApp Engine]'))} In-Memory REST Request GET /status:")
+                print(f"  Response ({resp.status_code}): {green(resp.text())}")
+                continue
+            elif cmd == ":geo":
+                from haven.geo import haversine_distance, geohash_encode
+                # Bengaluru to London
+                d = haversine_distance(12.9716, 77.5946, 51.5074, -0.1278)
+                gh = geohash_encode(12.9716, 77.5946, precision=7)
+                print(f"{bold(cyan('[Geospatial Engine]'))} Haversine Distance (BLR -> LHR): {green(f'{d:.2f} km')}")
+                print(f"  Base32 Geohash (Bengaluru): {green(gh)}")
+                continue
+            elif cmd == ":signal":
+                from haven.signal import fft, spectrum_magnitude, sine_wave
+                samples = sine_wave(freq=5.0, duration_s=0.2, sample_rate=40)
+                spec = fft(samples)
+                mags = spectrum_magnitude(spec[:4])
+                print(f"{bold(cyan('[Signal Engine]'))} Radix-2 Cooley-Tukey FFT Spectrum:")
+                print(f"  Dominant Frequency Magnitudes: {green(str(mags))}")
                 continue
             elif cmd in (":model", ":layers", ":architecture"):
                 from .odcs_tools import _cmd_model

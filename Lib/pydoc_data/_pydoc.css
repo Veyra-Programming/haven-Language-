@@ -21,23 +21,29 @@
     --block-border-color: #94a3b8;
     --error-color: #ef4444;
     --repr-color: #a855f7;
+    --glow-cyan: #00f0ff;
+    --glow-purple: #a855f7;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --text-color: #f8fafc;
-        --background-color: #0f172a;
+        --text-color: #f1f5f9;
+        --background-color: #0b0f19;
         --link-color: #38bdf8;
-        --link-visited-color: #818cf8;
+        --link-visited-color: #a78bfa;
         --link-hover-color: #7dd3fc;
         --muted-color: #94a3b8;
-        --code-background-color: #1e293b;
-        --border-color: #334155;
-        --target-background-color: #334155;
-        --block-background-color: #1e293b;
-        --block-border-color: #475569;
+        --code-background-color: #111827;
+        --border-color: #1f293d;
+        --target-background-color: #1e293b;
+        --block-background-color: #111827;
+        --block-border-color: #1f293d;
         --error-color: #f87171;
         --repr-color: #c084fc;
+        --glow-cyan: #38bdf8;
+        --glow-purple: #c084fc;
+        --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
     }
 }
 
@@ -147,11 +153,17 @@ section.error > h2 {
 
 section section {
     border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 0 0.8em 0.6em;
-    margin: 0.8em 0;
+    border-radius: 8px;
+    padding: 0 1em 0.8em;
+    margin: 1em 0;
     max-width: 100%;
     background-color: var(--block-background-color);
+    box-shadow: var(--card-shadow);
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+section section:hover {
+    border-color: var(--glow-cyan);
 }
 
 /* Documented names */

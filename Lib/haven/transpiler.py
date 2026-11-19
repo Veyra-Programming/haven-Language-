@@ -43,21 +43,31 @@ def preprocess_haven(source_code: str) -> str:
             curr_line = re.sub(r'\(\)\s*->\s*', 'lambda: ', curr_line)
             curr_line = re.sub(r'\(([a-zA-Z_][a-zA-Z0-9_,\s]*)\)\s*->\s*', r'lambda \1: ', curr_line)
 
-        # 4. 'use <module>' -> 'import <module>'
-        m_use = re.match(r'^(\s*)use\s+([a-zA-Z_][a-zA-Z0-9_\.]*)\s*$', curr_line)
+        # 4. 'use <module> [as <alias>]' -> 'import <module> [as <alias>]'
+        m_use = re.match(r'^(\s*)use\s+([a-zA-Z_][a-zA-Z0-9_\.]*)(?:\s+as\s+([a-zA-Z_][a-zA-Z0-9_]*))?\s*$', curr_line)
         if m_use:
-            processed_lines.append(f"{m_use.group(1)}import {m_use.group(2)}")
+            indent, mod, alias = m_use.groups()
+            haven_submodules = {
+                "quantum", "ai", "net", "geo", "signal", "crypto",
+                "scientific", "robotics", "cyber", "engine"
+            }
+            if mod in haven_submodules and not alias:
+                processed_lines.append(f"{indent}import haven.{mod} as {mod}")
+            elif alias:
+                processed_lines.append(f"{indent}import {mod} as {alias}")
+            else:
+                processed_lines.append(f"{indent}import {mod}")
             continue
 
         # 5. 'variable <name> = <val>' -> '<name> = <val>'
-        m_var = re.match(r'^(\s*)variable\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)$', curr_line)
+        m_var = re.match(r'^(\s*)variable\s+([a-zA-Z_][a-zA-Z0-9_,\s]*?)\s*=\s*(.+)$', curr_line)
         if m_var:
             lead, name, val = m_var.groups()
             processed_lines.append(f"{lead}{name} = {val}")
             continue
 
         # 6. 'constant <NAME> = <val>' -> '<NAME> = <val>'
-        m_const = re.match(r'^(\s*)constant\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*(.+)$', curr_line)
+        m_const = re.match(r'^(\s*)constant\s+([a-zA-Z_][a-zA-Z0-9_,\s]*?)\s*=\s*(.+)$', curr_line)
         if m_const:
             lead, name, val = m_const.groups()
             processed_lines.append(f"{lead}{name} = {val}")
