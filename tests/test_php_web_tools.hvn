@@ -1,0 +1,145 @@
+# =========================================================
+#   Haven PHP-Style Web Tools & Platform-Independence Test Suite
+#   Architecture & Specification by Anirudha Puthraya
+# =========================================================
+
+use haven.web as web
+use haven.php as php
+
+print("=========================================================")
+print("  Haven PHP-Style Web Tools & Database Verification      ")
+print("  Architecture & Specification by Anirudha Puthraya      ")
+print("=========================================================")
+
+# [1/5] PHP String Functions Verification
+print("[1/5] Verifying PHP String Functions...")
+variable csv = "alpha,beta,gamma,delta"
+variable parts = php.explode(",", csv)
+ensure len(parts) == 4 otherwise "explode failed"
+ensure parts[1] == "beta" otherwise "explode element mismatch"
+
+variable joined = php.implode(" | ", parts)
+ensure joined == "alpha | beta | gamma | delta" otherwise "implode failed"
+
+variable replaced = php.str_replace("beta", "omega", joined)
+ensure "omega" in replaced otherwise "str_replace failed"
+
+variable pos = php.strpos(joined, "gamma")
+ensure pos == 15 otherwise "strpos failed"
+
+variable sub = php.substr("HelloWorld", 0, 5)
+ensure sub == "Hello" otherwise "substr failed"
+
+variable sanitized = php.htmlspecialchars("<script>alert('xss')</script>")
+ensure "&lt;script&gt;" in sanitized otherwise "htmlspecialchars failed"
+
+variable stripped = php.strip_tags("<b>Bold</b> <i>Italic</i>")
+ensure stripped == "Bold Italic" otherwise "strip_tags failed"
+print("[PASS] PHP String Functions: explode, implode, str_replace, substr, htmlspecialchars verified.")
+
+# [2/5] PHP Array Functions Verification
+print("[2/5] Verifying PHP Array & Collection Primitives...")
+variable a1 = [1, 2, 3]
+variable a2 = [4, 5]
+variable merged = php.array_merge(a1, a2)
+ensure len(merged) == 5 otherwise "array_merge list failed"
+ensure php.in_array(3, merged) otherwise "in_array failed"
+ensure not php.in_array(99, merged) otherwise "in_array false positive"
+
+variable users = [
+    {"id": 1, "name": "Alice", "role": "admin"},
+    {"id": 2, "name": "Bob", "role": "user"},
+    {"id": 3, "name": "Charlie", "role": "admin"}
+]
+variable names = php.array_column(users, "name")
+ensure names == ["Alice", "Bob", "Charlie"] otherwise "array_column failed"
+
+variable chunks = php.array_chunk([1, 2, 3, 4, 5, 6, 7], 3)
+ensure len(chunks) == 3 otherwise "array_chunk failed"
+ensure len(chunks[0]) == 3 otherwise "chunk size mismatch"
+
+variable admins = php.array_filter(users, lambda u: u["role"] == "admin")
+ensure len(admins) == 2 otherwise "array_filter failed"
+print("[PASS] PHP Array Primitives: array_merge, array_column, array_chunk, array_filter verified.")
+
+# [3/5] PHP Security & Cryptographic Password Hashing
+print("[3/5] Verifying Password Hashing & Message Digests...")
+variable password = "SovereignSecurePassword2026!"
+variable hash_str = php.password_hash(password)
+ensure hash_str.startswith("$pbkdf2-sha256$") otherwise "Invalid password hash format"
+ensure php.password_verify(password, hash_str) otherwise "password_verify must succeed for valid password"
+ensure not php.password_verify("WrongPassword!", hash_str) otherwise "password_verify must fail for invalid password"
+
+variable md5_hash = php.md5("hello")
+ensure md5_hash == "5d41402abc4b2a76b9719d911017c592" otherwise "MD5 mismatch"
+variable sha1_hash = php.sha1("hello")
+ensure sha1_hash == "aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d" otherwise "SHA1 mismatch"
+print("[PASS] PHP Security: password_hash, password_verify, md5, sha1 verified.")
+
+# [4/5] PHP Embedded Template Engine
+print("[4/5] Verifying PHP / Haven Embedded Template Engine...")
+variable template_src = """
+<html>
+<body>
+    <h1><?= title ?></h1>
+    <ul>
+    <?haven for item in items: ?>
+        <li><?= item ?></li>
+    <?haven pass ?>
+    </ul>
+</body>
+</html>
+"""
+variable tmpl = web.HavenTemplate(template_src)
+variable rendered = tmpl.render({
+    "title": "Haven Store",
+    "items": ["Laptop", "Mouse", "Keyboard"]
+})
+
+ensure "<h1>Haven Store</h1>" in rendered otherwise "Template variable interpolation failed"
+ensure "<li>Laptop</li>" in rendered otherwise "Template loop item 1 missing"
+ensure "<li>Mouse</li>" in rendered otherwise "Template loop item 2 missing"
+ensure "<li>Keyboard</li>" in rendered otherwise "Template loop item 3 missing"
+print("[PASS] Template Engine: <?= ... ?> expressions & <?haven ... ?> blocks verified.")
+
+# [5/5] Fluent Database QueryBuilder & SQLite Storage
+print("[5/5] Verifying Database QueryBuilder & CRUD Operations...")
+variable db = web.Database(":memory:")
+db.raw_query("""
+    CREATE TABLE products (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        price REAL NOT NULL,
+        category TEXT NOT NULL
+    )
+""")
+
+# Insert Records
+variable id1 = db.table("products").insert({"name": "Phone", "price": 699.99, "category": "electronics"})
+variable id2 = db.table("products").insert({"name": "Desk", "price": 199.50, "category": "furniture"})
+variable id3 = db.table("products").insert({"name": "Headphones", "price": 99.00, "category": "electronics"})
+ensure id1 == 1 and id2 == 2 and id3 == 3 otherwise "Insert failed to return IDs"
+
+# Query Records
+variable electronics = db.table("products").where("category", "electronics").order_by("price", "DESC").get()
+ensure len(electronics) == 2 otherwise "Where query count mismatch"
+ensure electronics[0]["name"] == "Phone" otherwise "Order by DESC mismatch"
+
+# Update Record
+variable updated_rows = db.table("products").where("id", id1).update({"price": 649.99})
+ensure updated_rows == 1 otherwise "Update failed"
+variable updated_prod = db.table("products").where("id", id1).first()
+ensure updated_prod["price"] == 649.99 otherwise "Updated value mismatch"
+
+# Delete Record
+variable deleted_rows = db.table("products").where("id", id2).delete()
+ensure deleted_rows == 1 otherwise "Delete failed"
+variable remaining = db.table("products").get()
+ensure len(remaining) == 2 otherwise "Expected 2 remaining records"
+
+db.close()
+print("[PASS] Database: Parameterized QueryBuilder, CRUD & Table mutations verified.")
+
+print("=========================================================")
+print(" ALL HAVEN PHP-STYLE WEB TOOLS & DATABASE PASSED (100%)  ")
+print("=========================================================")

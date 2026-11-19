@@ -6,6 +6,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ---
 
+## [3.0.3 GA] - 2026-11-19 (PHP-Style Web Development Suite & Platform-Independent Server)
+
+### 🐘 PHP-Style Web Development Toolbox (`haven.web` / `haven.php` / `ani.web`)
+- **Embedded Template Engine (`HavenTemplate`)**:
+  - Direct server-side code embedding inside HTML and text files using `<?= expression ?>` (escaped), `<?!= expression ?>` (raw), and statement blocks `<?haven ... ?>`, `<?ani ... ?>`, `<?php ... ?>`.
+  - Automatic indentation level tracking across template loops (`for`/`end`), conditionals (`if`/`else`), and HTML markup.
+- **PHP Superglobals (`HttpContext`)**:
+  - `GET`: Decoded query string parameters.
+  - `POST`: Form-urlencoded or JSON request body payload.
+  - `SERVER`: Request headers, client IP, host, request URI, and timestamps.
+  - `COOKIE`: Automatic incoming cookie parser and `set_cookie()` response header builder.
+  - `SESSION`: Cryptographically signed server-side session store (`HAVEN_SESSID`).
+- **Standard PHP Functional Toolbox**:
+  - Strings: `explode`, `implode`, `str_replace`, `strpos`, `substr`, `trim`, `htmlentities`, `htmlspecialchars`, `strip_tags`, `nl2br`.
+  - Arrays: `array_merge`, `array_keys`, `array_values`, `array_column`, `array_chunk`, `array_filter`, `array_map`, `in_array`, `count_items`.
+  - Cryptography & Hashing: `password_hash` (PBKDF2-HMAC-SHA256 with dynamic salt), `password_verify`, `md5`, `sha1`.
+- **Database Abstraction & Fluent QueryBuilder (`DB` / `Database`)**:
+  - SQL-injection safe parameterized QueryBuilder (`DB.table("name").where(...).order_by(...).limit(...).get()`).
+  - Full CRUD support: `.insert()`, `.first()`, `.update()`, `.delete()`, and raw queries.
+- **Platform-Independent Web Server (`haven serve` / `ani serve`)**:
+  - Built-in zero-dependency development web server running identically across Windows, macOS, Linux, and Android (Termux).
+  - CLI usage: `haven serve --port 8000 --dir ./public`. Automatically executes embedded templates and serves static assets.
+
+---
+
 ## [3.0.2 GA] - 2026-11-19 (All-Rounder Superpowers: Quantum, Deep Learning, Audio/Signal & MicroApp)
 
 ### 🌟 Star Language OmniEngine (`str.engine` / `star.engine`)

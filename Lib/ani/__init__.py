@@ -84,6 +84,42 @@ import haven.ai as ai
 import haven.net as net
 import haven.signal as signal
 import haven.geo as geo
+import haven.web as web
+import haven.php as php
+
+from haven.web import (
+    HavenTemplate,
+    HttpContext,
+    QueryBuilder,
+    Database,
+    DB,
+    serve as web_serve,
+    explode,
+    implode,
+    str_replace,
+    strpos,
+    substr,
+    trim,
+    htmlspecialchars,
+    htmlentities,
+    strip_tags,
+    nl2br,
+    array_merge,
+    array_keys,
+    array_values,
+    array_column,
+    array_chunk,
+    array_filter,
+    array_map,
+    in_array,
+    count_items,
+    password_hash,
+    password_verify,
+    json_encode,
+    json_decode,
+    md5,
+    sha1,
+)
 
 from haven.quantum import (
     QuantumCircuit,

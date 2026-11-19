@@ -46,6 +46,7 @@ def print_help() -> None:
   {green('articles')} [list|read|open]      Read architectural essays & articles by Anirudha Puthraya
   {green('odcs')} <subcommand> [args...]    ODCS audit, replay, inspection, and verification tools
   {green('info')}                           Display Ani++ / Haven runtime, OmniEngine, and ODCS info
+  {green('serve')} [--port 8000] [--dir .] Launch platform-independent dynamic PHP/Haven web server
   {green('idle')}                           Launch the Ani++ / Haven Graphical IDE / Shell
   {green('version')}, {green('-V')}, {green('--version')}    Print language version and dual-identity info
 
@@ -269,6 +270,16 @@ def main(args: list = None) -> int:
     elif cmd == "idle":
         import idlelib.pyshell
         idlelib.pyshell.main()
+        return 0
+
+    elif cmd in ("serve", "server", "http"):
+        parser = argparse.ArgumentParser(prog="haven serve", description="Launch platform-independent development web server")
+        parser.add_argument("-p", "--port", type=int, default=8000, help="Port to listen on (default: 8000)")
+        parser.add_argument("-H", "--host", default="127.0.0.1", help="Host interface (default: 127.0.0.1)")
+        parser.add_argument("-d", "--dir", default=".", help="Document root directory (default: current directory)")
+        ns = parser.parse_args(subargs)
+        from haven.web import serve
+        serve(port=ns.port, host=ns.host, document_root=ns.dir)
         return 0
 
     else:

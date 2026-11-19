@@ -49,7 +49,7 @@ def preprocess_haven(source_code: str) -> str:
             indent, mod, alias = m_use.groups()
             haven_submodules = {
                 "quantum", "ai", "net", "geo", "signal", "crypto",
-                "scientific", "robotics", "cyber", "engine"
+                "scientific", "robotics", "cyber", "engine", "web", "php"
             }
             if mod in haven_submodules and not alias:
                 processed_lines.append(f"{indent}import haven.{mod} as {mod}")
